@@ -1,0 +1,22 @@
+# dependencies
+node_modules/
+
+# environment
+.env
+.env.*
+
+# builds
+dist/
+build/
+
+# test / coverage
+coverage/
+
+# logs
+logs/
+*.log
+
+# user uploads
+uploads/
+
+*.txt
