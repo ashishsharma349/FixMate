@@ -193,14 +193,14 @@ const ComplaintForm = () => {
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gray-100 p-0 sm:p-4 font-sans">
-      {/* Mobile: Full Screen | Laptop: App Card */}
       <div className="relative w-full h-screen sm:h-auto sm:max-w-[480px] bg-white sm:rounded-[40px] shadow-2xl overflow-hidden flex flex-col">
         
-        {/* Branding Header */}
+        {/* Branding Header - Logo Updated to Match Home Page */}
         <div className="flex-[0.2] min-h-[100px] flex items-center px-8 relative bg-white">
           <div className="z-10 flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#1a365d] rounded-full flex items-center justify-center shadow-md">
-              <span className="text-white text-xl">⚙️</span>
+            {/* New Building Logo Badge */}
+            <div className="w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-md overflow-hidden border border-slate-200">
+              <img src="/logo.png" alt="FixMate Logo" className="w-full h-full object-contain" />
             </div>
             <div>
               <h1 className="text-xl font-extrabold text-[#1a365d] leading-none">FixMate</h1>
@@ -263,6 +263,7 @@ const ComplaintForm = () => {
               <div className="relative group cursor-pointer">
                 <input 
                   type="file" 
+                  name="photo"
                   accept="image/*"
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
                   onChange={handleFileChange}

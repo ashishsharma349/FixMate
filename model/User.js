@@ -31,38 +31,17 @@
 // // module.exports = mongoose.model("User", UserSchema);
 // module.exports = mongoose.models.User || mongoose.model("User", UserSchema);
 
+// User.js - Apply similar changes to staff.js
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
 
-const UserSchema = new Schema({
-  authId: {
-    type: Schema.Types.ObjectId,
-    ref: "Auth",
-    required: true,
-    unique: true
-  },
-  name: {
-    type: String,
-    required: true
-  },
-  age: {
-    type: Number,
-    required: true,
-    min: 0
-  },
-  phone: {
-    type: String,
-    required: true
-  },
-  photo: {
-    type: String,
-    default: null    // stores local filename e.g. "1234567_abc.jpg"
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-    immutable: true
-  }
+const userSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  contact: { type: String, required: true },
+  age: { type: Number },
+  aadhaar: { type: String, required: true, unique: true },
+  photo: { type: String, default: null }, // Local path /uploads/...
+  role: { type: String, default: "user" }
 });
 
-module.exports = mongoose.models.User || mongoose.model("User", UserSchema);
+module.exports = mongoose.model("User", userSchema);
