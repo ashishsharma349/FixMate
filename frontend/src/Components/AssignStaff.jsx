@@ -308,8 +308,9 @@ const ComplaintAssignmentPage = () => {
         setLoading(true);
         const staffRes = await fetch("http://localhost:3000/users/All-Staff", { credentials: "include" });
         const staffData = await staffRes.json();
+        console.log("Staff Data :",staffData);
         setStaffList(Array.isArray(staffData) ? staffData : []);
-
+        
         const compRes = await fetch("http://localhost:3000/users/All-Complains", { credentials: "include" });
         const compData = await compRes.json();
         setComplaints(Array.isArray(compData?.complains) ? compData.complains : []);
@@ -385,7 +386,7 @@ const ComplaintAssignmentPage = () => {
 
           <div className="flex-1 overflow-y-auto p-4 space-y-3">
             {filteredStaff.map((staff) => (
-              <div key={staff._id} onClick={() => setSelectedStaffId(staff._id)}
+              <div key={staff._id} onClick={() => setSelectedStaffId(staff._id)} // Modified  sending profile id
                 className={`p-4 rounded-3xl cursor-pointer transition-all border-2 ${selectedStaffId === staff._id ? "border-blue-600 bg-blue-50 shadow-md" : "border-transparent bg-gray-50 hover:bg-gray-100"}`}>
                 <div className="flex justify-between items-center">
                   <div>
