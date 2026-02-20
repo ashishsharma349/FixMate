@@ -97,19 +97,16 @@ function generateTempPassword() {
   const special = "@$!%*?&";
   const all = upper + lower + digits + special;
 
-  // Guarantee at least one of each required type
   let pass =
     upper[Math.floor(Math.random() * upper.length)] +
     lower[Math.floor(Math.random() * lower.length)] +
     digits[Math.floor(Math.random() * digits.length)] +
     special[Math.floor(Math.random() * special.length)];
 
-  // Fill remaining 4 characters from all
   for (let i = 0; i < 4; i++) {
     pass += all[Math.floor(Math.random() * all.length)];
   }
 
-  // Shuffle
   return pass.split("").sort(() => Math.random() - 0.5).join("");
 }
 
@@ -117,7 +114,6 @@ async function hashPassword(password) {
   const salt = await bcrypt.genSalt(10);
   return await bcrypt.hash(password, salt);
 }
-
 
 // ─── LOGIN ────────────────────────────────────────────────────────────────────
 exports.handlePost_login = async (req, res) => {
@@ -138,7 +134,7 @@ exports.handlePost_login = async (req, res) => {
       email: authUser.email,
       role: authUser.role,
       profileId: profile?._id.toString(),
-      isFirstLogin: authUser.isFirstLogin   // frontend uses this to redirect to change-password page
+      isFirstLogin: authUser.isFirstLogin 
     };
     req.session.isLoggedIn = true;
 
@@ -157,7 +153,6 @@ exports.handlePost_login = async (req, res) => {
   }
 };
 
-
 // ─── LOGOUT ───────────────────────────────────────────────────────────────────
 exports.handle_logout = (req, res) => {
   try {
@@ -171,50 +166,70 @@ exports.handle_logout = (req, res) => {
   }
 };
 
-
-// ─── ADMIN: CREATE USER OR STAFF ──────────────────────────────────────────────
-// Only admin can hit this route (protected by isAdmin middleware)
+// ─── ADMIN: CREATE USER OR STAFF (WITH ROLLBACK) ──────────────────────────────
 exports.handlePost_createUser = async (req, res) => {
   console.log("[handlePost_createUser] :", req.body);
   try {
-    const { name, userType, age, email, contact, department } = req.body;
+    const { name, userType, age, email, contact, aadhaar, department } = req.body;
 
-    // Check duplicate email
-    const existingAuth = await Auth.findOne({ email });
-    if (existingAuth) return res.status(409).json({ error: "Email already registered" });
+    // 1. Check duplicate email or aadhaar
+    const existingAuth = await Auth.findOne({ $or: [{ email }, { aadhaar }] });
+    if (existingAuth) return res.status(409).json({ error: "Email or Aadhaar already registered" });
 
-    // Generate and hash temp password
     const tempPassword = generateTempPassword();
     const hashedPassword = await hashPassword(tempPassword);
 
-    // Create Auth record
+    // 2. Create Auth record
     const authUser = await Auth.create({
       email,
       password: hashedPassword,
       role: userType,
+      aadhaar, 
       isFirstLogin: true
     });
 
-    // Create profile record
-    if (userType === "user") {
-      await User.create({ authId: authUser._id, name, age, phone: contact });
-    } else if (userType === "staff") {
-      await Staff.create({ authId: authUser._id, name, phone: contact, department });
+    // 3. Create profile record with ROLLBACK logic
+    try {
+      if (userType === "user") {
+        await User.create({ 
+          authId: authUser._id, 
+          name, 
+          age, 
+          phone: contact, 
+          aadhaar, 
+          email 
+        });
+      } else if (userType === "staff") {
+        await Staff.create({ 
+          authId: authUser._id, 
+          name, 
+          phone: contact, 
+          department, 
+          aadhaar 
+        });
+      }
+    } catch (profileError) {
+      // If profile fails (e.g. validation), DELETE the created Auth record
+      await Auth.findByIdAndDelete(authUser._id);
+      console.log("[ROLLBACK]: Auth record deleted due to profile error");
+      throw profileError; // Pass the error to the main catch block
     }
 
-    // Send temp password to their email
+    // 4. Send email only after everything is saved
     await sendTempPasswordMail(email, name, tempPassword, userType);
 
-    res.status(201).json({ msg: `${userType} account created. Temp password sent to ${email}.` });
+    res.status(201).json({ msg: `${userType} account created successfully.` });
 
   } catch (err) {
     console.log("[handlePost_createUser ERROR]:", err);
-    res.status(500).json({ error: "Could not create account" });
+    if (err.name === 'ValidationError') {
+      return res.status(400).json({ error: "Validation Failed: " + err.message });
+    }
+    res.status(500).json({ error: "Could not create account: " + err.message });
   }
 };
 
-
-// ─── CHANGE PASSWORD (forced on first login, or voluntary) ───────────────────
+// ─── CHANGE PASSWORD ──────────────────────────────────────────────────────────
 exports.handlePost_changePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
@@ -225,16 +240,13 @@ exports.handlePost_changePassword = async (req, res) => {
     const authUser = await Auth.findById(sessionUser.id).select("+password");
     if (!authUser) return res.status(404).json({ error: "User not found" });
 
-    // Verify current/temp password
     const isMatch = await bcrypt.compare(currentPassword, authUser.password);
     if (!isMatch) return res.status(401).json({ error: "Current password is incorrect" });
 
-    // Hash and save new password
     authUser.password = await hashPassword(newPassword);
     authUser.isFirstLogin = false;
     await authUser.save();
 
-    // Update session
     req.session.user.isFirstLogin = false;
     req.session.save(err => {
       if (err) return res.status(500).json({ error: "Session update failed" });

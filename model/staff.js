@@ -66,9 +66,15 @@ const StaffSchema = new Schema({
     enum: ['Plumbing', 'Electrical', 'Carpentry', 'Cleaning', 'Security'],
     default: 'Cleaning'
   },
-  photo: {
-    type: String,
-    default: null    // stores local filename e.g. "1234567_abc.jpg"
+  // Added your new requirements
+  aadhaar: { 
+    type: String, 
+    required: true, 
+    unique: true 
+  },
+  photo: { 
+    type: String, 
+    default: null 
   },
   isAvailable: {
     type: Boolean,
@@ -88,4 +94,4 @@ const StaffSchema = new Schema({
   }
 });
 
-module.exports = mongoose.model("Staff", StaffSchema);
+module.exports = mongoose.models.Staff || mongoose.model("Staff", StaffSchema);
