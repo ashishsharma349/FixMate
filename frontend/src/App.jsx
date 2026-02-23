@@ -18,6 +18,7 @@ import HomePage from "./Components/HomePage";
 import ComplaintForm from "./Components/user/ComplainForm";
 import AllComplains from "./Components/user/AllComplains";
 import ComplainDetailCard from "./Components/UI/ComplainDetailCard";
+import MyPayments from "./Components/user/MyPayments";
 
 // Staff-specific
 import Task from "./Components/Staff/Task";
@@ -69,6 +70,7 @@ function App() {
         {/* User routes */}
         <Route path="/FileComplain"        element={role === "user" ? <ComplaintForm /> : <Navigate to="/" replace />} />
         <Route path="/All-Complains"       element={role === "user" ? <AllComplains /> : <Navigate to="/" replace />} />
+        <Route path="/my-payments" element={role === "user" ? <MyPayments /> : <Navigate to="/" replace />} />
         <Route path="/ComplainDetail/:id"  element={<ComplainDetailCard />} />
 
         {/* Staff routes */}

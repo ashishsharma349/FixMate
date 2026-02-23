@@ -232,6 +232,7 @@ const authRouter = require('./routes/authRouter');
 const profileRouter = require('./routes/profileRouter');
 const inventoryRouter = require('./routes/inventoryRoutes');
 const seedInventory = require("./seedInventory");
+const paymentRouter = require('./routes/paymentRoutes');
 // inside mongoose.connect().then(...)
 
 const session = require('express-session');
@@ -275,6 +276,12 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: store,
+  cookie: {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: false,
+    maxAge: 1000 * 60 * 60 * 24 * 7
+  }
 }));
 
 app.use(express.urlencoded({ extended: true }));
@@ -283,6 +290,7 @@ app.use(express.static("dist"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/check-login", (req, res) => {
+  res.set("Cache-Control", "no-store");
   if (req.session.user) {
     res.json({
       isLoggedIn: true,
@@ -299,6 +307,7 @@ app.use("/users", userRouter);
 app.use("/admin", adminRouter);
 app.use("/profile", profileRouter);
 app.use("/inventory", inventoryRouter);
+app.use("/payments", paymentRouter);
 
 mongoose.connect(DB_PATH).then(async () => {
   console.log("[Database Name] :", mongoose.connection.name);
@@ -316,3 +325,8 @@ mongoose.connect(DB_PATH).then(async () => {
 // // //https://console.cloudinary.com/app/c-60bb50f541835b7ef225ec07b2fd8a/assets/
 
 // // //https://github.com/ashishsharma349/Fixmate    // github-branch where code is 
+
+
+//User
+// viveksharma6124cbi@gmail.com
+// %a8rDgYU

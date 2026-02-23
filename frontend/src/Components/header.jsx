@@ -16,6 +16,7 @@ function Header() {
             <Link to="/profile" style={navItemStyle}>Profile</Link>
             <Link to="/FileComplain" style={navItemStyle}>Register Complaint</Link>
             <Link to="/All-Complains" style={navItemStyle}>All Complaints</Link>
+            <Link to="/my-payments">💳 My Payments</Link>
           </>
         )}
 

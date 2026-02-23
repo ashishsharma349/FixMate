@@ -1,53 +1,48 @@
-// import { createContext, useState } from "react";    
-// import { useEffect } from "react";
-// export const AuthContext= createContext();
+// import { createContext, useState, useEffect } from "react";
 
-// export function AuthProvider({children}) {
-//     const [isLoggedIn,setIsLoggedIn]= useState(null);
-//     const [role,setRole]=useState(null);
+// export const AuthContext = createContext();
 
-//     // const [user,setUser]= useState(null);
-    
+// export function AuthProvider({ children }) {
+//   const [isLoggedIn, setIsLoggedIn] = useState(null);
+//   const [role, setRole] = useState(null);
+//   const [isFirstLogin, setIsFirstLogin] = useState(false);
+
 //   useEffect(() => {
-//       fetch("http://localhost:3000/check-login", 
-//        { credentials: "include" }
-//        )
+//     fetch("http://localhost:3000/check-login", { credentials: "include" })
 //       .then(res => res.json())
 //       .then(data => {
-//         console.log("Session.isLoggedIn(from server) :", data.isLoggedIn);
-//         // console.log("Frontend Login State before setting :", isLoggedIn)
- 
-//         if (data.isLoggedIn) {
-//           setIsLoggedIn(true);
-//           setRole(data.isLoggedIn? data.role:null);
-//         }
-//       }).catch(err => {
-
+//         setIsLoggedIn(data.isLoggedIn);
+//         setRole(data.isLoggedIn ? data.role : null);
+//         setIsFirstLogin(data.isFirstLogin ?? false);
+//       })
+//       .catch(() => {
 //         setIsLoggedIn(false);
 //         setRole(null);
+//         setIsFirstLogin(false);
 //       });
-//     }, []);
+//   }, []);
 
-//     useEffect(() => {
-//     console.log("Auth state changed:", isLoggedIn, role);
-//     }, [isLoggedIn, role]);
+//   const login = (roleFromServer, firstLogin = false) => {
+//     setIsLoggedIn(true);
+//     setRole(roleFromServer ?? null);
+//     setIsFirstLogin(firstLogin);
+//   };
 
-//     const login=()=>{
-//         console.log("Called login function");
-//         setIsLoggedIn(true)
-//     }
-//     const logout=()=>{
-//         console.log("Called logout function");
-//         setIsLoggedIn(false)
-//     }
-    
-//    //upar jo context create kara tha first line pe
-//     return <>
-//         <AuthContext.Provider value={{isLoggedIn,role,login,logout}} > 
-//             {children}
-//         </AuthContext.Provider>
-//     </>
+//   const logout = () => {
+//     setIsLoggedIn(false);
+//     setRole(null);
+//     setIsFirstLogin(false);
+//   };
+
+//   const clearFirstLogin = () => setIsFirstLogin(false);
+
+//   return (
+//     <AuthContext.Provider value={{ isLoggedIn, role, isFirstLogin, login, logout, clearFirstLogin }}>
+//       {children}
+//     </AuthContext.Provider>
+//   );
 // }
+
 
 import { createContext, useState, useEffect } from "react";
 
@@ -59,7 +54,10 @@ export function AuthProvider({ children }) {
   const [isFirstLogin, setIsFirstLogin] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:3000/check-login", { credentials: "include" })
+    fetch("http://localhost:3000/check-login", {
+      credentials: "include",
+      headers: { "Cache-Control": "no-cache" }
+    })
       .then(res => res.json())
       .then(data => {
         setIsLoggedIn(data.isLoggedIn);
