@@ -1,16 +1,3 @@
-// import { useContext } from "react";
-// import { AuthContext } from "../Context/AuthContext";
-
-// function Profile(){
-
-// return <>
-//         <h1>Dashboard</h1>
-//         <p>To be continued</p>
-//     </>
-// }
-
-// export default Profile;
-
 import { useEffect, useState, useContext, useRef } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../Context/AuthContext";

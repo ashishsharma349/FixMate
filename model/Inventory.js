@@ -2,11 +2,14 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const InventorySchema = new Schema({
-    itemName: { type: String, required: true },
-    category: { type: String, enum: ['Electrical', 'Plumbing', 'Hardware', 'Cleaning'] },
-    quantity: { type: Number, default: 0 },
-    unitPrice: { type: Number, required: true }, // Cost per single item
-    lastUpdated: { type: Date, default: Date.now }
+  name:      { type: String, required: true, unique: true },
+  category:  { type: String, enum: ["Plumbing", "Electrical", "Carpentry", "Cleaning", "Security", "General"], default: "General" },
+  unit:      { type: String, default: "pcs" }, // pcs, kg, m, L, rolls
+  quantity:  { type: Number, default: 0, min: 0 },
+  minimum:   { type: Number, default: 5 },     // below this = low stock on admin dashboard
+  updatedAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("Inventory", InventorySchema);
+InventorySchema.pre("save", function (next) { this.updatedAt = new Date(); next(); });
+
+module.exports = mongoose.models.Inventory || mongoose.model("Inventory", InventorySchema);

@@ -1,18 +1,48 @@
 // const bcrypt = require("bcrypt");
 // const path = require('path');
 // const rootDir = require('../utils/pathUtil');
-// const { validationResult } = require("express-validator");
 // const Auth = require("../model/Auth");
 // const User = require("../model/User");
 // const Staff = require("../model/staff");
+// const { sendTempPasswordMail } = require("../utils/mailer");
 
+// // ─── Helper: generate a random secure temp password ───────────────────────────
+// function generateTempPassword() {
+//   const upper = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+//   const lower = "abcdefghijkmnpqrstuvwxyz";
+//   const digits = "23456789";
+//   const special = "@$!%*?&";
+//   const all = upper + lower + digits + special;
+
+//   let pass =
+//     upper[Math.floor(Math.random() * upper.length)] +
+//     lower[Math.floor(Math.random() * lower.length)] +
+//     digits[Math.floor(Math.random() * digits.length)] +
+//     special[Math.floor(Math.random() * special.length)];
+
+//   for (let i = 0; i < 4; i++) {
+//     pass += all[Math.floor(Math.random() * all.length)];
+//   }
+
+//   return pass.split("").sort(() => Math.random() - 0.5).join("");
+// }
+
+// async function hashPassword(password) {
+//   const salt = await bcrypt.genSalt(10);
+//   return await bcrypt.hash(password, salt);
+// }
+
+// // ─── LOGIN ────────────────────────────────────────────────────────────────────
 // exports.handlePost_login = async (req, res) => {
 //   try {
 //     const { email, password } = req.body;
+//     console.log("email :",email);
+//     console.log("password :",password);
 //     const authUser = await Auth.findOne({ email }).select("+password");
 //     if (!authUser) return res.status(401).json({ error: "Email not found" });
 
 //     const isMatch = await bcrypt.compare(password, authUser.password);
+//     console.log("Ismatch :",isMatch)
 //     if (!isMatch) return res.status(401).json({ error: "Invalid password" });
 
 //     let profile;
@@ -23,63 +53,131 @@
 //       id: authUser._id.toString(),
 //       email: authUser.email,
 //       role: authUser.role,
-//       profileId: profile?._id.toString()
+//       profileId: profile?._id.toString(),
+//       isFirstLogin: authUser.isFirstLogin 
 //     };
 //     req.session.isLoggedIn = true;
+
 //     req.session.save(err => {
 //       if (err) return res.status(500).json({ session: "Could not save session", success: false });
-//       return res.json({ success: true, role: authUser.role, message: "Logged in" });
+//       return res.json({
+//         success: true,
+//         role: authUser.role,
+//         isFirstLogin: authUser.isFirstLogin,
+//         message: "Logged in"
+//       });
 //     });
-    
-//   } catch (err) {
-//     res.status(500).send({ error: "Authentication Failed" });
-//   }
-// }
 
+//   } catch (err) {
+//     res.status(500).json({ error: "Authentication Failed" });
+//   }
+// };
+
+// // ─── LOGOUT ───────────────────────────────────────────────────────────────────
 // exports.handle_logout = (req, res) => {
-//   try{
-//   req.session.destroy(err => {
-//     if (err) console.log(err);
-//     res.clearCookie('connect.sid', { path: "/" });
-//     res.status(200).send("Successfully Logged Out");
-//   });
-//   }
-//   catch(err){
-//     console.log("[Session Destroy/ Logout Error]:",err);
-//   }
-
-// }
-
-// async function Hash_password(password) {
-//   const salt = await bcrypt.genSalt(10);
-//   return await bcrypt.hash(password, salt);
-// }
-
-// exports.handlePost_signup = async (req, res) => {
-//   console.log("[handlePost_signup] :",req.body);
 //   try {
-//     const { name, userType, age, email, contact, password, department } = req.body;
-//     const existingAuth = await Auth.findOne({ email });
-//     if (existingAuth) return res.status(409).json({ error: "Email already taken" });
-//     console.log("Email Not Duplicate Done");
-//     // console.log(password);
-//     const hashedPassword = await Hash_password(password);
-//     const authUser = await Auth.create({ email, password: hashedPassword, role: userType });
-//     console.log("Hashing Password and Auth document Done");
-//     if (userType === "user") {
-//       await User.create({ authId: authUser._id, name, age, phone: contact });
-//     console.log("User Created"); 
-//     } else if (userType === "staff") {
-//       await Staff.create({ authId: authUser._id, name, phone: contact, department });
-//       console.log("Staff Created"); 
+//     req.session.destroy(err => {
+//       if (err) console.log(err);
+//       res.clearCookie('connect.sid', { path: "/" });
+//       res.status(200).send("Successfully Logged Out");
+//     });
+//   } catch (err) {
+//     console.log("[Session Destroy/ Logout Error]:", err);
+//   }
+// };
+
+// // ─── ADMIN: CREATE USER OR STAFF (WITH ROLLBACK) ──────────────────────────────
+// exports.handlePost_createUser = async (req, res) => {
+//   console.log("[handlePost_createUser] :", req.body);
+//   try {
+//     const { name, userType, age, email, contact, aadhaar, department } = req.body;
+
+//     // 1. Check duplicate email or aadhaar
+//     const existingAuth = await Auth.findOne({ $or: [{ email }, { aadhaar }] });
+//     if (existingAuth) return res.status(409).json({ error: "Email or Aadhaar already registered" });
+
+//     const tempPassword = generateTempPassword();
+//     const hashedPassword = await hashPassword(tempPassword);
+
+//     // 2. Create Auth record
+//     const authUser = await Auth.create({
+//       email,
+//       password: hashedPassword,
+//       role: userType,
+//       aadhaar, 
+//       isFirstLogin: true
+//     });
+
+//     // 3. Create profile record with ROLLBACK logic
+//     try {
+//       if (userType === "user") {
+//         await User.create({ 
+//           authId: authUser._id, 
+//           name, 
+//           age, 
+//           phone: contact, 
+//           aadhaar, 
+//           email 
+//         });
+//       } else if (userType === "staff") {
+//         await Staff.create({ 
+//           authId: authUser._id, 
+//           name, 
+//           phone: contact, 
+//           department, 
+//           aadhaar 
+//         });
+//       }
+//     } catch (profileError) {
+//       // If profile fails (e.g. validation), DELETE the created Auth record
+//       await Auth.findByIdAndDelete(authUser._id);
+//       console.log("[ROLLBACK]: Auth record deleted due to profile error");
+//       throw profileError; // Pass the error to the main catch block
 //     }
-//     res.status(201).json({ msg: "User Created" });
+
+//     // 4. Send email only after everything is saved
+//     await sendTempPasswordMail(email, name, tempPassword, userType);
+
+//     res.status(201).json({ msg: `${userType} account created successfully.` });
 
 //   } catch (err) {
-//     console.log(err);
-//     res.status(500).json({ error: err });
+//     console.log("[handlePost_createUser ERROR]:", err);
+//     if (err.name === 'ValidationError') {
+//       return res.status(400).json({ error: "Validation Failed: " + err.message });
+//     }
+//     res.status(500).json({ error: "Could not create account: " + err.message });
 //   }
-// }
+// };
+
+// // ─── CHANGE PASSWORD ──────────────────────────────────────────────────────────
+// exports.handlePost_changePassword = async (req, res) => {
+//   try {
+//     const { currentPassword, newPassword } = req.body;
+//     const sessionUser = req.session.user;
+
+//     if (!sessionUser) return res.status(401).json({ error: "Not logged in" });
+
+//     const authUser = await Auth.findById(sessionUser.id).select("+password");
+//     if (!authUser) return res.status(404).json({ error: "User not found" });
+
+//     const isMatch = await bcrypt.compare(currentPassword, authUser.password);
+//     if (!isMatch) return res.status(401).json({ error: "Current password is incorrect" });
+
+//     authUser.password = await hashPassword(newPassword);
+//     authUser.isFirstLogin = false;
+//     await authUser.save();
+
+//     req.session.user.isFirstLogin = false;
+//     req.session.save(err => {
+//       if (err) return res.status(500).json({ error: "Session update failed" });
+//       res.json({ success: true, message: "Password changed successfully" });
+//     });
+
+//   } catch (err) {
+//     console.log("[handlePost_changePassword ERROR]:", err);
+//     res.status(500).json({ error: "Could not change password" });
+//   }
+// };
 
 const bcrypt = require("bcrypt");
 const path = require('path');
@@ -119,10 +217,13 @@ async function hashPassword(password) {
 exports.handlePost_login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log("email :", email);
+    console.log("password :", password);
     const authUser = await Auth.findOne({ email }).select("+password");
     if (!authUser) return res.status(401).json({ error: "Email not found" });
 
     const isMatch = await bcrypt.compare(password, authUser.password);
+    console.log("Ismatch :", isMatch);
     if (!isMatch) return res.status(401).json({ error: "Invalid password" });
 
     let profile;
@@ -134,7 +235,7 @@ exports.handlePost_login = async (req, res) => {
       email: authUser.email,
       role: authUser.role,
       profileId: profile?._id.toString(),
-      isFirstLogin: authUser.isFirstLogin 
+      isFirstLogin: authUser.isFirstLogin
     };
     req.session.isLoggedIn = true;
 
@@ -170,52 +271,63 @@ exports.handle_logout = (req, res) => {
 exports.handlePost_createUser = async (req, res) => {
   console.log("[handlePost_createUser] :", req.body);
   try {
-    const { name, userType, age, email, contact, aadhaar, department } = req.body;
+    const { name, userType, age, email, contact, phone, aadhaar, department } = req.body;
+    const phoneNum = phone || contact; // accept either field name from different forms
 
-    // 1. Check duplicate email or aadhaar
-    const existingAuth = await Auth.findOne({ $or: [{ email }, { aadhaar }] });
-    if (existingAuth) return res.status(409).json({ error: "Email or Aadhaar already registered" });
+    // 1. Validate required fields
+    if (!name || !userType || !email || !phoneNum) {
+      return res.status(400).json({ error: "Name, userType, email and phone are required" });
+    }
+    if (userType === "user" && !age) {
+      return res.status(400).json({ error: "Age is required for residents" });
+    }
+    if (userType === "staff" && !department) {
+      return res.status(400).json({ error: "Department is required for staff" });
+    }
+
+    // 2. Check duplicate email
+    const existingAuth = await Auth.findOne({ email });
+    if (existingAuth) return res.status(409).json({ error: "Email already registered" });
 
     const tempPassword = generateTempPassword();
     const hashedPassword = await hashPassword(tempPassword);
 
-    // 2. Create Auth record
+    // 3. Create Auth record
     const authUser = await Auth.create({
       email,
       password: hashedPassword,
       role: userType,
-      aadhaar, 
       isFirstLogin: true
     });
 
-    // 3. Create profile record with ROLLBACK logic
+    // 4. Create profile record with ROLLBACK logic
     try {
       if (userType === "user") {
-        await User.create({ 
-          authId: authUser._id, 
-          name, 
-          age, 
-          phone: contact, 
-          aadhaar, 
-          email 
+        await User.create({
+          authId: authUser._id,
+          name,
+          age,
+          phone: phoneNum,
+          aadhaar,
+          email
         });
       } else if (userType === "staff") {
-        await Staff.create({ 
-          authId: authUser._id, 
-          name, 
-          phone: contact, 
-          department, 
-          aadhaar 
+        await Staff.create({
+          authId: authUser._id,
+          name,
+          phone: phoneNum,
+          department,
+          aadhaar
         });
       }
     } catch (profileError) {
-      // If profile fails (e.g. validation), DELETE the created Auth record
+      // If profile creation fails, DELETE the Auth record to avoid orphan
       await Auth.findByIdAndDelete(authUser._id);
       console.log("[ROLLBACK]: Auth record deleted due to profile error");
-      throw profileError; // Pass the error to the main catch block
+      throw profileError;
     }
 
-    // 4. Send email only after everything is saved
+    // 5. Send email only after everything is saved
     await sendTempPasswordMail(email, name, tempPassword, userType);
 
     res.status(201).json({ msg: `${userType} account created successfully.` });

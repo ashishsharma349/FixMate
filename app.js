@@ -105,10 +105,6 @@
 // //   console.log("Error :"+err);
 // // })
 
-// // //https://cloud.mongodb.com/v2/6945663825be031afb5cd455#/explorer/69456739bb3db7510c498fa4/demoDB
-// // //https://console.cloudinary.com/app/c-60bb50f541835b7ef225ec07b2fd8a/assets/
-
-// // //https://github.com/ashishsharma349/Fixmate    // github-branch where code is 
 
 // // //user acc-
 // // // maheshwari@gmail.com
@@ -234,6 +230,9 @@ const userRouter = require('./routes/userRoutes');
 const adminRouter = require('./routes/adminRoutes');
 const authRouter = require('./routes/authRouter');
 const profileRouter = require('./routes/profileRouter');
+const inventoryRouter = require('./routes/inventoryRoutes');
+const seedInventory = require("./seedInventory");
+// inside mongoose.connect().then(...)
 
 const session = require('express-session');
 const MongoDbStore = require("connect-mongodb-session")(session);
@@ -299,14 +298,21 @@ app.use(authRouter);
 app.use("/users", userRouter);
 app.use("/admin", adminRouter);
 app.use("/profile", profileRouter);
+app.use("/inventory", inventoryRouter);
 
 mongoose.connect(DB_PATH).then(async () => {
   console.log("[Database Name] :", mongoose.connection.name);
   console.log("Connected to MongoDB");
   seedAdmin();
+  seedInventory();
   app.listen(PORT, () => {
     console.log(`Server is running at http://localhost:${PORT}`);
   });
 }).catch(err => {
   console.log("Error :" + err);
 });
+
+// // //https://cloud.mongodb.com/v2/6945663825be031afb5cd455#/explorer/69456739bb3db7510c498fa4/demoDB
+// // //https://console.cloudinary.com/app/c-60bb50f541835b7ef225ec07b2fd8a/assets/
+
+// // //https://github.com/ashishsharma349/Fixmate    // github-branch where code is 

@@ -1,154 +1,191 @@
-// import { useEffect ,useState} from "react";
-// import { useNavigate } from "react-router-dom";
-
-// function ComplainCard({data}) {
-//   const navigate= useNavigate();
-
-//   const show_detail=()=>{
-//   navigate("/ComplainDetail/${data._id}",{state:data})
-//   }  
-
-//   // console.log(data);
-//   return (
-//     <div className="max-w-sm rounded-xl shadow-md border p-4 bg-white">
-//       {/* Title */}
-//       <h2 className="text-xl font-semibold mb-3">
-//         {data.title}
-//       </h2>
-//       {/* Image */}
-//       <div className="w-full h-48 mb-3 overflow-hidden rounded-lg">
-//         <img
-//           src={data.image_url}
-//           alt="Complaint proof"
-//           className="w-full h-full object-cover"
-//         />
-//       </div>
-//       {/* Status */}
-//       <div className="text-sm">
-//         Status:
-//         <span className="ml-2 font-medium">
-//           {data.status}
-//         </span>
-//         <div>
-//             <button onClick={show_detail}> See Details</button>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// function ShowComplains(){
-// const [complains,setComplains]=useState([]);
-
-// useEffect(()=>{
-// fetch("http://localhost:3000/users/All-Complains",{
-// method:"GET",
-// }).then(res=>{
-//     return res.json()
-// }).then(data=>{
-// // console.log(data);
-// // setComplains(complains=>[...complains,data.complains]);  duplicacy error bcoz abi ek data ha khali
-// setComplains(data.complains);
-// })
-// },[])
-
-// return (
-//     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-//       {
-//         complains.map((c) => (
-//         <ComplainCard
-//           key={c._id}
-//           data={c}
-//         />
-//       ))
-//       }
-//     </div>
-//   );
-// }
-// export default ShowComplains;
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function ComplainCard({ data }) {
-  const navigate = useNavigate();
+const API = "http://localhost:3000";
 
-  const show_detail = () => {
-    navigate(`/ComplainDetail/${data._id}`, { state: data });
+// ── Status color helper ───────────────────────────────────────────────────────
+const getStatusStyle = (status) => {
+  const map = {
+    Resolved:        "bg-green-100 text-green-700 border-green-200",
+    InProgress:      "bg-blue-100 text-blue-700 border-blue-200",
+    Assigned:        "bg-purple-100 text-purple-700 border-purple-200",
+    EstimatePending: "bg-yellow-100 text-yellow-700 border-yellow-200",
+    EstimateApproved:"bg-teal-100 text-teal-700 border-teal-200",
+    Pending:         "bg-orange-100 text-orange-700 border-orange-200",
   };
+  return map[status] || "bg-gray-100 text-gray-600 border-gray-200";
+};
 
-  const getStatusColor = (status) => {
-    switch (status?.toLowerCase()) {
-      case "resolved":
-        return "bg-green-100 text-green-700 border-green-200";
-      case "in-progress":
-        return "bg-blue-100 text-blue-700 border-blue-200";
-      default:
-        return "bg-yellow-100 text-yellow-700 border-yellow-200";
+// ── Single complaint card ─────────────────────────────────────────────────────
+function ComplainCard({ data, onRevoke }) {
+  const navigate = useNavigate();
+  const [revoking, setRevoking] = useState(false);
+  const [revokeReason, setRevokeReason] = useState("");
+  const [showRevokeBox, setShowRevokeBox] = useState(false);
+  const [revokeMsg, setRevokeMsg] = useState("");
+
+  // Navigate to detail page (existing behaviour)
+  const showDetail = () => navigate(`/ComplainDetail/${data._id}`, { state: data });
+
+  // Can revoke only if Personal + not yet in InProgress/Resolved
+  const canRevoke =
+    data.workType === "Personal" &&
+    ["Assigned", "EstimatePending", "EstimateApproved"].includes(data.status);
+
+  const handleRevoke = async () => {
+    setRevoking(true);
+    setRevokeMsg("");
+    try {
+      // Uses new PATCH /users/revoke-complaint endpoint
+      const res = await fetch(`${API}/users/revoke-complaint`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ complaintId: data._id, revokeReason }),
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error);
+      setRevokeMsg("✅ Staff revoked. Complaint reopened.");
+      setShowRevokeBox(false);
+      onRevoke(); // refresh list
+    } catch (err) {
+      setRevokeMsg("❌ " + err.message);
+    } finally {
+      setRevoking(false);
     }
   };
 
   return (
     <div className="bg-white rounded-[30px] shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group">
+      {/* Complaint image */}
       <div className="relative w-full h-48 overflow-hidden bg-gray-100">
         <img
-          src={data.image_url}
+          src={data.image_url?.startsWith("/") ? `${API}${data.image_url}` : data.image_url}
           alt="Complaint proof"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          onError={(e) => { e.target.src = "/placeholder.png"; }}
         />
-        <div
-          className={`absolute top-4 right-4 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${getStatusColor(
-            data.status
-          )}`}
-        >
+        {/* Status badge */}
+        <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${getStatusStyle(data.status)}`}>
           {data.status}
         </div>
+        {/* WorkType badge */}
+        {data.workType && (
+          <div className={`absolute top-4 left-4 px-2.5 py-1 rounded-full text-[10px] font-bold ${data.workType === "Personal" ? "bg-blue-600 text-white" : "bg-teal-600 text-white"}`}>
+            {data.workType === "Personal" ? "🏠 Personal" : "🏢 Common"}
+          </div>
+        )}
       </div>
 
       <div className="p-6">
+        {/* Category + Title */}
         <p className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] mb-1">
           {data.category || "Maintenance"}
         </p>
-        <h2 className="text-xl font-extrabold text-[#1a365d] mb-4 truncate">
-          {data.title}
-        </h2>
+        <h2 className="text-xl font-extrabold text-[#1a365d] mb-2 truncate">{data.title}</h2>
 
-        <div className="flex items-center justify-between border-t border-gray-50 pt-4">
-          <div className="flex flex-col">
-            <span className="text-[10px] text-gray-400 font-bold uppercase">
-              Date Reported
-            </span>
+        {/* Assigned staff info */}
+        {data.assignedStaff && (
+          <p className="text-xs text-gray-500 mb-3">
+            🔧 Assigned to: <span className="font-semibold">{data.assignedStaff.name}</span>
+            {data.assignedStaff.department && ` · ${data.assignedStaff.department}`}
+          </p>
+        )}
+
+        {/* Estimated cost (if submitted) */}
+        {data.estimatedCost && (
+          <p className="text-xs text-gray-500 mb-3">
+            💰 Estimated: <span className="font-semibold">₹{data.estimatedCost}</span>
+            {data.estimateStatus && (
+              <span className={`ml-2 px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                data.estimateStatus === "Approved" ? "bg-green-100 text-green-700" :
+                data.estimateStatus === "Rejected" ? "bg-red-100 text-red-700" :
+                "bg-yellow-100 text-yellow-700"
+              }`}>
+                {data.estimateStatus}
+              </span>
+            )}
+          </p>
+        )}
+
+        {/* Date + Actions */}
+        <div className="flex items-center justify-between border-t border-gray-50 pt-4 gap-2 flex-wrap">
+          <div>
+            <span className="text-[10px] text-gray-400 font-bold uppercase block">Date Reported</span>
             <span className="text-xs font-semibold text-gray-600">
               {new Date(data.createdAt).toLocaleDateString()}
             </span>
           </div>
-
-          <button
-            onClick={show_detail}
-            className="bg-[#25334d] text-white px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-slate-700 transition"
-          >
-            See Details
-          </button>
+          <div className="flex gap-2">
+            {/* Revoke button — only for Personal assigned work */}
+            {canRevoke && (
+              <button
+                onClick={() => setShowRevokeBox(!showRevokeBox)}
+                className="bg-red-50 text-red-600 border border-red-200 px-3 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-red-100 transition"
+              >
+                Revoke Staff
+              </button>
+            )}
+            <button
+              onClick={showDetail}
+              className="bg-[#25334d] text-white px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-slate-700 transition"
+            >
+              See Details
+            </button>
+          </div>
         </div>
+
+        {/* Revoke confirmation box */}
+        {showRevokeBox && (
+          <div className="mt-4 bg-red-50 rounded-2xl p-4 border border-red-100">
+            <p className="text-xs font-bold text-red-700 mb-2">
+              ⚠️ Are you sure? This will unassign the staff and reopen the complaint.
+            </p>
+            <textarea
+              className="w-full text-xs p-3 rounded-xl border border-red-200 bg-white resize-none focus:outline-none mb-3"
+              rows={2}
+              placeholder="Reason for revoking (optional)..."
+              value={revokeReason}
+              onChange={(e) => setRevokeReason(e.target.value)}
+            />
+            {revokeMsg && <p className="text-xs mb-2 font-medium">{revokeMsg}</p>}
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowRevokeBox(false)}
+                className="flex-1 py-2 rounded-xl bg-white border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleRevoke}
+                disabled={revoking}
+                className="flex-1 py-2 rounded-xl bg-red-500 text-white text-xs font-bold hover:bg-red-600 disabled:opacity-50"
+              >
+                {revoking ? "Revoking..." : "Confirm Revoke"}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
+// ── Main complaints list ──────────────────────────────────────────────────────
 function ShowComplains() {
   const [complains, setComplains] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    fetch("http://localhost:3000/users/All-Complains", {
-      method: "GET",
-      credentials: "include", 
-    })
+  const fetchComplains = () => {
+    setLoading(true);
+    // Uses existing GET /users/All-Complains endpoint
+    fetch(`${API}/users/All-Complains`, { method: "GET", credentials: "include" })
       .then((res) => {
         if (!res.ok) {
           if (res.status === 401) throw new Error("Not authenticated");
-          throw new Error("Failed to fetch complains");
+          throw new Error("Failed to fetch complaints");
         }
         return res.json();
       })
@@ -157,56 +194,58 @@ function ShowComplains() {
         setLoading(false);
       })
       .catch((err) => {
-        console.error(err);
         setError(err.message);
-        setComplains([]);
         setLoading(false);
       });
-  }, []);
+  };
 
-  if (loading) {
+  useEffect(() => { fetchComplains(); }, []);
+
+  if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#1a365d]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#1a365d]" />
       </div>
     );
-  }
 
-  if (error) {
+  if (error)
     return (
       <div className="min-h-screen flex items-center justify-center text-red-500 font-semibold">
         {error}
       </div>
     );
-  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
-      <div className="flex items-center justify-between mb-10">
+      <div className="flex items-center justify-between mb-10 flex-wrap gap-4">
         <div>
-          <h1 className="text-3xl font-black text-[#1a365d] tracking-tight">
-            Your Complains
-          </h1>
-          <p className="text-sm text-gray-500 font-medium">
-            Track and manage your reported issues
-          </p>
+          <h1 className="text-3xl font-black text-[#1a365d] tracking-tight">Your Complaints</h1>
+          <p className="text-sm text-gray-500 font-medium">Track and manage your reported issues</p>
         </div>
-        <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-xl shadow-inner">
-          📋
-        </div>
+        {/* File new complaint button */}
+        <button
+          onClick={() => navigate("/FileComplain")}
+          className="bg-[#25334d] text-white px-6 py-3 rounded-full text-sm font-bold hover:bg-slate-700 transition"
+        >
+          + New Complaint
+        </button>
       </div>
 
       {complains.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {complains.map((c) => (
-            <ComplainCard key={c._id} data={c} />
+            <ComplainCard key={c._id} data={c} onRevoke={fetchComplains} />
           ))}
         </div>
       ) : (
         <div className="text-center py-20 bg-gray-50 rounded-[40px] border-2 border-dashed border-gray-200">
-          <p className="text-gray-400 font-bold uppercase tracking-widest text-sm">
-            No complains found
-          </p>
+          <p className="text-gray-400 font-bold uppercase tracking-widest text-sm">No complaints found</p>
+          <button
+            onClick={() => navigate("/FileComplain")}
+            className="mt-4 bg-[#25334d] text-white px-6 py-3 rounded-full text-sm font-bold hover:bg-slate-700 transition"
+          >
+            File Your First Complaint
+          </button>
         </div>
       )}
     </div>
