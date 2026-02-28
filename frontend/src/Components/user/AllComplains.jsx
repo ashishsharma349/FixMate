@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-const API = "http://localhost:3000";
+import { API, getAuthHeaders, jsonAuthHeaders } from "../../utils/api";
 
 // ── Status color helper ───────────────────────────────────────────────────────
 const getStatusStyle = (status) => {
   const map = {
-    Resolved:        "bg-green-100 text-green-700 border-green-200",
-    InProgress:      "bg-blue-100 text-blue-700 border-blue-200",
-    Assigned:        "bg-purple-100 text-purple-700 border-purple-200",
+    Resolved: "bg-green-100 text-green-700 border-green-200",
+    InProgress: "bg-blue-100 text-blue-700 border-blue-200",
+    Assigned: "bg-purple-100 text-purple-700 border-purple-200",
     EstimatePending: "bg-yellow-100 text-yellow-700 border-yellow-200",
-    EstimateApproved:"bg-teal-100 text-teal-700 border-teal-200",
-    Pending:         "bg-orange-100 text-orange-700 border-orange-200",
+    EstimateApproved: "bg-teal-100 text-teal-700 border-teal-200",
+    Pending: "bg-orange-100 text-orange-700 border-orange-200",
   };
   return map[status] || "bg-gray-100 text-gray-600 border-gray-200";
 };
@@ -39,8 +38,7 @@ function ComplainCard({ data, onRevoke }) {
       // Uses new PATCH /users/revoke-complaint endpoint
       const res = await fetch(`${API}/users/revoke-complaint`, {
         method: "PATCH",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: jsonAuthHeaders(),
         body: JSON.stringify({ complaintId: data._id, revokeReason }),
       });
       const result = await res.json();
@@ -97,11 +95,10 @@ function ComplainCard({ data, onRevoke }) {
           <p className="text-xs text-gray-500 mb-3">
             💰 Estimated: <span className="font-semibold">₹{data.estimatedCost}</span>
             {data.estimateStatus && (
-              <span className={`ml-2 px-2 py-0.5 rounded-full text-[10px] font-semibold ${
-                data.estimateStatus === "Approved" ? "bg-green-100 text-green-700" :
-                data.estimateStatus === "Rejected" ? "bg-red-100 text-red-700" :
-                "bg-yellow-100 text-yellow-700"
-              }`}>
+              <span className={`ml-2 px-2 py-0.5 rounded-full text-[10px] font-semibold ${data.estimateStatus === "Approved" ? "bg-green-100 text-green-700" :
+                  data.estimateStatus === "Rejected" ? "bg-red-100 text-red-700" :
+                    "bg-yellow-100 text-yellow-700"
+                }`}>
                 {data.estimateStatus}
               </span>
             )}
@@ -181,7 +178,7 @@ function ShowComplains() {
   const fetchComplains = () => {
     setLoading(true);
     // Uses existing GET /users/All-Complains endpoint
-    fetch(`${API}/users/All-Complains`, { method: "GET", credentials: "include" })
+    fetch(`${API}/users/All-Complains`, { method: "GET", headers: getAuthHeaders() })
       .then((res) => {
         if (!res.ok) {
           if (res.status === 401) throw new Error("Not authenticated");

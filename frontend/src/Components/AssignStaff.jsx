@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { getAuthHeaders } from "../utils/api";
 
 const ComplaintAssignmentPage = () => {
   const [complaints, setComplaints] = useState([]);
@@ -14,12 +15,11 @@ const ComplaintAssignmentPage = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const staffRes = await fetch("http://localhost:3000/users/All-Staff", { credentials: "include" });
+        const staffRes = await fetch("http://localhost:3000/users/All-Staff", { headers: getAuthHeaders() });
         const staffData = await staffRes.json();
-        console.log("Staff Data :",staffData);
         setStaffList(Array.isArray(staffData) ? staffData : []);
-        
-        const compRes = await fetch("http://localhost:3000/users/All-Complains", { credentials: "include" });
+
+        const compRes = await fetch("http://localhost:3000/users/All-Complains", { headers: getAuthHeaders() });
         const compData = await compRes.json();
         setComplaints(Array.isArray(compData?.complains) ? compData.complains : []);
       } catch (err) {
@@ -53,7 +53,7 @@ const ComplaintAssignmentPage = () => {
     try {
       const response = await fetch("http://localhost:3000/users/Assign-Complain", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         body: JSON.stringify({ staffId: selectedStaffId, complaintIds: selectedComplaints }),
       });
       if (!response.ok) throw new Error("Assignment failed");
@@ -69,7 +69,7 @@ const ComplaintAssignmentPage = () => {
   return (
     <div className="min-h-screen bg-[#f8fafc] p-4 lg:p-8 font-sans">
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 h-[calc(100vh-100px)]">
-        
+
         {/* LEFT: STAFF DIRECTORY */}
         <div className="w-full lg:w-[400px] flex flex-col bg-white rounded-[40px] shadow-xl border border-gray-100 overflow-hidden">
           <div className="p-6 bg-white border-b">

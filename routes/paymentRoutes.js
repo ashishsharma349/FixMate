@@ -66,6 +66,31 @@ router.get("/my-payments", loggedIn, async (req, res) => {
   }
 });
 
+// GET /payments/monthly-revenue — resident payments collected, grouped by month (dashboard chart)
+router.get("/monthly-revenue", adminOnly, async (req, res) => {
+  try {
+    const data = await Payment.aggregate([
+      { $match: { type: "personal", status: "Paid" } },
+      {
+        $group: {
+          _id: { month: { $month: "$paidAt" }, year: { $year: "$paidAt" } },
+          revenue: { $sum: "$amount" },
+        },
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } },
+      { $limit: 6 },
+    ]);
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const chartData = data.map(d => ({
+      month: months[d._id.month - 1],
+      revenue: d.revenue,
+    }));
+    res.json({ chartData });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // POST /payments/generate-monthly (admin)
 router.post("/generate-monthly", adminOnly, async (req, res) => {
   try {
@@ -88,12 +113,12 @@ router.post("/generate-monthly", adminOnly, async (req, res) => {
 
       const refId = await generateRefId("personal");
       await Payment.create({
-        type:       "personal",
-        resident:   resident._id,
+        type: "personal",
+        resident: resident._id,
         flatNumber: resident.flatNumber || "—",
         amount,
-        dueDate:    new Date(year, month, 5),
-        status:     "Pending",
+        dueDate: new Date(year, month, 5),
+        status: "Pending",
         month,
         year,
         refId,
@@ -108,36 +133,36 @@ router.post("/generate-monthly", adminOnly, async (req, res) => {
   }
 });
 
-// POST /payments/create-order (resident — no ownership check, my-payments already filters)
+// POST /payments/create-order (resident)
 router.post("/create-order", loggedIn, async (req, res) => {
   try {
     const { paymentId } = req.body;
     if (!paymentId) return res.status(400).json({ error: "paymentId required" });
 
     const payment = await Payment.findById(paymentId).populate("resident", "name flatNumber");
-    if (!payment)                  return res.status(404).json({ error: "Payment record not found" });
+    if (!payment) return res.status(404).json({ error: "Payment record not found" });
     if (payment.status === "Paid") return res.status(400).json({ error: "Already paid" });
 
-    // Reuse existing order if already created (handles orders created from admin side)
+    // Reuse existing order if already created
     if (payment.razorpayOrderId) {
       return res.json({
-        orderId:      payment.razorpayOrderId,
-        amount:       payment.amount * 100,
-        currency:     "INR",
-        keyId:        process.env.RAZORPAY_KEY_ID,
+        orderId: payment.razorpayOrderId,
+        amount: payment.amount * 100,
+        currency: "INR",
+        keyId: process.env.RAZORPAY_KEY_ID,
         residentName: payment.resident?.name || "",
-        flatNumber:   payment.flatNumber,
+        flatNumber: payment.flatNumber,
       });
     }
 
     const order = await razorpay.orders.create({
-      amount:   payment.amount * 100,
+      amount: payment.amount * 100,
       currency: "INR",
-      receipt:  `fixmate_${payment._id}`,
+      receipt: `fixmate_${payment._id}`,
       notes: {
-        flatNumber:   payment.flatNumber,
+        flatNumber: payment.flatNumber,
         residentName: payment.resident?.name || "",
-        paymentId:    String(payment._id),
+        paymentId: String(payment._id),
       },
     });
 
@@ -145,12 +170,12 @@ router.post("/create-order", loggedIn, async (req, res) => {
     await payment.save();
 
     res.json({
-      orderId:      order.id,
-      amount:       order.amount,
-      currency:     order.currency,
-      keyId:        process.env.RAZORPAY_KEY_ID,
+      orderId: order.id,
+      amount: order.amount,
+      currency: order.currency,
+      keyId: process.env.RAZORPAY_KEY_ID,
       residentName: payment.resident?.name || "",
-      flatNumber:   payment.flatNumber,
+      flatNumber: payment.flatNumber,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -173,10 +198,10 @@ router.post("/verify", loggedIn, async (req, res) => {
     const payment = await Payment.findOneAndUpdate(
       { razorpayOrderId: razorpay_order_id },
       {
-        status:            "Paid",
+        status: "Paid",
         razorpayPaymentId: razorpay_payment_id,
         razorpaySignature: razorpay_signature,
-        paidAt:            new Date(),
+        paidAt: new Date(),
       },
       { new: true }
     );
@@ -196,18 +221,65 @@ router.post("/maintenance", adminOnly, async (req, res) => {
 
     const refId = await generateRefId("maintenance");
     const payment = await Payment.create({
-      type:      "maintenance",
+      type: "maintenance",
       complaint: complaintId || null,
-      worker:    workerId    || null,
+      worker: workerId || null,
       workerName,
       purpose,
       amount,
-      status:  "Paid",
-      paidAt:  new Date(),
+      status: "Paid",
+      paidAt: new Date(),
       refId,
     });
 
     res.json({ success: true, payment });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /payments/mark-paid — admin confirms payment as paid
+router.post("/mark-paid", adminOnly, async (req, res) => {
+  try {
+    const { paymentId } = req.body;
+    if (!paymentId) return res.status(400).json({ error: "paymentId required" });
+    const payment = await Payment.findByIdAndUpdate(
+      paymentId,
+      { status: "Paid", paidAt: new Date(), razorpayPaymentId: "ADMIN_CONFIRMED" },
+      { new: true }
+    );
+    if (!payment) return res.status(404).json({ error: "Payment not found" });
+    res.json({ success: true, payment });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PUT /payments/:id — admin edits a maintenance payment
+router.put("/:id", adminOnly, async (req, res) => {
+  try {
+    const { purpose, amount, workerName, status, paidAt } = req.body;
+    const update = {};
+    if (purpose !== undefined) update.purpose = purpose;
+    if (amount !== undefined) update.amount = Number(amount);
+    if (workerName !== undefined) update.workerName = workerName;
+    if (status !== undefined) update.status = status;
+    if (paidAt !== undefined) update.paidAt = paidAt ? new Date(paidAt) : null;
+
+    const payment = await Payment.findByIdAndUpdate(req.params.id, { $set: update }, { new: true });
+    if (!payment) return res.status(404).json({ error: "Payment not found" });
+    res.json({ success: true, payment });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// DELETE /payments/:id — admin deletes a maintenance payment
+router.delete("/:id", adminOnly, async (req, res) => {
+  try {
+    const payment = await Payment.findByIdAndDelete(req.params.id);
+    if (!payment) return res.status(404).json({ error: "Payment not found" });
+    res.json({ success: true, message: "Payment deleted" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

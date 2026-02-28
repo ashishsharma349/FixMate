@@ -9,8 +9,10 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [showPw, setShowPw] = useState(false);
 
   if (isLoggedIn) return <Navigate to="/" />;
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,7 +23,6 @@ function Login() {
 
     try {
       const res = await fetch("http://localhost:3000/login", {
-        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -30,7 +31,7 @@ function Login() {
       const data = await res.json();
 
       if (data.success) {
-        login(data.role, data.isFirstLogin);
+        login(data.role, data.isFirstLogin, data.sessionId);
         if (data.isFirstLogin) {
           navigate("/change-password");
         } else {
@@ -59,7 +60,7 @@ function Login() {
           <div className="z-10 flex flex-col items-center">
             {/* The Building Logo Badge */}
             <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-4 shadow-xl border-4 border-[#1a365d] overflow-hidden">
-                <img src="/logo.png" alt="FixMate Logo" className="w-16 h-16 object-contain" />
+              <img src="/logo.png" alt="FixMate Logo" className="w-16 h-16 object-contain" />
             </div>
             <h1 className="text-4xl font-black text-[#1a365d] tracking-tighter">FixMate</h1>
             <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.3em] mt-1">Management Portal</p>
@@ -81,13 +82,23 @@ function Login() {
               </div>
               <div className="group">
                 <label className="text-sky-400 text-[10px] font-black uppercase ml-1 mb-1 block">Password</label>
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  className="w-full p-4 rounded-xl bg-[#cbd5e1] text-slate-800 placeholder-slate-500 outline-none focus:ring-2 focus:ring-blue-400 transition-all font-medium"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+                <div className="relative">
+                  <input
+                    type={showPw ? "text" : "password"}
+                    placeholder="••••••••"
+                    className="w-full p-4 pr-12 rounded-xl bg-[#cbd5e1] text-slate-800 placeholder-slate-500 outline-none focus:ring-2 focus:ring-blue-400 transition-all font-medium"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPw(!showPw)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 text-lg p-1 transition-colors"
+                    tabIndex={-1}
+                  >
+                    {showPw ? "🙈" : "👁️"}
+                  </button>
+                </div>
               </div>
             </div>
 

@@ -1,13 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
+import { API, getAuthHeaders, jsonAuthHeaders } from "../../utils/api";
 
-const API = "http://localhost:3000";
+// Auto-refresh hook
+const usePolling = (fetchFn, intervalMs = 15000) => {
+  const savedFn = useRef(fetchFn);
+  useEffect(() => { savedFn.current = fetchFn; }, [fetchFn]);
+  useEffect(() => {
+    savedFn.current();
+    const id = setInterval(() => savedFn.current(), intervalMs);
+    return () => clearInterval(id);
+  }, [intervalMs]);
+};
 
 const statusColors = {
-  Assigned:         "bg-blue-100 text-blue-700",
-  EstimatePending:  "bg-yellow-100 text-yellow-700",
+  Assigned: "bg-blue-100 text-blue-700",
+  EstimatePending: "bg-yellow-100 text-yellow-700",
   EstimateApproved: "bg-green-100 text-green-700",
-  InProgress:       "bg-purple-100 text-purple-700",
-  Resolved:         "bg-gray-100 text-gray-500",
+  InProgress: "bg-purple-100 text-purple-700",
+  Resolved: "bg-gray-100 text-gray-500",
 };
 
 function TaskCard({ task, onRefresh }) {
@@ -18,35 +28,36 @@ function TaskCard({ task, onRefresh }) {
   const [worklog, setWorklog] = useState("");
   const [actualCost, setActualCost] = useState("");
   const [proofFile, setProofFile] = useState(null);
-  const [materials, setMaterials] = useState([]); // optional — can be empty
+  const [materials, setMaterials] = useState([]);
   const [inventoryItems, setInventoryItems] = useState([]);
   const [submittingProof, setSubmittingProof] = useState(false);
   const [proofMsg, setProofMsg] = useState("");
 
-  // Fetch real inventory items from backend for CommonArea work
+  const isPersonal = task.workType === "Personal";
+  const isCommonArea = task.workType === "CommonArea";
+
+  // Fetch inventory only for CommonArea + EstimateApproved
   useEffect(() => {
-    if (task.workType === "CommonArea" && task.status === "EstimateApproved") {
-      fetch(`${API}/inventory`, { credentials: "include" })
+    if (isCommonArea && task.status === "EstimateApproved") {
+      fetch(`${API}/inventory`, { headers: getAuthHeaders() })
         .then((r) => r.json())
         .then((d) => setInventoryItems(d.items || []))
         .catch(console.error);
     }
-  }, [task.workType, task.status]);
+  }, [isCommonArea, task.status]);
 
   const addMaterial = (name) => {
     if (!name || materials.find((m) => m.name === name)) return;
     setMaterials([...materials, { name, qty: 1 }]);
   };
-
   const removeMaterial = (idx) => setMaterials(materials.filter((_, i) => i !== idx));
-
   const updateQty = (idx, qty) => {
     const updated = [...materials];
     updated[idx].qty = Math.max(1, Number(qty) || 1);
     setMaterials(updated);
   };
 
-  // Submit estimated labour cost
+  // Submit estimate
   const handleSubmitEstimate = async () => {
     if (!estimateCost) return;
     setSubmittingEst(true);
@@ -54,8 +65,7 @@ function TaskCard({ task, onRefresh }) {
     try {
       const res = await fetch(`${API}/users/submit-estimate`, {
         method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: jsonAuthHeaders(),
         body: JSON.stringify({ complaintId: task._id, estimatedCost: estimateCost }),
       });
       const data = await res.json();
@@ -69,7 +79,7 @@ function TaskCard({ task, onRefresh }) {
     }
   };
 
-  // Submit completion proof — materials are optional
+  // Submit proof
   const handleSubmitProof = async () => {
     if (!proofFile) return;
     setSubmittingProof(true);
@@ -78,14 +88,14 @@ function TaskCard({ task, onRefresh }) {
       const formData = new FormData();
       formData.append("complaintId", task._id);
       formData.append("worklog", worklog);
-      formData.append("actualCost", actualCost);
-      // Send materials as JSON string — empty array is valid (labour only)
-      formData.append("materialsUsed", JSON.stringify(materials));
+      // Only send actualCost for CommonArea — Personal uses estimatedCost on backend
+      if (isCommonArea) formData.append("actualCost", actualCost);
+      formData.append("materialsUsed", JSON.stringify(isCommonArea ? materials : []));
       formData.append("proof", proofFile);
 
       const res = await fetch(`${API}/users/complete-task`, {
         method: "POST",
-        credentials: "include",
+        headers: getAuthHeaders(),
         body: formData,
       });
       const data = await res.json();
@@ -115,21 +125,21 @@ function TaskCard({ task, onRefresh }) {
         <p className="text-xs text-slate-400 mt-1">{task.description}</p>
         {task.resident && <p className="text-xs text-slate-400 mt-1">👤 {task.resident.name}</p>}
         <div className="mt-2">
-          <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-semibold ${task.workType === "Personal" ? "bg-blue-50 text-blue-600" : "bg-teal-50 text-teal-600"}`}>
-            {task.workType === "Personal" ? "🏠 Personal Work" : "🏢 Common Area Work"}
+          <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-semibold ${isPersonal ? "bg-blue-50 text-blue-600" : "bg-teal-50 text-teal-600"}`}>
+            {isPersonal ? "🏠 Personal Work" : "🏢 Common Area Work"}
           </span>
         </div>
       </div>
 
-      {/* ── STEP 1: Submit Estimate ─────────────────────────────────────────── */}
+      {/* ── STEP 1: Estimate — shown for BOTH types on Assigned status ── */}
       {task.status === "Assigned" && (
         <div className="bg-slate-50 rounded-2xl p-4 mb-4">
           <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">
             Step 1 — Your Estimated Labour Cost (₹)
           </p>
-          <div className={`text-[11px] px-3 py-2 rounded-xl mb-3 font-medium ${task.workType === "Personal" ? "bg-blue-50 text-blue-600" : "bg-teal-50 text-teal-600"}`}>
-            {task.workType === "Personal"
-              ? "🏠 Personal work — estimate shared with resident directly. No admin step."
+          <div className={`text-[11px] px-3 py-2 rounded-xl mb-3 font-medium ${isPersonal ? "bg-blue-50 text-blue-600" : "bg-teal-50 text-teal-600"}`}>
+            {isPersonal
+              ? "🏠 Personal work — estimate auto-approved, resident sees it. No admin step."
               : "🏢 Common area — admin will approve your estimate before work begins."}
           </div>
           <input
@@ -150,7 +160,7 @@ function TaskCard({ task, onRefresh }) {
         </div>
       )}
 
-      {/* ── Waiting for admin (CommonArea only) ────────────────────────────── */}
+      {/* ── Waiting for admin (CommonArea EstimatePending only) ── */}
       {task.status === "EstimatePending" && (
         <div className="bg-yellow-50 rounded-2xl p-4 mb-4 text-center">
           <p className="text-2xl mb-1">⏳</p>
@@ -159,7 +169,7 @@ function TaskCard({ task, onRefresh }) {
         </div>
       )}
 
-      {/* ── STEP 2: Submit Proof — unlocked after estimate approved ────────── */}
+      {/* ── STEP 2: Submit Proof — after estimate approved ── */}
       {task.status === "EstimateApproved" && (
         <div className="space-y-4">
           <div className="bg-green-50 rounded-2xl px-4 py-3 text-center">
@@ -178,14 +188,12 @@ function TaskCard({ task, onRefresh }) {
             />
           </div>
 
-          {/* Materials — OPTIONAL, only shown for CommonArea */}
-          {task.workType === "CommonArea" && (
+          {/* Materials — CommonArea ONLY */}
+          {isCommonArea && (
             <div>
-              <div className="flex items-center justify-between ml-1 mb-1">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                  Materials Used <span className="text-slate-300 normal-case font-normal">(optional)</span>
-                </label>
-              </div>
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block ml-1 mb-1">
+                Materials Used <span className="text-slate-300 normal-case font-normal">(optional)</span>
+              </label>
               <select
                 className="w-full p-3 bg-blue-50 text-blue-700 rounded-xl border-none font-bold text-xs"
                 onChange={(e) => { addMaterial(e.target.value); e.target.value = ""; }}
@@ -219,21 +227,30 @@ function TaskCard({ task, onRefresh }) {
             </div>
           )}
 
-          {/* Actual cost */}
-          <div>
-            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block ml-1 mb-1">
-              Final Amount Charged (₹)
-            </label>
-            <input
-              type="number"
-              placeholder="Enter final amount"
-              className="w-full p-4 bg-slate-50 rounded-2xl border border-slate-100 font-black text-xl text-slate-800 focus:outline-none"
-              value={actualCost}
-              onChange={(e) => setActualCost(e.target.value)}
-            />
-          </div>
+          {/* Actual cost — CommonArea ONLY (Personal uses estimate automatically) */}
+          {isCommonArea && (
+            <div>
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block ml-1 mb-1">
+                Final Amount Charged (₹)
+              </label>
+              <input
+                type="number"
+                placeholder="Enter final amount"
+                className="w-full p-4 bg-slate-50 rounded-2xl border border-slate-100 font-black text-xl text-slate-800 focus:outline-none"
+                value={actualCost}
+                onChange={(e) => setActualCost(e.target.value)}
+              />
+            </div>
+          )}
 
-          {/* Proof photo — required */}
+          {/* Personal info note */}
+          {isPersonal && (
+            <div className="bg-blue-50 rounded-2xl px-4 py-3 text-xs text-blue-600 font-medium">
+              🏠 Personal work — final amount is your approved estimate of ₹{task.estimatedCost}. Just upload proof.
+            </div>
+          )}
+
+          {/* Proof photo */}
           <div className={`py-8 rounded-[2rem] border-2 border-dashed flex flex-col items-center justify-center transition-all ${proofFile ? "bg-green-50 border-green-200" : "bg-slate-50 border-slate-200"}`}>
             <label className="cursor-pointer flex flex-col items-center">
               <span className="text-3xl mb-1">{proofFile ? "✅" : "📸"}</span>
@@ -260,7 +277,7 @@ function TaskCard({ task, onRefresh }) {
           <p className="text-2xl mb-1">🎉</p>
           <p className="text-sm font-bold text-gray-600">Proof Submitted — Awaiting Admin Verification</p>
           {task.materialsUsed?.length > 0 && (
-            <p className="text-xs text-gray-400 mt-1">Materials used: {task.materialsUsed.map(m => `${m.name} x${m.qty}`).join(", ")}</p>
+            <p className="text-xs text-gray-400 mt-1">Materials: {task.materialsUsed.map(m => `${m.name} x${m.qty}`).join(", ")}</p>
           )}
         </div>
       )}
@@ -272,10 +289,10 @@ function Task() {
   const [complains, setComplains] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/users/Task`, { credentials: "include" });
+      const res = await fetch(`${API}/users/Task`, { headers: getAuthHeaders() });
       const data = await res.json();
       if (data?.complains) setComplains(data.complains);
     } catch (err) {
@@ -283,9 +300,10 @@ function Task() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  useEffect(() => { fetchTasks(); }, []);
+  // Auto-refresh every 15 seconds
+  usePolling(fetchTasks, 15000);
 
   if (loading)
     return (

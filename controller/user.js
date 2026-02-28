@@ -1,11 +1,17 @@
 const Complain = require("../model/Complain");
 const User = require("../model/User");
-const { deductMaterials } = require("./inventory"); // auto-deduct on CommonArea completion
+const { deductMaterials } = require("./inventory");
 
-// ── FILE UPLOAD FOR COMPLAINT (existing) ────────────────────────────────────
+// ── FILE UPLOAD FOR COMPLAINT ──────────────────────────────────────────────────
 exports.handlePost_fileUpload = async (req, res) => {
-  if (!req.file) return res.status(400).json({ error: "No file uploaded" });
   try {
+    if (!req.body.title || !req.body.description || !req.body.priority) {
+      return res.status(400).json({ error: "Title, description and priority required" });
+    }
+    // FIXED: photo is MANDATORY
+    if (!req.file) {
+      return res.status(400).json({ error: "Photo is required" });
+    }
     const complain = {
       image_url:   `/uploads/${req.file.filename}`,
       title:       req.body.title,
@@ -22,7 +28,7 @@ exports.handlePost_fileUpload = async (req, res) => {
   }
 };
 
-// ── SHOW COMPLAINTS — resident sees own, admin sees all (existing) ────────────
+// ── SHOW COMPLAINTS ────────────────────────────────────────────────────────────
 exports.ShowComplains = async (req, res) => {
   try {
     const sessionUser = req.session.user;
@@ -37,7 +43,7 @@ exports.ShowComplains = async (req, res) => {
   }
 };
 
-// ── GET ALL STAFF (existing) ─────────────────────────────────────────────────
+// ── GET ALL STAFF ──────────────────────────────────────────────────────────────
 exports.getAllStaffDetails = async (req, res) => {
   try {
     const Staff = require("../model/staff");
@@ -48,7 +54,7 @@ exports.getAllStaffDetails = async (req, res) => {
   }
 };
 
-// ── ASSIGN COMPLAINT (existing) ──────────────────────────────────────────────
+// ── ASSIGN COMPLAINT ───────────────────────────────────────────────────────────
 exports.handleComplainAssign = async (req, res) => {
   try {
     const Staff = require("../model/staff");
@@ -68,7 +74,7 @@ exports.handleComplainAssign = async (req, res) => {
   }
 };
 
-// ── FETCH STAFF TASKS (existing) ─────────────────────────────────────────────
+// ── FETCH STAFF TASKS ──────────────────────────────────────────────────────────
 exports.fetch_task = async (req, res) => {
   try {
     const sessionUser = req.session.user;
@@ -83,7 +89,7 @@ exports.fetch_task = async (req, res) => {
   }
 };
 
-// ── PROFILE PHOTO UPLOAD (existing) ─────────────────────────────────────────
+// ── PROFILE PHOTO UPLOAD ───────────────────────────────────────────────────────
 exports.handleProfilePhotoUpload = async (req, res) => {
   try {
     const Staff = require("../model/staff");
@@ -104,7 +110,9 @@ exports.handleProfilePhotoUpload = async (req, res) => {
   }
 };
 
-// ── NEW: STAFF SUBMITS ESTIMATE ──────────────────────────────────────────────
+// ── STAFF SUBMITS ESTIMATE ─────────────────────────────────────────────────────
+// Personal = auto-approve (no admin step needed)
+// CommonArea = goes to admin for approval
 exports.submitEstimate = async (req, res) => {
   try {
     const sessionUser = req.session.user;
@@ -118,8 +126,8 @@ exports.submitEstimate = async (req, res) => {
     if (String(complaint.assignedStaff) !== String(sessionUser.profileId))
       return res.status(403).json({ error: "Not your complaint" });
 
-    // Personal = auto-approve (resident pays offline), CommonArea = needs admin approval
     const isPersonal = complaint.workType === "Personal";
+
     await Complain.findByIdAndUpdate(complaintId, {
       $set: {
         estimatedCost:  Number(estimatedCost),
@@ -127,17 +135,21 @@ exports.submitEstimate = async (req, res) => {
         status:         isPersonal ? "EstimateApproved" : "EstimatePending",
       },
     });
+
     res.status(200).json({
-      message: isPersonal ? "Estimate recorded. Work can begin." : "Estimate sent to admin for approval.",
+      message: isPersonal
+        ? "Estimate recorded and auto-approved. Proceed with work."
+        : "Estimate sent to admin for approval.",
     });
   } catch (err) {
+    console.error("[submitEstimate]:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
-// ── NEW: STAFF SUBMITS COMPLETION PROOF ─────────────────────────────────────
-// Materials are OPTIONAL — labour-only jobs are perfectly valid (empty array)
-// Auto-deducts inventory only for CommonArea work (society's stock)
+// ── STAFF SUBMITS COMPLETION PROOF ────────────────────────────────────────────
+// Personal work: actualCost = estimatedCost (already confirmed)
+// CommonArea: actualCost can differ (materials etc.)
 exports.completeTask = async (req, res) => {
   try {
     const sessionUser = req.session.user;
@@ -153,23 +165,53 @@ exports.completeTask = async (req, res) => {
     if (String(complaint.assignedStaff) !== String(sessionUser.profileId))
       return res.status(403).json({ error: "Not your complaint" });
 
-    // Materials optional — empty array = labour only, that's fine
     let materials = [];
     try { materials = JSON.parse(materialsUsed || "[]"); } catch (_) {}
+
+    // Personal: use estimatedCost as finalCost
+    // CommonArea: use submitted actualCost
+    const finalCost = complaint.workType === "Personal"
+      ? complaint.estimatedCost
+      : (Number(actualCost) || 0);
 
     await Complain.findByIdAndUpdate(complaintId, {
       $set: {
         proofImage:    `/uploads/${req.file.filename}`,
         worklog:       worklog || "",
-        actualCost:    Number(actualCost) || 0,
+        actualCost:    finalCost,
         materialsUsed: materials,
         status:        "InProgress",
       },
     });
 
-    // Only deduct society inventory for CommonArea work with materials used
+    // Only deduct society inventory for CommonArea work
     if (complaint.workType === "CommonArea" && materials.length > 0) {
       await deductMaterials(materials);
+    }
+
+    // Auto-create maintenance payment for CommonArea work
+    if (complaint.workType === "CommonArea") {
+      try {
+        const Payment = require("../model/Payment");
+        const Staff = require("../model/staff");
+        const staff = await Staff.findById(sessionUser.profileId);
+        const count = await Payment.countDocuments({ type: "maintenance" });
+        const refId = `MAN-${String(count + 1).padStart(5, "0")}`;
+        await Payment.create({
+          type:       "maintenance",
+          complaint:  complaint._id,
+          worker:     sessionUser.profileId,
+          workerName: staff?.name || "Staff",
+          purpose:    complaint.title,
+          amount:     finalCost,
+          status:     "Paid",
+          paidAt:     new Date(),
+          refId,
+        });
+      } catch (payErr) {
+        console.error("[completeTask] maintenance payment creation failed:", payErr.message);
+        // Don't fail the whole request — proof is already saved
+      }
     }
 
     res.status(200).json({ message: "Completion submitted successfully" });
@@ -179,7 +221,7 @@ exports.completeTask = async (req, res) => {
   }
 };
 
-// ── NEW: RESIDENT REVOKES ASSIGNED STAFF (Personal work only) ───────────────
+// ── RESIDENT REVOKES ASSIGNED STAFF ───────────────────────────────────────────
 exports.revokeStaff = async (req, res) => {
   try {
     const Staff = require("../model/staff");
@@ -197,11 +239,9 @@ exports.revokeStaff = async (req, res) => {
     if (!["Assigned", "EstimatePending", "EstimateApproved"].includes(complaint.status))
       return res.status(400).json({ error: "Cannot revoke at this stage" });
 
-    // Free up the staff member
     if (complaint.assignedStaff)
       await Staff.findByIdAndUpdate(complaint.assignedStaff, { $set: { isAvailable: true } });
 
-    // Fully reset complaint so admin can reassign
     await Complain.findByIdAndUpdate(complaintId, {
       $set: {
         assignedStaff: null, status: "Pending", workType: null,

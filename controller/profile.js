@@ -20,6 +20,8 @@ exports.getProfile = async (req, res) => {
         name: profile?.name,
         age: profile?.age,
         phone: profile?.phone,
+        flatNumber: profile?.flatNumber,
+        aadhaar: profile?.aadhaar,
         photo: profile?.photo ? `/uploads/${profile.photo}` : null,
         createdAt: auth.createdAt,
       });

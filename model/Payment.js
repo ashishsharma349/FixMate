@@ -24,7 +24,7 @@ const paymentSchema = new mongoose.Schema({
   razorpaySignature: { type: String },
 
   // ── Maintenance Payment ──
-  complaint:  { type: mongoose.Schema.Types.ObjectId, ref: "Complaint" },
+  complaint:  { type: mongoose.Schema.Types.ObjectId, ref: "Complain" }, // FIXED: was "Complaint"
   worker:     { type: mongoose.Schema.Types.ObjectId, ref: "Staff" },
   workerName: { type: String },
   purpose:    { type: String },

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { AuthContext } from '../Context/AuthContext';
 
 const Home = () => {
-  const { isLoggedIn, role, isFirstLogin } = useContext(AuthContext);
+  const { isLoggedIn, role, isFirstLogin, sessionExpired, dismissExpired } = useContext(AuthContext);
 
   const getDashboardLink = () => {
     if (role === "admin") return { to: "/AssignStaff", label: "Go to Admin Panel" };
@@ -16,7 +16,15 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-[#1a365d] font-sans overflow-x-hidden">
-      
+
+      {/* Session Expired Banner */}
+      {sessionExpired && (
+        <div className="bg-yellow-50 border-b border-yellow-200 px-6 py-3 flex items-center justify-center gap-3">
+          <span className="text-yellow-700 text-sm font-medium">⏰ Your session has expired. Please <Link to="/login" className="text-blue-600 font-bold underline">login again</Link> to continue.</span>
+          <button onClick={dismissExpired} className="text-yellow-500 hover:text-yellow-700 font-bold text-lg leading-none">×</button>
+        </div>
+      )}
+
       {/* Banner - Only for First Login */}
       {isLoggedIn && isFirstLogin && (
         <div className="w-full bg-gradient-to-r from-amber-400 to-orange-500 text-white px-6 py-3 flex items-center justify-between shadow-lg sticky top-0 z-[100]">
@@ -29,36 +37,24 @@ const Home = () => {
         </div>
       )}
 
-      {/* Navbar */}
-      <nav className="w-full bg-white/80 backdrop-blur-md border-b border-slate-200 px-6 py-4 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-3 group">
-            <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-md overflow-hidden border border-slate-100 group-hover:scale-110 transition-transform">
-              <img src="/logo.png" alt="FixMate Logo" className="w-full h-full object-contain p-1" />
-            </div>
-            <h1 className="text-2xl font-black tracking-tighter text-[#1a365d]">FixMate</h1>
-          </div>
-
-          <div className="flex items-center gap-4">
-            {isLoggedIn ? (
-              <div className="flex items-center gap-6">
-                <Link to={dash.to} className="bg-[#1a365d] text-white px-6 py-2 rounded-xl text-sm font-bold uppercase tracking-widest hover:bg-blue-900 shadow-md transition-all">
-                  {dash.label}
-                </Link>
-                <Link to="/logout" className="text-sm font-black text-slate-400 hover:text-red-500 transition-colors uppercase tracking-widest">
-                  Logout
-                </Link>
+      {/* Navbar — only show when NOT logged in (logged-in users have Header from App.jsx) */}
+      {!isLoggedIn && (
+        <nav className="w-full bg-white/80 backdrop-blur-md border-b border-slate-200 px-6 py-4 sticky top-0 z-50 shadow-sm">
+          <div className="max-w-7xl mx-auto flex justify-between items-center">
+            <div className="flex items-center gap-3 group">
+              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-md overflow-hidden border border-slate-100 group-hover:scale-110 transition-transform">
+                <img src="/logo.png" alt="FixMate Logo" className="w-full h-full object-contain p-1" />
               </div>
-            ) : (
-              <Link to="/login" className="bg-[#1a365d] text-white px-8 py-2 rounded-xl text-sm font-bold uppercase tracking-widest hover:shadow-lg transition-all">
-                Login
-              </Link>
-            )}
+              <h1 className="text-2xl font-black tracking-tighter text-[#1a365d]">FixMate</h1>
+            </div>
+            <Link to="/login" className="bg-[#1a365d] text-white px-8 py-2 rounded-xl text-sm font-bold uppercase tracking-widest hover:shadow-lg transition-all">
+              Login
+            </Link>
           </div>
-        </div>
-      </nav>
+        </nav>
+      )}
 
-      <header className="relative bg-white pt-20 pb-32 px-6 overflow-hidden border-b border-slate-100">
+      <header className="relative bg-white pt-12 pb-20 px-6 overflow-hidden border-b border-slate-100">
         {/* Background Accent */}
         <div className="absolute top-0 right-0 w-1/3 h-full opacity-5 pointer-events-none">
           <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
@@ -68,26 +64,30 @@ const Home = () => {
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
           {/* Hero Logo */}
-          <div className="mb-12 flex justify-center">
+          <div className="mb-6 flex justify-center">
             <div className="relative">
               <div className="absolute inset-0 bg-blue-400 blur-3xl opacity-20 rounded-full animate-pulse"></div>
-              <div className="w-40 h-40 bg-white rounded-[40px] flex items-center justify-center shadow-2xl border border-slate-100 overflow-hidden relative z-10">
-                <img src="/logo.png" alt="FixMate" className="w-28 h-28 object-contain" />
+              <div className="w-24 h-24 bg-white rounded-[24px] flex items-center justify-center shadow-xl border border-slate-100 overflow-hidden relative z-10">
+                <img src="/logo.png" alt="FixMate" className="w-16 h-16 object-contain" />
               </div>
             </div>
           </div>
-          
-          <h2 className="text-6xl md:text-7xl font-black mb-8 tracking-tighter leading-none">
-            Report. Track. <br/>
+
+          <h2 className="text-5xl md:text-6xl font-black mb-5 tracking-tighter leading-none">
+            Report. Track. <br />
             <span className="text-blue-600">Resolve.</span>
           </h2>
-          <p className="text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed mb-12 font-medium">
-            The unified platform for residential excellence. Bridging the gap between 
+          <p className="text-base text-slate-500 max-w-xl mx-auto leading-relaxed mb-8 font-medium">
+            The unified platform for residential excellence. Bridging the gap between
             residents and management with real-time maintenance tracking.
           </p>
-          
-          {!isLoggedIn && (
-            <Link to="/login" className="inline-block bg-[#1a365d] text-white px-12 py-5 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl hover:scale-105 active:scale-95 transition-all">
+
+          {isLoggedIn ? (
+            <Link to={dash.to} className="inline-block bg-[#1a365d] text-white px-10 py-4 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all text-sm">
+              {dash.label}
+            </Link>
+          ) : (
+            <Link to="/login" className="inline-block bg-[#1a365d] text-white px-10 py-4 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all text-sm">
               Login to FixMate
             </Link>
           )}

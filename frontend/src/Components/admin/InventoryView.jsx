@@ -7,13 +7,13 @@
 //   case "Inventory": return <InventoryView />;
 
 import { useState, useEffect, useCallback } from "react";
+import { getAuthHeaders } from "../../utils/api";
 
 const API = "http://localhost:3000";
 
 const apiFetch = async (url, opts = {}) => {
   const res = await fetch(`${API}${url}`, {
-    credentials: "include",
-    headers: { "Content-Type": "application/json", ...(opts.headers || {}) },
+    headers: { "Content-Type": "application/json", ...getAuthHeaders(), ...(opts.headers || {}) },
     ...opts,
   });
   const data = await res.json();

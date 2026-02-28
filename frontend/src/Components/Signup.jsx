@@ -1,6 +1,7 @@
 import { useState, useContext } from "react";
 import { Navigate } from "react-router-dom";
 import { AuthContext } from "../Context/AuthContext";
+import { jsonAuthHeaders } from "../utils/api";
 
 // This is NOT a public signup page.
 // Only admin can access this to create resident/staff accounts.
@@ -16,7 +17,7 @@ export default function CreateUser() {
     aadhaar: "", // Added Aadhaar field
     department: "",
   });
-  
+
   const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
@@ -26,7 +27,7 @@ export default function CreateUser() {
 
   function handleChange(e) {
     const { name, value } = e.target;
-    
+
     // Custom logic for Aadhaar and Contact to only allow numbers
     if (name === "aadhaar" || name === "contact") {
       const numericValue = value.replace(/\D/g, "");
@@ -41,7 +42,7 @@ export default function CreateUser() {
     e.preventDefault();
     setErrors({});
     setSuccess("");
-    
+
     // Basic Aadhaar Validation before sending to server
     if (formData.aadhaar.length !== 12) {
       setErrors({ aadhaar: "Aadhaar must be exactly 12 digits" });
@@ -53,9 +54,8 @@ export default function CreateUser() {
     try {
       const res = await fetch("http://localhost:3000/admin/create-user", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: jsonAuthHeaders(),
         body: JSON.stringify(formData),
-        credentials: "include",
       });
 
       const data = await res.json();
@@ -135,15 +135,15 @@ export default function CreateUser() {
             {errors.contact && <p className="text-red-300 text-[10px]">{errors.contact}</p>}
 
             {/* Aadhaar Card Field */}
-            <input 
-              type="text" 
-              maxLength="12" 
-              className={inputStyle} 
-              name="aadhaar" 
+            <input
+              type="text"
+              maxLength="12"
+              className={inputStyle}
+              name="aadhaar"
               placeholder="Aadhaar Number (12 digits)"
-              value={formData.aadhaar} 
-              onChange={handleChange} 
-              required 
+              value={formData.aadhaar}
+              onChange={handleChange}
+              required
             />
             {errors.aadhaar && <p className="text-red-300 text-[10px]">{errors.aadhaar}</p>}
 

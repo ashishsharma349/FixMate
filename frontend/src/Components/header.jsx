@@ -13,16 +13,18 @@ function Header() {
         {/* Resident nav */}
         {isLoggedIn && role === "user" && (
           <>
+            <Link to="/" style={navItemStyle}>🏠 Home</Link>
             <Link to="/profile" style={navItemStyle}>Profile</Link>
             <Link to="/FileComplain" style={navItemStyle}>Register Complaint</Link>
             <Link to="/All-Complains" style={navItemStyle}>All Complaints</Link>
-            <Link to="/my-payments">💳 My Payments</Link>
+            <Link to="/my-payments" style={navItemStyle}>💳 My Payments</Link>
           </>
         )}
 
         {/* Staff nav */}
         {isLoggedIn && role === "staff" && (
           <>
+            <Link to="/" style={navItemStyle}>🏠 Home</Link>
             <Link to="/profile" style={navItemStyle}>Profile</Link>
             <Link to="/Assigned-Tasks" style={navItemStyle}>Assigned Tasks</Link>
           </>
@@ -31,6 +33,7 @@ function Header() {
         {/* Admin nav */}
         {isLoggedIn && role === "admin" && (
           <>
+            <Link to="/" style={navItemStyle}>🏠 Home</Link>
             <Link to="/profile" style={navItemStyle}>Profile</Link>
             <Link to="/AssignStaff" style={navItemStyle}>Assign Staff</Link>
             <Link to="/create-user" style={navItemStyle}>Create User</Link>

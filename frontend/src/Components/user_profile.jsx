@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext, useRef } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../Context/AuthContext";
+import { getAuthHeaders } from "../utils/api";
 
 // ─── Stat Card (admin only) ───────────────────────────────────────────────────
 function StatCard({ label, value, color }) {
@@ -23,7 +24,7 @@ function Profile() {
   const fileInputRef = useRef();
 
   useEffect(() => {
-    fetch("http://localhost:3000/profile", { credentials: "include" })
+    fetch("http://localhost:3000/profile", { headers: getAuthHeaders() })
       .then(res => res.json())
       .then(data => {
         setProfile(data);
@@ -49,7 +50,7 @@ function Profile() {
     try {
       const res = await fetch("http://localhost:3000/profile/photo", {
         method: "POST",
-        credentials: "include",
+        headers: getAuthHeaders(),
         body: formData,
       });
       const data = await res.json();
@@ -120,7 +121,7 @@ function Profile() {
           <span className={`inline-block mt-2 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest
             ${profile.role === "admin" ? "bg-purple-100 text-purple-700" :
               profile.role === "staff" ? "bg-blue-100 text-blue-700" :
-              "bg-green-100 text-green-700"}`}>
+                "bg-green-100 text-green-700"}`}>
             {profile.role}
           </span>
         </div>
@@ -148,7 +149,11 @@ function Profile() {
             )}
 
             {profile.role === "user" && (
-              <InfoRow label="Age" value={profile.age} />
+              <>
+                <InfoRow label="Age" value={profile.age} />
+                <InfoRow label="Flat Number" value={profile.flatNumber || "—"} />
+                <InfoRow label="Aadhaar" value={profile.aadhaar || "—"} />
+              </>
             )}
 
             {profile.role === "staff" && (

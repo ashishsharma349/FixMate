@@ -1,0 +1,26 @@
+{"_id":{"$oid":"699b34f5fc29e1808f1cc4a8"},"name":"PVC Pipe (1m)","__v":0,"category":"Plumbing","minimum":5,"quantity":20,"unit":"pcs","updatedAt":{"$date":"2026-02-22T16:55:14.08Z"}}
+{"_id":{"$oid":"699b34f5fc29e1808f1cc4a9"},"name":"Tap Washer","__v":0,"category":"Plumbing","minimum":10,"quantity":30,"unit":"pcs","updatedAt":{"$date":"2026-02-22T16:55:14.477Z"}}
+{"_id":{"$oid":"699b34f5fc29e1808f1cc4aa"},"name":"PVC Fitting","__v":0,"category":"Plumbing","minimum":8,"quantity":25,"unit":"pcs","updatedAt":{"$date":"2026-02-22T16:55:14.611Z"}}
+{"_id":{"$oid":"699b34f5fc29e1808f1cc4ab"},"name":"Sealant Tape","__v":0,"category":"Plumbing","minimum":5,"quantity":15,"unit":"rolls","updatedAt":{"$date":"2026-02-22T16:55:14.676Z"}}
+{"_id":{"$oid":"699b34f5fc29e1808f1cc4ac"},"name":"Water Tap","__v":0,"category":"Plumbing","minimum":3,"quantity":10,"unit":"pcs","updatedAt":{"$date":"2026-02-22T16:55:14.732Z"}}
+{"_id":{"$oid":"699b34f5fc29e1808f1cc4ad"},"name":"LED Bulb 9W","__v":0,"category":"Electrical","minimum":5,"quantity":20,"unit":"pcs","updatedAt":{"$date":"2026-02-22T16:55:14.788Z"}}
+{"_id":{"$oid":"699b34f5fc29e1808f1cc4ae"},"name":"Switch Board","__v":0,"category":"Electrical","minimum":3,"quantity":10,"unit":"pcs","updatedAt":{"$date":"2026-02-22T16:55:14.838Z"}}
+{"_id":{"$oid":"699b34f5fc29e1808f1cc4af"},"name":"Electric Wire (m)","__v":0,"category":"Electrical","minimum":10,"quantity":50,"unit":"m","updatedAt":{"$date":"2026-02-22T16:55:14.889Z"}}
+{"_id":{"$oid":"699b34f5fc29e1808f1cc4b0"},"name":"MCB Breaker","__v":0,"category":"Electrical","minimum":2,"quantity":8,"unit":"pcs","updatedAt":{"$date":"2026-02-22T16:55:14.958Z"}}
+{"_id":{"$oid":"699b34f5fc29e1808f1cc4b1"},"name":"Socket Outlet","__v":0,"category":"Electrical","minimum":4,"quantity":12,"unit":"pcs","updatedAt":{"$date":"2026-02-22T16:55:15.02Z"}}
+{"_id":{"$oid":"699b34f5fc29e1808f1cc4b2"},"name":"Wood Screws","__v":0,"category":"Carpentry","minimum":20,"quantity":100,"unit":"pcs","updatedAt":{"$date":"2026-02-22T16:55:15.08Z"}}
+{"_id":{"$oid":"699b34f6fc29e1808f1cc4b3"},"name":"Door Hinge","__v":0,"category":"Carpentry","minimum":5,"quantity":20,"unit":"pcs","updatedAt":{"$date":"2026-02-22T16:55:15.147Z"}}
+{"_id":{"$oid":"699b34f6fc29e1808f1cc4b4"},"name":"Door Handle","__v":0,"category":"Carpentry","minimum":2,"quantity":8,"unit":"pcs","updatedAt":{"$date":"2026-02-22T16:55:15.199Z"}}
+{"_id":{"$oid":"699b34f6fc29e1808f1cc4b5"},"name":"Sandpaper Sheet","__v":0,"category":"Carpentry","minimum":5,"quantity":15,"unit":"pcs","updatedAt":{"$date":"2026-02-22T16:55:15.27Z"}}
+{"_id":{"$oid":"699b34f6fc29e1808f1cc4b6"},"name":"Wood Polish","__v":0,"category":"Carpentry","minimum":2,"quantity":5,"unit":"L","updatedAt":{"$date":"2026-02-22T16:55:15.328Z"}}
+{"_id":{"$oid":"699b34f6fc29e1808f1cc4b7"},"name":"Floor Cleaner","__v":0,"category":"Cleaning","minimum":3,"quantity":10,"unit":"L","updatedAt":{"$date":"2026-02-22T16:55:15.391Z"}}
+{"_id":{"$oid":"699b34f6fc29e1808f1cc4b8"},"name":"Garbage Bags","__v":0,"category":"Cleaning","minimum":10,"quantity":50,"unit":"pcs","updatedAt":{"$date":"2026-02-22T16:55:15.455Z"}}
+{"_id":{"$oid":"699b34f6fc29e1808f1cc4b9"},"name":"Mop Head","__v":0,"category":"Cleaning","minimum":2,"quantity":5,"unit":"pcs","updatedAt":{"$date":"2026-02-22T16:55:15.521Z"}}
+{"_id":{"$oid":"699b34f6fc29e1808f1cc4ba"},"name":"Disinfectant","__v":0,"category":"Cleaning","minimum":2,"quantity":8,"unit":"L","updatedAt":{"$date":"2026-02-22T16:55:15.58Z"}}
+{"_id":{"$oid":"699b34f6fc29e1808f1cc4bb"},"name":"Door Lock","__v":0,"category":"Security","minimum":2,"quantity":6,"unit":"pcs","updatedAt":{"$date":"2026-02-22T16:55:15.643Z"}}
+{"_id":{"$oid":"699b34f6fc29e1808f1cc4bc"},"name":"Door Bolt","__v":0,"category":"Security","minimum":3,"quantity":10,"unit":"pcs","updatedAt":{"$date":"2026-02-22T16:55:15.701Z"}}
+{"_id":{"$oid":"699b34f6fc29e1808f1cc4bd"},"name":"Door Chain","__v":0,"category":"Security","minimum":2,"quantity":8,"unit":"pcs","updatedAt":{"$date":"2026-02-22T16:55:15.76Z"}}
+{"_id":{"$oid":"699b34f6fc29e1808f1cc4be"},"name":"Cement (kg)","__v":0,"category":"General","minimum":10,"quantity":30,"unit":"kg","updatedAt":{"$date":"2026-02-22T16:55:15.82Z"}}
+{"_id":{"$oid":"699b34f6fc29e1808f1cc4bf"},"name":"Wall Paint (L)","__v":0,"category":"General","minimum":3,"quantity":10,"unit":"L","updatedAt":{"$date":"2026-02-22T16:55:15.88Z"}}
+{"_id":{"$oid":"699b34f6fc29e1808f1cc4c0"},"name":"Putty","__v":0,"category":"General","minimum":3,"quantity":10,"unit":"kg","updatedAt":{"$date":"2026-02-22T16:55:15.945Z"}}
+{"_id":{"$oid":"699b34f6fc29e1808f1cc4c1"},"name":"Adhesive","__v":0,"category":"General","minimum":2,"quantity":8,"unit":"pcs","updatedAt":{"$date":"2026-02-22T16:55:16.009Z"}}

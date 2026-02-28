@@ -1,6 +1,7 @@
 import { useState, useContext } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { AuthContext } from "../Context/AuthContext";
+import { jsonAuthHeaders } from "../utils/api";
 
 function ChangePassword() {
   const navigate = useNavigate();
@@ -41,8 +42,7 @@ function ChangePassword() {
     try {
       const res = await fetch("http://localhost:3000/change-password", {
         method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: jsonAuthHeaders(),
         body: JSON.stringify({
           currentPassword: formData.currentPassword,
           newPassword: formData.newPassword,

@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-
-const API = "http://localhost:3000";
+import { API, getAuthHeaders, jsonAuthHeaders } from "../../utils/api";
 
 // ── Shared UI atoms (matches AllComplains style) ──────────────────────────────
 const getStatusStyle = (status) => {
   const map = {
-    Paid:    "bg-green-100 text-green-700 border-green-200",
+    Paid: "bg-green-100 text-green-700 border-green-200",
     Pending: "bg-yellow-100 text-yellow-700 border-yellow-200",
     Overdue: "bg-red-100 text-red-700 border-red-200",
   };
@@ -31,7 +30,7 @@ function PaymentCard({ payment, onPaid }) {
   const [paying, setPaying] = useState(false);
   const [msg, setMsg] = useState("");
 
-  const isPaid    = payment.status === "Paid";
+  const isPaid = payment.status === "Paid";
   const isOverdue = payment.status === "Overdue";
 
   const handlePayNow = async () => {
@@ -41,8 +40,7 @@ function PaymentCard({ payment, onPaid }) {
       // Step 1 — Create / reuse Razorpay order
       const res = await fetch(`${API}/payments/create-order`, {
         method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: jsonAuthHeaders(),
         body: JSON.stringify({ paymentId: payment._id }),
       });
       const data = await res.json();
@@ -64,12 +62,11 @@ function PaymentCard({ payment, onPaid }) {
             // Step 3 — Verify payment
             const vRes = await fetch(`${API}/payments/verify`, {
               method: "POST",
-              credentials: "include",
-              headers: { "Content-Type": "application/json" },
+              headers: jsonAuthHeaders(),
               body: JSON.stringify({
-                razorpay_order_id:   response.razorpay_order_id,
+                razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature:  response.razorpay_signature,
+                razorpay_signature: response.razorpay_signature,
               }),
             });
             const vData = await vRes.json();
@@ -188,7 +185,7 @@ export default function MyPayments() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`${API}/payments/my-payments`, { credentials: "include" });
+      const res = await fetch(`${API}/payments/my-payments`, { headers: getAuthHeaders() });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to fetch payments");
       setPayments(data.payments || []);
@@ -205,7 +202,7 @@ export default function MyPayments() {
     ? payments
     : payments.filter((p) => p.status === filter);
 
-  const totalPaid    = payments.filter(p => p.status === "Paid").reduce((s, p) => s + (p.amount || 0), 0);
+  const totalPaid = payments.filter(p => p.status === "Paid").reduce((s, p) => s + (p.amount || 0), 0);
   const totalPending = payments.filter(p => p.status !== "Paid").reduce((s, p) => s + (p.amount || 0), 0);
   const overdueCount = payments.filter(p => p.status === "Overdue").length;
 
@@ -256,11 +253,10 @@ export default function MyPayments() {
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-4 py-2 rounded-full text-[11px] font-black uppercase tracking-widest transition ${
-                filter === f
+              className={`px-4 py-2 rounded-full text-[11px] font-black uppercase tracking-widest transition ${filter === f
                   ? "bg-[#25334d] text-white"
                   : "bg-white border border-gray-200 text-gray-500 hover:bg-gray-50"
-              }`}
+                }`}
             >
               {f}
             </button>

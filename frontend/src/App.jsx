@@ -61,23 +61,23 @@ function App() {
     <>
       <Header />
       <Routes>
-        <Route path="/"                    element={<HomePage />} />
-        <Route path="/login"               element={<Navigate to="/" replace />} />
-        <Route path="/logout"              element={<Logout />} />
-        <Route path="/change-password"     element={<ChangePassword />} />
-        <Route path="/profile"             element={<Profile />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<Navigate to="/" replace />} />
+        <Route path="/logout" element={<Logout />} />
+        <Route path="/change-password" element={<ChangePassword />} />
+        <Route path="/profile" element={<Profile />} />
 
         {/* User routes */}
-        <Route path="/FileComplain"        element={role === "user" ? <ComplaintForm /> : <Navigate to="/" replace />} />
-        <Route path="/All-Complains"       element={role === "user" ? <AllComplains /> : <Navigate to="/" replace />} />
+        <Route path="/FileComplain" element={role === "user" ? <ComplaintForm /> : <Navigate to="/" replace />} />
+        <Route path="/All-Complains" element={role === "user" ? <AllComplains /> : <Navigate to="/" replace />} />
         <Route path="/my-payments" element={role === "user" ? <MyPayments /> : <Navigate to="/" replace />} />
-        <Route path="/ComplainDetail/:id"  element={<ComplainDetailCard />} />
+        <Route path="/ComplainDetail/:id" element={<ComplainDetailCard />} />
 
         {/* Staff routes */}
-        <Route path="/Assigned-Tasks"      element={role === "staff" ? <Task /> : <Navigate to="/" replace />} />
+        <Route path="/Assigned-Tasks" element={role === "staff" ? <Task /> : <Navigate to="/" replace />} />
 
         {/* Fallback */}
-        <Route path="*"                    element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   );
