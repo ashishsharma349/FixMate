@@ -151,8 +151,9 @@ function DashboardView({ onNavigate }) {
 
   const statCards = [
     { icon: "🏢", label: "Total Complaints", value: s.totalComplaints ?? 0, bg: "bg-blue-50", iconBg: "bg-blue-100" },
-    { icon: "🔧", label: "In Progress", value: s.inProgress ?? 0, bg: "bg-yellow-50", iconBg: "bg-yellow-100" },
+    { icon: "🔧", label: "Active Work", value: s.inProgress ?? 0, bg: "bg-yellow-50", iconBg: "bg-yellow-100" },
     { icon: "⏳", label: "Pending Approval", value: s.pendingApproval ?? 0, bg: "bg-purple-50", iconBg: "bg-purple-100", sub: "Unassigned complaints" },
+    { icon: "✅", label: "Resolved", value: s.resolvedComplaints ?? 0, bg: "bg-green-50", iconBg: "bg-green-100" },
     { icon: "💳", label: "Pending Estimates", value: s.pendingEstimates ?? 0, bg: "bg-red-50", iconBg: "bg-red-100", sub: "Awaiting admin approval" },
   ];
 
@@ -164,7 +165,7 @@ function DashboardView({ onNavigate }) {
         Auto-refreshing every 10s
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         {statCards.map(c => (
           <div key={c.label} className={`${c.bg} rounded-2xl flex items-center gap-3 px-4 py-4 shadow-sm`}>
             <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-xl ${c.iconBg}`}>{c.icon}</div>
@@ -339,6 +340,9 @@ function ComplaintsView() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
+  const [filterPriority, setFilterPriority] = useState("All");
+  const [filterCategory, setFilterCategory] = useState("All");
+  const [sortOrder, setSortOrder] = useState("newest");
   const [assignModal, setAssignModal] = useState(null);
   const [assignForm, setAssignForm] = useState({ staffId: "", workType: "Personal" });
   const [staffFilter, setStaffFilter] = useState({ dept: "All", avail: "All" });
@@ -381,8 +385,17 @@ function ComplaintsView() {
     const s = search.toLowerCase();
     const matchSearch = c.title?.toLowerCase().includes(s) || c._id?.toLowerCase().includes(s) || c.resident?.name?.toLowerCase().includes(s);
     const matchStatus = filterStatus === "All" || c.status === filterStatus;
-    return matchSearch && matchStatus;
+    const matchPriority = filterPriority === "All" || c.priority === filterPriority;
+    const matchCategory = filterCategory === "All" || c.category === filterCategory;
+    return matchSearch && matchStatus && matchPriority && matchCategory;
+  }).sort((a, b) => {
+    const dateA = new Date(a.createdAt);
+    const dateB = new Date(b.createdAt);
+    return sortOrder === "newest" ? dateB - dateA : dateA - dateB;
   });
+
+  const allCategories = ["All", ...Array.from(new Set(complaints.map(c => c.category).filter(Boolean)))];
+  const allPriorities = ["All", "Low", "Medium", "High", "Emergency"];
 
   const departments = ["All", ...Array.from(new Set(staff.map(s => s.department).filter(Boolean)))];
   const filteredStaff = staff.filter(s => {
@@ -398,15 +411,32 @@ function ComplaintsView() {
           {msg}<button className="text-xs underline ml-4" onClick={() => setMsg("")}>dismiss</button>
         </div>
       )}
-      <div className="bg-white rounded-2xl shadow-sm p-4 flex items-center gap-3 flex-wrap">
-        <input className="flex-1 min-w-[200px] border border-gray-200 rounded-xl px-4 py-2 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300"
-          placeholder="Search by title, ID, resident name..." value={search} onChange={e => setSearch(e.target.value)} />
-        {["All", "Pending", "Assigned", "EstimatePending", "EstimateApproved", "InProgress", "Resolved"].map(s => (
-          <button key={s} onClick={() => setFilterStatus(s)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors ${filterStatus === s ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
-            {s}
-          </button>
-        ))}
+      <div className="bg-white rounded-2xl shadow-sm p-4 space-y-3">
+        <div className="flex items-center gap-3 flex-wrap">
+          <input className="flex-1 min-w-[200px] border border-gray-200 rounded-xl px-4 py-2 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300"
+            placeholder="Search by title, ID, resident name..." value={search} onChange={e => setSearch(e.target.value)} />
+          <div className="flex items-center gap-2">
+            <Sel className="!py-1.5 !px-3 !rounded-xl !text-xs" value={sortOrder} onChange={e => setSortOrder(e.target.value)}>
+              <option value="newest">Latest First</option>
+              <option value="oldest">Oldest First</option>
+            </Sel>
+            <Sel className="!py-1.5 !px-3 !rounded-xl !text-xs" value={filterPriority} onChange={e => setFilterPriority(e.target.value)}>
+              {allPriorities.map(p => <option key={p} value={p}>{p === "All" ? "All Priorities" : p}</option>)}
+            </Sel>
+            <Sel className="!py-1.5 !px-3 !rounded-xl !text-xs" value={filterCategory} onChange={e => setFilterCategory(e.target.value)}>
+              {allCategories.map(cat => <option key={cat} value={cat}>{cat === "All" ? "All Categories" : cat}</option>)}
+            </Sel>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap border-t border-gray-50 pt-3">
+          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mr-2">Status:</span>
+          {["All", "Pending", "Assigned", "InProgress", "Resolved"].map(s => (
+            <button key={s} onClick={() => setFilterStatus(s)}
+              className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all ${filterStatus === s ? "bg-blue-600 text-white shadow-md" : "bg-gray-50 text-gray-500 hover:bg-gray-100"}`}>
+              {s.toUpperCase()}
+            </button>
+          ))}
+        </div>
       </div>
       <div className="bg-white rounded-2xl shadow-sm overflow-x-auto">
         {loading ? (
@@ -593,7 +623,7 @@ function InventoryView() {
         </div>
         <button onClick={() => {
           setModal("add");
-          setForm({ category: "General", unit: "pcs", quantity: 0, minQuantity: 5, unitPrice: 0, supplier: "", approvedBy: "", approvedDate: "" });
+          setForm({ category: "General", unit: "pcs", quantity: 0, minQuantity: 5, description: "", unitPrice: 0, supplier: "", approvedBy: "", approvedDate: "" });
           setMsg("");
         }} className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-xl text-xs font-semibold transition-colors whitespace-nowrap">
           + Add Item
@@ -626,7 +656,7 @@ function InventoryView() {
           <table className="w-full text-sm min-w-[900px]">
             <thead className="bg-gray-50 border-b border-gray-100">
               <tr>
-                {["Item", "Category", "Unit", "Qty", "Min", "Unit Price", "Supplier", "Approved By", "Status", "Actions"].map((h) => (
+                {["Item", "Desc", "Category", "Unit", "Qty", "Min", "Unit Price", "Supplier", "Approved By", "Status", "Actions"].map((h) => (
                   <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500 whitespace-nowrap">{h}</th>
                 ))}
               </tr>
@@ -635,6 +665,7 @@ function InventoryView() {
               {items.map((item) => (
                 <tr key={item._id} className={`border-b border-gray-50 transition-colors ${isLow(item) ? "bg-red-50 hover:bg-red-100" : "hover:bg-gray-50"}`}>
                   <td className="px-4 py-3 font-semibold text-gray-700">{item.name}</td>
+                  <td className="px-4 py-3 text-xs text-gray-500 max-w-[150px] truncate" title={item.description || "—"}>{item.description || "—"}</td>
                   <td className="px-4 py-3"><span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700 font-semibold">{item.category}</span></td>
                   <td className="px-4 py-3 text-gray-500">{item.unit}</td>
                   <td className="px-4 py-3"><span className={`font-black text-base ${isLow(item) ? "text-red-600" : "text-gray-800"}`}>{item.quantity}</span></td>
@@ -688,6 +719,7 @@ function InventoryView() {
             <div className="px-6 py-5 space-y-3">
               {msg && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{msg}</p>}
               <Input label="Item Name *" placeholder="e.g. LED Bulb 9W" {...f("name")} />
+              <Input label="Description" placeholder="e.g. 4-inch stainless steel, lever action" {...f("description")} />
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1">
                   <label className="text-xs font-semibold text-gray-600">Category</label>
@@ -986,6 +1018,7 @@ function PaymentsView() {
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [genMsg, setGenMsg] = useState("");
+  const [monthlyAmount, setMonthlyAmount] = useState(5000);
   const [viewModal, setViewModal] = useState(null);
   const [markModal, setMarkModal] = useState(null);
   const [markingPaid, setMarkingPaid] = useState(null);
@@ -1008,7 +1041,7 @@ function PaymentsView() {
   const handleGenerateMonthly = async () => {
     setGenerating(true); setGenMsg("");
     try {
-      const res = await apiFetch("/payments/generate-monthly", { method: "POST" });
+      const res = await apiFetch("/payments/generate-monthly", { method: "POST", body: JSON.stringify({ amount: Number(monthlyAmount) }) });
       setGenMsg(`✅ Done — ${res.created} new records created, ${res.skipped} already existed for ${res.month}/${res.year}`);
       fetchPayments();
     } catch (err) { setGenMsg("❌ " + err.message); }
@@ -1069,9 +1102,13 @@ function PaymentsView() {
         ))}
         <div className="ml-auto flex items-center gap-2">
           {tab === "personal" && (
-            <Btn color="teal" size="sm" onClick={handleGenerateMonthly} disabled={generating}>
-              {generating ? "Generating..." : "⟳ Generate Monthly Requests"}
-            </Btn>
+            <div className="flex items-center gap-1 bg-white px-2 py-1 rounded-xl shadow-sm border border-gray-100">
+              <span className="text-xs text-gray-500 font-semibold pl-2">₹</span>
+              <input type="number" value={monthlyAmount} onChange={e => setMonthlyAmount(e.target.value)} className="w-16 bg-transparent text-sm outline-none font-bold text-gray-700 placeholder-gray-300" placeholder="5000" />
+              <Btn color="teal" size="sm" onClick={handleGenerateMonthly} disabled={generating}>
+                {generating ? "Generating..." : "⟳ Generate"}
+              </Btn>
+            </div>
           )}
           <Btn color="gray" size="sm" onClick={fetchPayments}>↻ Refresh</Btn>
         </div>
@@ -1336,7 +1373,7 @@ function ReportsView() {
             </div>
             <div className="bg-yellow-50 rounded-xl p-3 text-center">
               <p className="text-2xl font-black text-yellow-600">{c.inProgress || 0}</p>
-              <p className="text-[10px] text-gray-500 font-medium mt-1">In Progress</p>
+              <p className="text-[10px] text-gray-500 font-medium mt-1">Active Work</p>
             </div>
             <div className="bg-red-50 rounded-xl p-3 text-center">
               <p className="text-2xl font-black text-red-500">{c.pending || 0}</p>
@@ -1498,7 +1535,6 @@ export default function AdminDashboard() {
   const [activeNav, setActiveNav] = useState("Dashboard");
 
   const navItems = [
-    { label: "Home", icon: "🏠", isLink: true },
     { label: "Dashboard", icon: "📊" },
     { label: "Complaints", icon: "📋" },
     { label: "User Management", icon: "👥" },
@@ -1528,6 +1564,11 @@ export default function AdminDashboard() {
     }
   };
 
+  const [profileName, setProfileName] = useState("Admin");
+  useEffect(() => {
+    apiFetch("/profile").then(p => setProfileName(p.profile?.name || "Admin")).catch(() => {});
+  }, []);
+
   return (
     <div className="flex h-screen bg-slate-100 font-sans overflow-hidden">
       <aside className="w-56 bg-white flex flex-col shadow-md z-10 flex-shrink-0">
@@ -1555,26 +1596,20 @@ export default function AdminDashboard() {
       </aside>
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-white px-6 py-3 flex items-center gap-4 shadow-sm border-b border-gray-100 flex-shrink-0">
-          <div className="flex-1 flex items-center bg-slate-100 rounded-xl px-4 py-2 gap-2">
-            <span className="text-gray-400 text-sm">🔍</span>
-            <input className="bg-transparent text-sm text-gray-500 outline-none w-full placeholder-gray-400" placeholder="Search by Flat No, Complaint ID, etc." />
+        <header className="bg-white px-6 py-3 flex items-center justify-between shadow-sm border-b border-gray-100 flex-shrink-0">
+          <div className="flex items-center gap-2 text-xs text-gray-400 bg-slate-100 px-4 py-2 rounded-xl">
+             <span className="font-semibold text-blue-600">FixMate Dashboard</span>
+             <span>&rsaquo;</span>
+             <span>{activeNav}</span>
           </div>
-          <div className="relative cursor-pointer">
-            <span className="text-xl">🔔</span>
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] rounded-full w-4 h-4 flex items-center justify-center font-bold">!</span>
-          </div>
-          <div className="flex items-center gap-2 cursor-pointer">
-            <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold">A</div>
-            <span className="text-sm font-semibold text-gray-700">Admin</span>
+          
+          <div className="flex items-center justify-end gap-x-2">
+            <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold shadow-sm ring-2 ring-white">
+              {profileName.charAt(0).toUpperCase()}
+            </div>
+            <span className="text-sm font-bold text-gray-700">{profileName}</span>
           </div>
         </header>
-
-        <div className="px-6 py-2 flex items-center gap-2 text-xs text-gray-400 bg-slate-100 border-b border-slate-200">
-          <span className="font-semibold text-blue-600">FixMate</span>
-          <span>&rsaquo;</span>
-          <span>{activeNav}</span>
-        </div>
 
         <main className="flex-1 overflow-y-auto px-6 py-5">
           {renderView()}

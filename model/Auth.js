@@ -46,7 +46,7 @@ const AuthSchema = new Schema({
   },
   isFirstLogin: {
     type: Boolean,
-    default: true   // true = must change password on next login
+    default: true   
   },
   createdAt: {
     type: Date,

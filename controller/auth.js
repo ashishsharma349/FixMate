@@ -56,7 +56,7 @@ exports.handlePost_login = async (req, res) => {
         success: true,
         role: authUser.role,
         isFirstLogin: authUser.isFirstLogin,
-        sessionId: req.sessionID, // ← frontend stores this in sessionStorage
+        sessionId: req.sessionID, // 
         message: "Logged in"
       });
     });

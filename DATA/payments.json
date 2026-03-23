@@ -1,29 +1,845 @@
-{"_id":{"$oid":"699c6964509af542517ec358"},"type":"personal","resident":{"$oid":"6998813ddf69da01e3a5b7a1"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Pending","refId":"PER-00001","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:16.712Z"},"updatedAt":{"$date":"2026-02-23T14:51:16.712Z"},"__v":0,"paidAt":null,"razorpayOrderId":null,"razorpayPaymentId":null,"razorpaySignature":null}
-{"_id":{"$oid":"699c6964509af542517ec35c"},"type":"personal","resident":{"$oid":"699add5e96027d96b18593df"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Pending","refId":"PER-00002","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:16.901Z"},"updatedAt":{"$date":"2026-02-23T14:51:16.901Z"},"__v":0,"paidAt":null,"razorpayOrderId":null,"razorpayPaymentId":null,"razorpaySignature":null}
-{"_id":{"$oid":"699c6965509af542517ec360"},"type":"personal","resident":{"$oid":"699ae19f050e407305573709"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Pending","refId":"PER-00003","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:17.081Z"},"updatedAt":{"$date":"2026-02-23T14:51:17.081Z"},"__v":0,"paidAt":null,"razorpayOrderId":null,"razorpayPaymentId":null,"razorpaySignature":null}
-{"_id":{"$oid":"699c6965509af542517ec364"},"type":"personal","resident":{"$oid":"699ae1dd050e40730557370e"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Pending","refId":"PER-00004","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:17.26Z"},"updatedAt":{"$date":"2026-02-23T14:51:17.26Z"},"__v":0,"paidAt":null,"razorpayOrderId":null,"razorpayPaymentId":null,"razorpaySignature":null}
-{"_id":{"$oid":"699c6965509af542517ec368"},"type":"personal","resident":{"$oid":"699ae211050e407305573713"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Pending","refId":"PER-00005","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:17.44Z"},"updatedAt":{"$date":"2026-02-23T14:51:17.44Z"},"__v":0,"paidAt":null,"razorpayOrderId":null,"razorpayPaymentId":null,"razorpaySignature":null}
-{"_id":{"$oid":"699c6965509af542517ec36c"},"type":"personal","resident":{"$oid":"699ae236050e407305573718"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Pending","refId":"PER-00006","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:17.622Z"},"updatedAt":{"$date":"2026-02-23T14:51:17.622Z"},"__v":0,"paidAt":null,"razorpayOrderId":null,"razorpayPaymentId":null,"razorpaySignature":null}
-{"_id":{"$oid":"699c6965509af542517ec370"},"type":"personal","resident":{"$oid":"699ae266050e40730557371d"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Pending","refId":"PER-00007","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:17.802Z"},"updatedAt":{"$date":"2026-02-23T14:51:17.802Z"},"__v":0,"paidAt":null,"razorpayOrderId":null,"razorpayPaymentId":null,"razorpaySignature":null}
-{"_id":{"$oid":"699c6965509af542517ec374"},"type":"personal","resident":{"$oid":"699ae28b050e407305573722"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Pending","refId":"PER-00008","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:17.98Z"},"updatedAt":{"$date":"2026-02-23T14:51:17.98Z"},"__v":0,"paidAt":null,"razorpayOrderId":null,"razorpayPaymentId":null,"razorpaySignature":null}
-{"_id":{"$oid":"699c6966509af542517ec378"},"type":"personal","resident":{"$oid":"699ae2b6050e40730557372d"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Pending","refId":"PER-00009","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:18.162Z"},"updatedAt":{"$date":"2026-02-23T14:51:18.162Z"},"__v":0,"paidAt":null,"razorpayOrderId":null,"razorpayPaymentId":null,"razorpaySignature":null}
-{"_id":{"$oid":"699c6966509af542517ec37c"},"type":"personal","resident":{"$oid":"699ae2e5050e407305573732"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Pending","refId":"PER-00010","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:18.343Z"},"updatedAt":{"$date":"2026-02-23T14:51:18.343Z"},"__v":0,"paidAt":null,"razorpayOrderId":null,"razorpayPaymentId":null,"razorpaySignature":null}
-{"_id":{"$oid":"699c6966509af542517ec380"},"type":"personal","resident":{"$oid":"699ae307050e407305573737"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Pending","refId":"PER-00011","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:18.522Z"},"updatedAt":{"$date":"2026-02-23T14:51:18.522Z"},"__v":0,"paidAt":null,"razorpayOrderId":null,"razorpayPaymentId":null,"razorpaySignature":null}
-{"_id":{"$oid":"699c6966509af542517ec384"},"type":"personal","resident":{"$oid":"699ae328050e40730557373c"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Pending","refId":"PER-00012","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:18.716Z"},"updatedAt":{"$date":"2026-02-23T14:51:18.716Z"},"__v":0,"paidAt":null,"razorpayOrderId":null,"razorpayPaymentId":null,"razorpaySignature":null}
-{"_id":{"$oid":"699c6966509af542517ec388"},"type":"personal","resident":{"$oid":"699ae34c050e407305573741"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Pending","refId":"PER-00013","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:18.89Z"},"updatedAt":{"$date":"2026-02-23T14:51:18.89Z"},"__v":0,"paidAt":null,"razorpayOrderId":null,"razorpayPaymentId":null,"razorpaySignature":null}
-{"_id":{"$oid":"699c6967509af542517ec38c"},"type":"personal","resident":{"$oid":"699ae36f050e407305573746"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Pending","refId":"PER-00014","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:19.071Z"},"updatedAt":{"$date":"2026-02-23T14:51:19.071Z"},"__v":0,"paidAt":null,"razorpayOrderId":null,"razorpayPaymentId":null,"razorpaySignature":null}
-{"_id":{"$oid":"699c6967509af542517ec390"},"type":"personal","resident":{"$oid":"699ae38b050e40730557374b"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Pending","refId":"PER-00015","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:19.249Z"},"updatedAt":{"$date":"2026-02-23T14:51:19.249Z"},"__v":0,"paidAt":null,"razorpayOrderId":null,"razorpayPaymentId":null,"razorpaySignature":null}
-{"_id":{"$oid":"699c6967509af542517ec394"},"type":"personal","resident":{"$oid":"699ae3aa050e407305573750"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Pending","refId":"PER-00016","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:19.44Z"},"updatedAt":{"$date":"2026-02-23T14:51:19.44Z"},"__v":0,"paidAt":null,"razorpayOrderId":null,"razorpayPaymentId":null,"razorpaySignature":null}
-{"_id":{"$oid":"699c6967509af542517ec398"},"type":"personal","resident":{"$oid":"699ae3e3050e407305573755"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Pending","refId":"PER-00017","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:19.631Z"},"updatedAt":{"$date":"2026-02-23T14:51:19.631Z"},"__v":0,"paidAt":null,"razorpayOrderId":null,"razorpayPaymentId":null,"razorpaySignature":null}
-{"_id":{"$oid":"699c6967509af542517ec39c"},"type":"personal","resident":{"$oid":"699ae403050e40730557375a"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Pending","refId":"PER-00018","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:19.81Z"},"updatedAt":{"$date":"2026-02-23T14:51:19.81Z"},"__v":0,"paidAt":null,"razorpayOrderId":null,"razorpayPaymentId":null,"razorpaySignature":null}
-{"_id":{"$oid":"699c6967509af542517ec3a0"},"type":"personal","resident":{"$oid":"699ae462050e407305573761"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Pending","refId":"PER-00019","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:19.99Z"},"updatedAt":{"$date":"2026-02-23T14:51:19.99Z"},"__v":0,"paidAt":null,"razorpayOrderId":null,"razorpayPaymentId":null,"razorpaySignature":null}
-{"_id":{"$oid":"699c6968509af542517ec3a4"},"type":"personal","resident":{"$oid":"699ae482050e407305573766"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Pending","refId":"PER-00020","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:20.171Z"},"updatedAt":{"$date":"2026-02-23T14:51:20.171Z"},"__v":0,"paidAt":null,"razorpayOrderId":null,"razorpayPaymentId":null,"razorpaySignature":null}
-{"_id":{"$oid":"699c6968509af542517ec3a8"},"type":"personal","resident":{"$oid":"699ae4a3050e40730557376b"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Pending","refId":"PER-00021","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:20.351Z"},"updatedAt":{"$date":"2026-02-23T14:51:20.351Z"},"__v":0,"paidAt":null,"razorpayOrderId":null,"razorpayPaymentId":null,"razorpaySignature":null}
-{"_id":{"$oid":"699c6968509af542517ec3ac"},"type":"personal","resident":{"$oid":"699ae4f2050e407305573775"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Pending","refId":"PER-00022","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:20.53Z"},"updatedAt":{"$date":"2026-02-23T14:51:20.53Z"},"__v":0,"paidAt":null,"razorpayOrderId":null,"razorpayPaymentId":null,"razorpaySignature":null}
-{"_id":{"$oid":"699c6968509af542517ec3b0"},"type":"personal","resident":{"$oid":"699ae512050e40730557377a"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Pending","refId":"PER-00023","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:20.712Z"},"updatedAt":{"$date":"2026-02-23T14:51:20.712Z"},"__v":0,"paidAt":null,"razorpayOrderId":null,"razorpayPaymentId":null,"razorpaySignature":null}
-{"_id":{"$oid":"699c6968509af542517ec3b4"},"type":"personal","resident":{"$oid":"699ae532050e40730557377f"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Pending","refId":"PER-00024","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:20.89Z"},"updatedAt":{"$date":"2026-02-23T14:51:20.89Z"},"__v":0,"paidAt":null,"razorpayOrderId":null,"razorpayPaymentId":null,"razorpaySignature":null}
-{"_id":{"$oid":"699c6969509af542517ec3b8"},"type":"personal","resident":{"$oid":"699ae57a050e40730557378a"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Pending","refId":"PER-00025","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:21.069Z"},"updatedAt":{"$date":"2026-02-24T13:41:17.329Z"},"__v":0,"razorpayOrderId":null,"paidAt":null,"razorpayPaymentId":null,"razorpaySignature":null}
-{"_id":{"$oid":"699c6969509af542517ec3bc"},"type":"personal","resident":{"$oid":"699ae5c6050e40730557378f"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Paid","refId":"PER-00026","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:21.25Z"},"updatedAt":{"$date":"2026-02-24T16:08:05.655Z"},"__v":0,"paidAt":{"$date":"2026-02-24T16:08:05.653Z"},"razorpayOrderId":null,"razorpayPaymentId":"ADMIN_CONFIRMED","razorpaySignature":null}
-{"_id":{"$oid":"699c6969509af542517ec3c0"},"type":"personal","resident":{"$oid":"699bd0aea0fb6097e57cd7d8"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Paid","refId":"PER-00027","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:21.43Z"},"updatedAt":{"$date":"2026-02-24T15:29:09.949Z"},"__v":0,"paidAt":{"$date":"2026-02-24T15:29:09.948Z"},"razorpayOrderId":null,"razorpayPaymentId":"CASH","razorpaySignature":null}
-{"_id":{"$oid":"699c6969509af542517ec3c4"},"type":"personal","resident":{"$oid":"699bd49289e2df4a8f8ec255"},"flatNumber":"—","amount":1,"dueDate":{"$date":"2026-03-04T18:30:00Z"},"status":"Paid","refId":"PER-00028","month":2,"year":2026,"createdAt":{"$date":"2026-02-23T14:51:21.61Z"},"updatedAt":{"$date":"2026-02-24T15:28:55.329Z"},"__v":0,"razorpayOrderId":null,"paidAt":{"$date":"2026-02-24T15:28:55.327Z"},"razorpayPaymentId":"CASH","razorpaySignature":null}
-{"_id":{"$oid":"699e718d574492ed089e3289"},"type":"maintenance","amount":500,"status":"Paid","complaint":{"$oid":"699e70ee574492ed089e3225"},"worker":{"$oid":"699ae90b050e4073055737c4"},"workerName":"Ashish Sharma","purpose":"Leaking Rooftop","refId":"MAN-00001","paidAt":{"$date":"2026-02-25T03:50:37.534Z"},"createdAt":{"$date":"2026-02-25T03:50:37.538Z"},"updatedAt":{"$date":"2026-02-25T03:50:37.538Z"},"__v":0}
+{
+    "_id": {
+        "$oid": "699c6964509af542517ec358"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "6998813ddf69da01e3a5b7a1"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Pending",
+    "refId": "PER-00001",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:16.712Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-23T14:51:16.712Z"
+    },
+    "__v": 0,
+    "paidAt": null,
+    "razorpayOrderId": null,
+    "razorpayPaymentId": null,
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6964509af542517ec35c"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699add5e96027d96b18593df"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Pending",
+    "refId": "PER-00002",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:16.901Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-23T14:51:16.901Z"
+    },
+    "__v": 0,
+    "paidAt": null,
+    "razorpayOrderId": null,
+    "razorpayPaymentId": null,
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6965509af542517ec360"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699ae19f050e407305573709"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Pending",
+    "refId": "PER-00003",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:17.081Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-23T14:51:17.081Z"
+    },
+    "__v": 0,
+    "paidAt": null,
+    "razorpayOrderId": null,
+    "razorpayPaymentId": null,
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6965509af542517ec364"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699ae1dd050e40730557370e"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Pending",
+    "refId": "PER-00004",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:17.26Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-23T14:51:17.26Z"
+    },
+    "__v": 0,
+    "paidAt": null,
+    "razorpayOrderId": null,
+    "razorpayPaymentId": null,
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6965509af542517ec368"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699ae211050e407305573713"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Pending",
+    "refId": "PER-00005",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:17.44Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-23T14:51:17.44Z"
+    },
+    "__v": 0,
+    "paidAt": null,
+    "razorpayOrderId": null,
+    "razorpayPaymentId": null,
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6965509af542517ec36c"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699ae236050e407305573718"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Pending",
+    "refId": "PER-00006",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:17.622Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-23T14:51:17.622Z"
+    },
+    "__v": 0,
+    "paidAt": null,
+    "razorpayOrderId": null,
+    "razorpayPaymentId": null,
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6965509af542517ec370"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699ae266050e40730557371d"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Pending",
+    "refId": "PER-00007",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:17.802Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-23T14:51:17.802Z"
+    },
+    "__v": 0,
+    "paidAt": null,
+    "razorpayOrderId": null,
+    "razorpayPaymentId": null,
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6965509af542517ec374"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699ae28b050e407305573722"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Pending",
+    "refId": "PER-00008",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:17.98Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-23T14:51:17.98Z"
+    },
+    "__v": 0,
+    "paidAt": null,
+    "razorpayOrderId": null,
+    "razorpayPaymentId": null,
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6966509af542517ec378"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699ae2b6050e40730557372d"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Pending",
+    "refId": "PER-00009",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:18.162Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-23T14:51:18.162Z"
+    },
+    "__v": 0,
+    "paidAt": null,
+    "razorpayOrderId": null,
+    "razorpayPaymentId": null,
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6966509af542517ec37c"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699ae2e5050e407305573732"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Pending",
+    "refId": "PER-00010",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:18.343Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-23T14:51:18.343Z"
+    },
+    "__v": 0,
+    "paidAt": null,
+    "razorpayOrderId": null,
+    "razorpayPaymentId": null,
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6966509af542517ec380"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699ae307050e407305573737"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Pending",
+    "refId": "PER-00011",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:18.522Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-23T14:51:18.522Z"
+    },
+    "__v": 0,
+    "paidAt": null,
+    "razorpayOrderId": null,
+    "razorpayPaymentId": null,
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6966509af542517ec384"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699ae328050e40730557373c"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Pending",
+    "refId": "PER-00012",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:18.716Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-23T14:51:18.716Z"
+    },
+    "__v": 0,
+    "paidAt": null,
+    "razorpayOrderId": null,
+    "razorpayPaymentId": null,
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6966509af542517ec388"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699ae34c050e407305573741"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Pending",
+    "refId": "PER-00013",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:18.89Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-23T14:51:18.89Z"
+    },
+    "__v": 0,
+    "paidAt": null,
+    "razorpayOrderId": null,
+    "razorpayPaymentId": null,
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6967509af542517ec38c"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699ae36f050e407305573746"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Pending",
+    "refId": "PER-00014",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:19.071Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-23T14:51:19.071Z"
+    },
+    "__v": 0,
+    "paidAt": null,
+    "razorpayOrderId": null,
+    "razorpayPaymentId": null,
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6967509af542517ec390"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699ae38b050e40730557374b"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Pending",
+    "refId": "PER-00015",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:19.249Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-23T14:51:19.249Z"
+    },
+    "__v": 0,
+    "paidAt": null,
+    "razorpayOrderId": null,
+    "razorpayPaymentId": null,
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6967509af542517ec394"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699ae3aa050e407305573750"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Pending",
+    "refId": "PER-00016",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:19.44Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-23T14:51:19.44Z"
+    },
+    "__v": 0,
+    "paidAt": null,
+    "razorpayOrderId": null,
+    "razorpayPaymentId": null,
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6967509af542517ec398"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699ae3e3050e407305573755"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Pending",
+    "refId": "PER-00017",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:19.631Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-23T14:51:19.631Z"
+    },
+    "__v": 0,
+    "paidAt": null,
+    "razorpayOrderId": null,
+    "razorpayPaymentId": null,
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6967509af542517ec39c"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699ae403050e40730557375a"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Pending",
+    "refId": "PER-00018",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:19.81Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-23T14:51:19.81Z"
+    },
+    "__v": 0,
+    "paidAt": null,
+    "razorpayOrderId": null,
+    "razorpayPaymentId": null,
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6967509af542517ec3a0"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699ae462050e407305573761"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Pending",
+    "refId": "PER-00019",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:19.99Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-23T14:51:19.99Z"
+    },
+    "__v": 0,
+    "paidAt": null,
+    "razorpayOrderId": null,
+    "razorpayPaymentId": null,
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6968509af542517ec3a4"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699ae482050e407305573766"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Pending",
+    "refId": "PER-00020",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:20.171Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-23T14:51:20.171Z"
+    },
+    "__v": 0,
+    "paidAt": null,
+    "razorpayOrderId": null,
+    "razorpayPaymentId": null,
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6968509af542517ec3a8"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699ae4a3050e40730557376b"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Pending",
+    "refId": "PER-00021",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:20.351Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-23T14:51:20.351Z"
+    },
+    "__v": 0,
+    "paidAt": null,
+    "razorpayOrderId": null,
+    "razorpayPaymentId": null,
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6968509af542517ec3ac"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699ae4f2050e407305573775"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Pending",
+    "refId": "PER-00022",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:20.53Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-23T14:51:20.53Z"
+    },
+    "__v": 0,
+    "paidAt": null,
+    "razorpayOrderId": null,
+    "razorpayPaymentId": null,
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6968509af542517ec3b0"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699ae512050e40730557377a"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Pending",
+    "refId": "PER-00023",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:20.712Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-23T14:51:20.712Z"
+    },
+    "__v": 0,
+    "paidAt": null,
+    "razorpayOrderId": null,
+    "razorpayPaymentId": null,
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6968509af542517ec3b4"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699ae532050e40730557377f"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Pending",
+    "refId": "PER-00024",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:20.89Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-23T14:51:20.89Z"
+    },
+    "__v": 0,
+    "paidAt": null,
+    "razorpayOrderId": null,
+    "razorpayPaymentId": null,
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6969509af542517ec3b8"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699ae57a050e40730557378a"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Pending",
+    "refId": "PER-00025",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:21.069Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-24T13:41:17.329Z"
+    },
+    "__v": 0,
+    "razorpayOrderId": null,
+    "paidAt": null,
+    "razorpayPaymentId": null,
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6969509af542517ec3bc"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699ae5c6050e40730557378f"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Paid",
+    "refId": "PER-00026",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:21.25Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-24T16:08:05.655Z"
+    },
+    "__v": 0,
+    "paidAt": {
+        "$date": "2026-02-24T16:08:05.653Z"
+    },
+    "razorpayOrderId": null,
+    "razorpayPaymentId": "ADMIN_CONFIRMED",
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6969509af542517ec3c0"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699bd0aea0fb6097e57cd7d8"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Paid",
+    "refId": "PER-00027",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:21.43Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-24T15:29:09.949Z"
+    },
+    "__v": 0,
+    "paidAt": {
+        "$date": "2026-02-24T15:29:09.948Z"
+    },
+    "razorpayOrderId": null,
+    "razorpayPaymentId": "CASH",
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699c6969509af542517ec3c4"
+    },
+    "type": "personal",
+    "resident": {
+        "$oid": "699bd49289e2df4a8f8ec255"
+    },
+    "flatNumber": "—",
+    "amount": 1,
+    "dueDate": {
+        "$date": "2026-03-04T18:30:00Z"
+    },
+    "status": "Paid",
+    "refId": "PER-00028",
+    "month": 2,
+    "year": 2026,
+    "createdAt": {
+        "$date": "2026-02-23T14:51:21.61Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-24T15:28:55.329Z"
+    },
+    "__v": 0,
+    "razorpayOrderId": null,
+    "paidAt": {
+        "$date": "2026-02-24T15:28:55.327Z"
+    },
+    "razorpayPaymentId": "CASH",
+    "razorpaySignature": null
+}
+{
+    "_id": {
+        "$oid": "699e718d574492ed089e3289"
+    },
+    "type": "maintenance",
+    "amount": 500,
+    "status": "Paid",
+    "complaint": {
+        "$oid": "699e70ee574492ed089e3225"
+    },
+    "worker": {
+        "$oid": "699ae90b050e4073055737c4"
+    },
+    "workerName": "Ashish Sharma",
+    "purpose": "Leaking Rooftop",
+    "refId": "MAN-00001",
+    "paidAt": {
+        "$date": "2026-02-25T03:50:37.534Z"
+    },
+    "createdAt": {
+        "$date": "2026-02-25T03:50:37.538Z"
+    },
+    "updatedAt": {
+        "$date": "2026-02-25T03:50:37.538Z"
+    },
+    "__v": 0
+}

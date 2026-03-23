@@ -12,10 +12,10 @@ const sendTempPasswordEmail = async (email, tempPassword, role) => {
   try {
     const transporter = nodemailer.createTransport({
       service: "gmail",
-      auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
+      auth: { user: process.env.MAIL_USER, pass: process.env.MAIL_PASS },
     });
     await transporter.sendMail({
-      from: `"FixMate Admin" <${process.env.EMAIL_USER}>`,
+      from: `"FixMate Admin" <${process.env.MAIL_USER}>`,
       to: email,
       subject: "Your FixMate Account Credentials",
       html: `<p>Your <strong>FixMate</strong> account has been created as <strong>${role}</strong>.</p>
@@ -34,11 +34,12 @@ const generateTempPassword = () =>
 // ── DASHBOARD STATS ───────────────────────────────────────────────────────────
 exports.getDashboardStats = async (req, res) => {
   try {
-    const [totalComplaints, inProgress, pendingApproval, pendingEstimates] = await Promise.all([
+    const [totalComplaints, inProgress, pendingApproval, pendingEstimates, resolvedComplaints] = await Promise.all([
       Complain.countDocuments(),
-      Complain.countDocuments({ status: "InProgress" }),
+      Complain.countDocuments({ status: { $in: ["Assigned", "EstimatePending", "EstimateApproved", "InProgress"] } }),
       Complain.countDocuments({ status: "Pending", assignedStaff: null }), // unassigned only
       Complain.countDocuments({ estimateStatus: "Pending" }),              // CommonArea estimates waiting
+      Complain.countDocuments({ status: "Resolved" }),                     // Finished tickets
     ]);
 
     const recentComplaints = await Complain.find()
@@ -64,7 +65,7 @@ exports.getDashboardStats = async (req, res) => {
     }).select("name quantity minQuantity unit category");
 
     res.json({
-      stats: { totalComplaints, inProgress, pendingApproval, pendingEstimates },
+      stats: { totalComplaints, inProgress, pendingApproval, pendingEstimates, resolvedComplaints },
       recentComplaints,
       pendingEstimatesList,
       wipComplaints,
@@ -185,7 +186,7 @@ exports.getReportsData = async (req, res) => {
       Complain.countDocuments(),
       Complain.countDocuments({ status: "Resolved" }),
       Complain.countDocuments({ status: "Pending" }),
-      Complain.countDocuments({ status: "InProgress" }),
+      Complain.countDocuments({ status: { $in: ["Assigned", "EstimatePending", "EstimateApproved", "InProgress"] } }),
       Staff.countDocuments(),
       Staff.countDocuments({ isAvailable: true }),
     ]);
@@ -255,8 +256,7 @@ exports.createUser = async (req, res) => {
     if (existing) return res.status(409).json({ error: "Email already exists" });
 
     const tempPassword = generateTempPassword();
-    const hashed = await bcrypt.hash(tempPassword, 10);
-    auth = await Auth.create({ email, password: hashed, role: "user", isFirstLogin: true });
+    auth = await Auth.create({ email, password: tempPassword, role: "user", isFirstLogin: true });
     const user = await User.create({ authId: auth._id, name, age, phone: phoneNum, aadhaar, flatNumber: flatNumber || null });
     await sendTempPasswordEmail(email, tempPassword, "Resident");
 
@@ -318,8 +318,7 @@ exports.createStaff = async (req, res) => {
     if (existing) return res.status(409).json({ error: "Email already exists" });
 
     const tempPassword = generateTempPassword();
-    const hashed = await bcrypt.hash(tempPassword, 10);
-    auth = await Auth.create({ email, password: hashed, role: "staff", isFirstLogin: true });
+    auth = await Auth.create({ email, password: tempPassword, role: "staff", isFirstLogin: true });
     const staff = await Staff.create({ authId: auth._id, name, phone: phoneNum, department, aadhaar });
     await sendTempPasswordEmail(email, tempPassword, "Staff");
 
@@ -372,9 +371,8 @@ exports.updateAdminProfile = async (req, res) => {
 
     if (newPassword) {
       if (!currentPassword) return res.status(400).json({ error: "Current password required" });
-      const match = await bcrypt.compare(currentPassword, auth.password);
-      if (!match) return res.status(401).json({ error: "Current password is incorrect" });
-      auth.password = await bcrypt.hash(newPassword, 10);
+      if (currentPassword !== auth.password) return res.status(401).json({ error: "Current password is incorrect" });
+      auth.password = newPassword;
     }
 
     await auth.save();

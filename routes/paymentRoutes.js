@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+require("dotenv").config();
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
 const Payment = require("../model/Payment");
@@ -44,6 +45,31 @@ router.get("/list", adminOnly, async (req, res) => {
         .sort({ createdAt: -1 }),
     ]);
     res.json({ maintenance, personal });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /payments/monthly-revenue (admin)
+router.get("/monthly-revenue", adminOnly, async (req, res) => {
+  try {
+    const data = await Payment.aggregate([
+      { $match: { status: "Paid" } },
+      {
+        $group: {
+          _id: { month: { $month: "$createdAt" }, year: { $year: "$createdAt" } },
+          revenue: { $sum: "$amount" },
+        },
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } },
+      { $limit: 6 },
+    ]);
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const chartData = data.map(d => ({
+      month: months[d._id.month - 1],
+      revenue: d.revenue,
+    }));
+    res.json({ chartData });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -156,12 +182,12 @@ router.post("/create-order", loggedIn, async (req, res) => {
     }
 
     const order = await razorpay.orders.create({
-      amount: payment.amount * 100,
+      amount: Math.round(Number(payment.amount) * 100),
       currency: "INR",
-      receipt: `fixmate_${payment._id}`,
+      receipt: `fixmate_${payment._id}`.substring(0, 40),
       notes: {
-        flatNumber: payment.flatNumber,
-        residentName: payment.resident?.name || "",
+        flatNumber: String(payment.flatNumber || "N/A"),
+        residentName: String(payment.resident?.name || "N/A"),
         paymentId: String(payment._id),
       },
     });
@@ -178,6 +204,7 @@ router.post("/create-order", loggedIn, async (req, res) => {
       flatNumber: payment.flatNumber,
     });
   } catch (err) {
+    console.error("Razorpay Create Order Error:", err);
     res.status(500).json({ error: err.message });
   }
 });

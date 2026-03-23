@@ -93,6 +93,18 @@ app.use("/profile", profileRouter);
 app.use("/inventory", inventoryRouter);
 app.use("/payments", paymentRouter);
 
+// ── Global error handler ──────────────────────────────────────────────────────
+app.use((err, req, res, next) => {
+  if (err.name === 'CastError') {
+    return res.status(400).json({ error: "Invalid ID format" });
+  }
+  if (err.message && err.message.includes('Not allowed by CORS')) {
+    return res.status(403).json({ error: "CORS: Origin not allowed" });
+  }
+  console.error("[Global Error]:", err.message || err);
+  res.status(err.status || 500).json({ error: err.message || "Internal server error" });
+});
+
 mongoose.connect(DB_PATH).then(async () => {
   console.log("[Database Name] :", mongoose.connection.name);
   console.log("Connected to MongoDB");

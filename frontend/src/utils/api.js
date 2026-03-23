@@ -15,21 +15,19 @@ export const API = "http://localhost:3000";
 const SS_KEY = "fixmate_sid";       // sessionStorage key
 const LS_KEY = "fixmate_sid_last";  // localStorage key (persistent)
 
-/** Get the current session ID (per-tab first, then persistent fallback) */
+/** Get the current session ID (per-tab only) */
 export function getSessionId() {
-    return sessionStorage.getItem(SS_KEY) || localStorage.getItem(LS_KEY) || null;
+    return sessionStorage.getItem(SS_KEY) || null;
 }
 
-/** Store session ID in both storages */
+/** Store session ID in sessionStorage only */
 export function storeSessionId(sid) {
     sessionStorage.setItem(SS_KEY, sid);
-    localStorage.setItem(LS_KEY, sid);
 }
 
-/** Clear session ID from both storages */
+/** Clear session ID from sessionStorage */
 export function clearSessionId() {
     sessionStorage.removeItem(SS_KEY);
-    localStorage.removeItem(LS_KEY);
 }
 
 /** Returns headers object with X-Session-Id if logged in */

@@ -5,6 +5,9 @@ const { deductMaterials } = require("./inventory");
 // ── FILE UPLOAD FOR COMPLAINT ──────────────────────────────────────────────────
 exports.handlePost_fileUpload = async (req, res) => {
   try {
+    if (!req.session || !req.session.user) {
+      return res.status(401).json({ error: "Unauthorized. Please log in." });
+    }
     if (!req.body.title || !req.body.description || !req.body.priority) {
       return res.status(400).json({ error: "Title, description and priority required" });
     }
@@ -18,7 +21,7 @@ exports.handlePost_fileUpload = async (req, res) => {
       category:    req.body.category || "General",
       priority:    req.body.priority,
       description: req.body.description,
-      resident:    req.session.user.id,
+      resident:    req.session.user.profileId || req.session.user.id,
     };
     await Complain.create(complain);
     res.status(201).json({ message: "Complaint filed successfully" });
@@ -33,7 +36,7 @@ exports.ShowComplains = async (req, res) => {
   try {
     const sessionUser = req.session.user;
     if (!sessionUser) return res.status(401).json({ error: "Not logged in" });
-    const filter = sessionUser.role === "admin" ? {} : { resident: sessionUser.id };
+    const filter = sessionUser.role === "admin" ? {} : { resident: sessionUser.profileId || sessionUser.id };
     const data = await Complain.find(filter)
       .populate("assignedStaff", "name department phone")
       .sort({ createdAt: -1 });
@@ -232,7 +235,7 @@ exports.revokeStaff = async (req, res) => {
     if (!complaintId) return res.status(400).json({ error: "complaintId required" });
     const complaint = await Complain.findById(complaintId);
     if (!complaint) return res.status(404).json({ error: "Complaint not found" });
-    if (String(complaint.resident) !== String(sessionUser.id))
+    if (String(complaint.resident) !== String(sessionUser.profileId || sessionUser.id))
       return res.status(403).json({ error: "Not your complaint" });
     if (complaint.workType !== "Personal")
       return res.status(400).json({ error: "Can only revoke Personal work" });

@@ -1,9 +1,20 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../Context/AuthContext';
 
 const Home = () => {
   const { isLoggedIn, role, isFirstLogin, sessionExpired, dismissExpired } = useContext(AuthContext);
+  const [profileName, setProfileName] = useState("");
+
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    fetch("http://localhost:3000/profile", {
+      headers: { "Content-Type": "application/json", "X-Session-Id": sessionStorage.getItem("fixmate_sid") }
+    })
+      .then(res => res.json())
+      .then(data => setProfileName(data.profile?.name || ""))
+      .catch(() => {});
+  }, [isLoggedIn]);
 
   const getDashboardLink = () => {
     if (role === "admin") return { to: "/AssignStaff", label: "Go to Admin Panel" };
@@ -83,9 +94,12 @@ const Home = () => {
           </p>
 
           {isLoggedIn ? (
-            <Link to={dash.to} className="inline-block bg-[#1a365d] text-white px-10 py-4 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all text-sm">
-              {dash.label}
-            </Link>
+            <div className="flex flex-col items-center gap-4">
+              {profileName && <p className="text-xl font-bold text-gray-600">Welcome back, {profileName}</p>}
+              <Link to={dash.to} className="inline-block bg-[#1a365d] text-white px-10 py-4 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all text-sm">
+                {dash.label}
+              </Link>
+            </div>
           ) : (
             <Link to="/login" className="inline-block bg-[#1a365d] text-white px-10 py-4 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all text-sm">
               Login to FixMate

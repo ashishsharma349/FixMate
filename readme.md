@@ -1,148 +1,166 @@
-# FixMate 🏢 - Comprehensive System Documentation
+# FixMate 🔧
 
-FixMate is a high-end, full-stack residential society management platform designed to automate and streamline interactions between **Residents**, **Maintenance Staff**, and **Administrators**. It features a robust role-based architecture, real-time task polling, and a unique multi-tab session strategy.
-
----
-
-## 🌟 1. System Architecture & Tech Stack
-
-- **Frontend**: React.js, Tailwind CSS, React Router, Recharts (Analytics).
-- **Backend**: Node.js, Express.js.
-- **Database**: MongoDB (Mongoose ORM).
-- **Authentication**: Custom Dual-Storage Session (Header-based `sessionStorage` + backend Cookies).
-- **Communication**: 
-  - **Nodemailer**: Automated email notifications for account credentials.
-- **Third-Party Integrations**:
-  - **Razorpay**: For maintenance and estimate payments.
-  - **Cloudinary**: Secure image hosting for complaint/resolution proofs.
+A **society / apartment maintenance management system** — residents file complaints, admins assign staff, staff complete work, and payments are tracked end-to-end.
 
 ---
 
-## 📁 2. Project Structure Overview
+## Tech Stack
 
-```text
+| Layer | Technology |
+|-------|-----------|
+| Backend | Node.js, Express.js |
+| Database | MongoDB + Mongoose |
+| Auth | express-session (tab-isolated via X-Session-Id header) |
+| Payments | Razorpay |
+| Email | Nodemailer (Gmail) |
+| File Uploads | Multer (local disk) |
+| Frontend | React + Vite (in `/frontend`) |
+| Styling | Tailwind CSS |
+| Charts | Recharts |
+
+---
+
+## Roles
+
+| Role | Access |
+|------|--------|
+| **Admin** | Full control — creates accounts, assigns complaints, approves budgets, manages inventory, views reports |
+| **Resident** | Files complaints with photo, tracks status, pays monthly maintenance bills |
+| **Staff** | Views assigned tasks, submits cost estimates, submits completion proof |
+
+---
+
+## Complaint Lifecycle
+
+```
+Pending → Assigned → EstimatePending → EstimateApproved → InProgress → Resolved
+```
+
+- **Personal** work (resident's flat): estimate auto-approved, resident pays via Razorpay
+- **CommonArea** work (society property): admin approves estimate, society fund covers cost
+
+---
+
+## Project Structure
+
+```
 FyProject/
-├── app.js                 # Entry point, middleware setup, route registration
-├── controller/            # Business logic
-│   ├── admin.js           # Dashboard stats, Staff/User CRUD, Assigning tasks
-│   ├── auth.js            # Authentication & Password management logic
-│   ├── inventory.js       # Stock tracking & automated deductions
-│   ├── payment.js         # Razorpay & Society expense management
-│   ├── profile.js         # Profile management
-│   ├── staff.js           # Staff-specific operations
-│   └── user.js            # Complaint filing & Resident workflows
-├── middleware/            # Auth guards & session header injection
-├── model/                 # Mongoose Schemas (Auth, User, Staff, Complain, Payment, Inventory, Announcement, Finance)
-├── routes/                # Express Routers
-└── frontend/              # React SPA
-    └── src/
-        ├── Components/    # Modular UI (Admin/, Staff/, User/, UI/)
-        ├── Context/       # AuthContext for role-based global state
-        └── utils/         # API wrappers & Auth Header utilities
+├── app.js                  ← Entry point
+├── seedAdmin.js            ← Auto-seeds admin on startup
+├── seedInventory.js        ← Auto-seeds default inventory
+├── model/                  ← Mongoose schemas
+│   ├── Auth.js             ← Login credentials
+│   ├── User.js             ← Resident profiles
+│   ├── staff.js            ← Staff profiles
+│   ├── Complain.js         ← Complaints (full lifecycle)
+│   ├── Payment.js          ← Personal bills + maintenance fund
+│   └── Inventory.js        ← Society stock items
+├── controller/             ← Business logic
+├── routes/                 ← URL → controller mapping
+├── middleware/             ← Auth guards, session header, validator
+├── config/                 ← Multer, Razorpay setup
+├── utils/                  ← Mailer, path helper
+└── frontend/               ← React app (Vite)
 ```
 
 ---
 
-## 👥 3. Advanced Module Workflows
+## API Reference
 
-### 🛠️ The Dual-Path Complaint Lifecycle
-Complaints follow different logic based on whether they are "Personal" or "Common Area":
+### Auth
+| Method | URL | Description |
+|--------|-----|-------------|
+| POST | `/login` | Login — returns sessionId |
+| POST | `/logout` | Destroy session |
+| POST | `/create-user` | Admin creates user/staff account |
+| POST | `/change-password` | Change temp password on first login |
+| GET | `/check-login` | Check session state |
 
-```mermaid
-graph TD
-    A[Resident Submits Complaint] --> B{Admin Assigns Staff}
-    B --> C[Staff Receives Task]
-    C --> D{Work Type?}
-    
-    D -- Personal --> E[Staff Submits Estimate]
-    E --> F[Auto-Approved]
-    F --> G[Resident Pays via Razorpay]
-    G --> H[Staff Starts Work]
-    
-    D -- Common Area --> I[Staff Submits Estimate]
-    I --> J[Admin Approves/Rejects]
-    J -- Approved --> K[Staff Starts Work]
-    
-    H --> L[Staff Uploads Completion Proof]
-    K --> L
-    L --> M[System Deducts Inventory & Logs Finance]
-    M --> N[Marked Resolved]
-```
+### Complaints (`/users`)
+| Method | URL | Description |
+|--------|-----|-------------|
+| POST | `/users/complains` | File a complaint (with photo) |
+| GET | `/users/All-Complains` | View complaints |
+| PATCH | `/users/Assign-Complain` | Assign staff to complaint |
+| GET | `/users/Task` | Staff: view assigned tasks |
+| POST | `/users/submit-estimate` | Staff: submit cost estimate |
+| POST | `/users/complete-task` | Staff: submit completion proof |
+| PATCH | `/users/revoke-complaint` | Resident: revoke staff (Personal only) |
 
-### 🧑‍💻 Feature Breakdown
+### Admin (`/admin`) — Admin only
+| Method | URL | Description |
+|--------|-----|-------------|
+| GET | `/admin/dashboard-stats` | Dashboard data |
+| GET | `/admin/complaints` | All complaints |
+| POST | `/admin/assign-complaint` | Assign + set workType |
+| POST | `/admin/handle-estimate` | Approve/reject estimate |
+| POST | `/admin/resolve-complaint` | Resolve complaint |
+| CRUD | `/admin/users/*` | Manage residents |
+| CRUD | `/admin/staff/*` | Manage staff |
+| GET | `/admin/reports-data` | Analytics |
 
-#### 1. Resident Module
-- **Smart Dashboard**: View real-time status of all filed complaints.
-- **Revocation**: Residents can revoke staff assignments for **Personal** work if it hasn't progressed to the "In Progress" stage.
-- **Payment Portal**: Securely pay maintenance bills and repair estimates via **Razorpay**.
+### Payments (`/payments`)
+| Method | URL | Description |
+|--------|-----|-------------|
+| POST | `/payments/generate-monthly` | Generate bills for all residents |
+| POST | `/payments/create-order` | Create Razorpay order |
+| POST | `/payments/verify` | Verify Razorpay payment |
+| GET | `/payments/my-payments` | Resident: view own bills |
+| GET | `/payments/list` | Admin: all payments |
 
-#### 2. Staff Module
-- **Auto-Polling**: The dashboard polls every 15s to ensure instant task delivery.
-- **Work Proofs**: Mandatory "After" photo upload via Cloudinary for resolution.
-- **Inventory Reporting**: Staff can report materials used, triggering automated stock updates.
-
-#### 3. Administrator Module
-- **Live Analytics**: Real-time charts for revenue breakdown and complaint status (WIP/Pending).
-- **Member Management**: Create and manage Residents/Staff; system auto-emails temp passwords.
-- **Inventory Management**: Automated stock tracking with low-stock warnings.
-- **Financial Audit**: Automatic logging of "Income" (Resident payments) and "Expense" (Staff payouts for Common Area repairs).
-
----
-
-## 🔐 4. Multi-Tab Session Engine (Hybrid Auth)
-
-To allow users to operate different roles (Admin/User/Staff) in different tabs simultaneously, FixMate implements a **Header-based Session Strategy**:
-
-1. **Isolation**: `sessionId` is stored in `sessionStorage` (isolated per tab).
-2. **Injection**: React injects `X-Session-Id` into every Axios/Fetch request header.
-3. **Middleware**: `sessionHeader.js` intercepts this header and maps it to `req.session` before `express-session` processes it.
-4. **Persistence**: `localStorage` acts as a backup for session recovery upon tab refreshes.
+### Inventory (`/inventory`) — Admin only
+| Method | URL | Description |
+|--------|-----|-------------|
+| GET | `/inventory` | All items (filter by search/category) |
+| POST | `/inventory` | Add item |
+| PUT | `/inventory/:id` | Update item |
+| DELETE | `/inventory/:id` | Delete item |
+| POST | `/inventory/restock` | Add stock quantity |
+| GET | `/inventory/low-stock` | Items below minimum threshold |
 
 ---
 
-## 🗄️ 5. Database Schema Key Models
+## Multi-Tab Login
 
-| Model | Purpose | Key Fields |
-| :--- | :--- | :--- |
-| **Auth** | Credentials | email, password (hashed), role, isFirstLogin |
-| **Complain** | Task Tracking | status, workType, estimatedCost, actualCost, proofImage |
-| **Finance** | Cashflow | transactionType, amount, relatedComplaint, handledBy |
-| **Inventory** | Stock Control | name, quantity, minQuantity, unitPrice |
-| **Announcement** | Communication | title, content, targetAudience (All/Residents/Staff) |
+Each browser tab stores its own `sessionId` in `sessionStorage`. Every API call sends `X-Session-Id` header. The `sessionHeader.js` middleware injects it as a cookie so `express-session` loads the correct session per tab.
 
 ---
 
-## 🛠️ 6. Setup & Developer Utilities
+## Environment Variables (`.env`)
 
-### Installation
-```bash
-npm install
-cd frontend && npm install
-```
-
-### Environment Variables (.env)
-```text
-MONGO_URI=your_mongodb_uri
+```env
+MONGO_URI=mongodb+srv://...
 SESSION_SECRET=your_secret
 PORT=3000
-EMAIL_USER=admin_email
-EMAIL_PASS=app_specific_password
-RAZORPAY_KEY_ID=your_key
-RAZORPAY_KEY_SECRET=your_secret
+
+ADMIN_EMAIL=admin@gmail.com
+ADMIN_PASSWORD=YourPassword
+
+MAIL_USER=your@gmail.com
+MAIL_PASS=gmail_app_password
+
+RAZORPAY_KEY_ID=rzp_test_...
+RAZORPAY_KEY_SECRET=...
 ```
 
-### Database Fixer Script
-If state becomes inconsistent during testing, run:
-```bash
-node scripts/fixData.js
-```
-- Resets all passwords to `Temp@1234`.
-- Syncs inventory counts.
-- Wipes failed payment logs.
+> `MAIL_PASS` = Gmail App Password (not your real password). Enable 2FA → Google Account → Security → App Passwords.
 
 ---
 
-## 💳 7. Payment Testing (Razorpay)
-Use the following UPI IDs in the checkout for testing:
-- **Success**: `success@razorpay`
-- **Failure**: `failure@razorpay`
+## Running Locally
+
+```bash
+npm install
+npm start          # runs nodemon app.js + tailwind watch
+```
+
+> For deep architecture documentation, see [project_overview.md](./project_overview.md)
+
+---
+
+## Razorpay Test Credentials
+
+| UPI ID | Result |
+|--------|--------|
+| `success@razorpay` | ✅ Payment succeeds |
+| `failure@razorpay` | ❌ Payment fails |

@@ -1,5 +1,6 @@
 const express = require("express");
 const adminControllers = require("../controller/admin");
+const { createUserRules, validate } = require("../middleware/validator");
 
 const adminRoute = express.Router();
 adminRoute.use(express.json());
@@ -24,13 +25,13 @@ adminRoute.post("/resolve-complaint", adminControllers.resolveComplaint);
 
 // ── Users ─────────────────────────────────────────────────────────────────────
 adminRoute.get("/users",            adminControllers.getAllUsers);
-adminRoute.post("/create-user",     adminControllers.createUser);
+adminRoute.post("/create-user",     createUserRules, validate, adminControllers.createUser);
 adminRoute.put("/users/:userId",    adminControllers.updateUser);
 adminRoute.delete("/users/:userId", adminControllers.deleteUser);
 
 // ── Staff ─────────────────────────────────────────────────────────────────────
 adminRoute.get("/staff",              adminControllers.getAllStaff);
-adminRoute.post("/create-staff",      adminControllers.createStaff);
+adminRoute.post("/create-staff",      createUserRules, validate, adminControllers.createStaff);
 adminRoute.put("/staff/:staffId",     adminControllers.updateStaff);
 adminRoute.delete("/staff/:staffId",  adminControllers.deleteStaff);
 

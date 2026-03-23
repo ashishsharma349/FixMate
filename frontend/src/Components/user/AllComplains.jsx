@@ -173,11 +173,18 @@ function ShowComplains() {
   const [complains, setComplains] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  
+  // High-end filters
+  const [search, setSearch] = useState("");
+  const [filterStatus, setFilterStatus] = useState("All");
+  const [filterPriority, setFilterPriority] = useState("All");
+  const [filterCategory, setFilterCategory] = useState("All");
+  const [sortOrder, setSortOrder] = useState("newest");
+
   const navigate = useNavigate();
 
   const fetchComplains = () => {
     setLoading(true);
-    // Uses existing GET /users/All-Complains endpoint
     fetch(`${API}/users/All-Complains`, { method: "GET", headers: getAuthHeaders() })
       .then((res) => {
         if (!res.ok) {
@@ -200,41 +207,109 @@ function ShowComplains() {
 
   if (loading)
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#1a365d]" />
       </div>
     );
 
   if (error)
     return (
-      <div className="min-h-screen flex items-center justify-center text-red-500 font-semibold">
+      <div className="min-h-screen flex items-center justify-center text-red-500 font-semibold bg-slate-50">
         {error}
       </div>
     );
 
-  return (
-    <div className="max-w-7xl mx-auto px-4 py-12">
-      <div className="flex items-center justify-between mb-10 flex-wrap gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-[#1a365d] tracking-tight">Your Complaints</h1>
-          <p className="text-sm text-gray-500 font-medium">Track and manage your reported issues</p>
-        </div>
-        {/* File new complaint button */}
-        <button
-          onClick={() => navigate("/FileComplain")}
-          className="bg-[#25334d] text-white px-6 py-3 rounded-full text-sm font-bold hover:bg-slate-700 transition"
-        >
-          + New Complaint
-        </button>
-      </div>
+  const filtered = complains.filter(c => {
+    const s = search.toLowerCase();
+    const matchSearch = c.title?.toLowerCase().includes(s) || c._id?.toLowerCase().includes(s);
+    const matchStatus = filterStatus === "All" || c.status === filterStatus;
+    const matchPriority = filterPriority === "All" || c.priority === filterPriority;
+    const matchCategory = filterCategory === "All" || c.category === filterCategory;
+    return matchSearch && matchStatus && matchPriority && matchCategory;
+  }).sort((a, b) => {
+    const dateA = new Date(a.createdAt);
+    const dateB = new Date(b.createdAt);
+    return sortOrder === "newest" ? dateB - dateA : dateA - dateB;
+  });
 
-      {complains.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {complains.map((c) => (
-            <ComplainCard key={c._id} data={c} onRevoke={fetchComplains} />
-          ))}
+  const allCategories = ["All", ...Array.from(new Set(complains.map(c => c.category).filter(Boolean)))];
+  const allStatuses = ["All", "Pending", "Assigned", "InProgress", "Resolved"];
+
+  return (
+    <div className="min-h-screen bg-slate-50 pb-20">
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        <div className="flex items-center justify-between mb-10 flex-wrap gap-4">
+          <div>
+            <h1 className="text-3xl font-black text-[#1a365d] tracking-tight">Your Complaints</h1>
+            <p className="text-sm text-gray-500 font-medium">Track and manage your reported issues</p>
+          </div>
+          <button
+            onClick={() => navigate("/FileComplain")}
+            className="bg-[#25334d] text-white px-8 py-3.5 rounded-full text-sm font-black uppercase tracking-widest hover:bg-slate-700 transition shadow-lg shadow-blue-900/10"
+          >
+            + New Complaint
+          </button>
         </div>
-      ) : (
+
+        {/* Filter Bar */}
+        <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 mb-8 space-y-4">
+          <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex-1 min-w-[280px] relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">🔍</span>
+              <input 
+                className="w-full border border-gray-100 rounded-2xl pl-12 pr-4 py-3 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all font-medium"
+                placeholder="Search by ID or title..." 
+                value={search} 
+                onChange={e => setSearch(e.target.value)} 
+              />
+            </div>
+            <div className="flex items-center gap-3">
+              <select 
+                className="bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3 text-xs font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                value={sortOrder} onChange={e => setSortOrder(e.target.value)}
+              >
+                <option value="newest">Latest Date</option>
+                <option value="oldest">Oldest Date</option>
+              </select>
+              <select 
+                className="bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3 text-xs font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                value={filterCategory} onChange={e => setFilterCategory(e.target.value)}
+              >
+                {allCategories.map(cat => <option key={cat} value={cat}>{cat === "All" ? "All Categories" : cat}</option>)}
+              </select>
+              <select 
+                className="bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3 text-xs font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                value={filterPriority} onChange={e => setFilterPriority(e.target.value)}
+              >
+                <option value="All">All Priorities</option>
+                <option value="Emergency">🚨 Emergency</option>
+                <option value="High">🔴 High</option>
+                <option value="Medium">🟠 Medium</option>
+                <option value="Low">🟢 Low</option>
+              </select>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap border-t border-gray-50 pt-4">
+            <span className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] mr-2">Quick Status:</span>
+            {allStatuses.map(s => (
+              <button 
+                key={s} 
+                onClick={() => setFilterStatus(s)}
+                className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${filterStatus === s ? "bg-[#1a365d] text-white shadow-md shadow-blue-900/20" : "bg-gray-50 text-gray-400 hover:bg-gray-100"}`}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {filtered.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filtered.map((c) => (
+              <ComplainCard key={c._id} data={c} onRevoke={fetchComplains} />
+            ))}
+          </div>
+        ) : (
         <div className="text-center py-20 bg-gray-50 rounded-[40px] border-2 border-dashed border-gray-200">
           <p className="text-gray-400 font-bold uppercase tracking-widest text-sm">No complaints found</p>
           <button
@@ -246,7 +321,8 @@ function ShowComplains() {
         </div>
       )}
     </div>
-  );
+  </div>
+);
 }
 
 export default ShowComplains;

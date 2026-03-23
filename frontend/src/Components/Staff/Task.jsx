@@ -288,6 +288,7 @@ function TaskCard({ task, onRefresh }) {
 function Task() {
   const [complains, setComplains] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filterStatus, setFilterStatus] = useState("Active");
 
   const fetchTasks = useCallback(async () => {
     setLoading(true);
@@ -302,29 +303,46 @@ function Task() {
     }
   }, []);
 
-  // Auto-refresh every 15 seconds
   usePolling(fetchTasks, 15000);
 
   if (loading)
     return (
-      <div className="p-10 text-center font-bold text-slate-400 uppercase tracking-widest">
+      <div className="p-10 text-center font-bold text-slate-400 uppercase tracking-widest bg-slate-50 min-h-screen">
         Loading Assignments...
       </div>
     );
 
+  const filtered = complains.filter(c => {
+    if (filterStatus === "Active") return ["Assigned", "InProgress", "EstimatePending", "EstimateApproved"].includes(c.status);
+    if (filterStatus === "Resolved") return c.status === "Resolved";
+    return true;
+  });
+
   return (
-    <div className="max-w-md mx-auto bg-slate-50 min-h-screen pb-10 font-sans">
-      <header className="bg-white px-6 py-5 border-b sticky top-0 z-10 shadow-sm">
-        <h1 className="text-lg font-black uppercase tracking-tight">My Assignments</h1>
-        <p className="text-xs text-slate-400 mt-0.5">{complains.length} task{complains.length !== 1 ? "s" : ""} assigned</p>
+    <div className="max-w-md mx-auto bg-slate-50 min-h-screen pb-20 font-sans">
+      <header className="bg-white px-6 py-5 border-b sticky top-0 z-20 shadow-sm">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-lg font-black uppercase tracking-tight text-slate-800">My Assignments</h1>
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{filtered.length} task{filtered.length !== 1 ? "s" : ""} shown</p>
+          </div>
+          <div className="flex bg-slate-100 p-1 rounded-xl">
+            {["Active", "Resolved", "All"].map(s => (
+              <button key={s} onClick={() => setFilterStatus(s)}
+                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all ${filterStatus === s ? "bg-white text-blue-600 shadow-sm" : "text-slate-400 hover:text-slate-600"}`}>
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
       </header>
       <div className="p-5 space-y-6">
-        {complains.length === 0 && (
+        {filtered.length === 0 && (
           <div className="text-center py-20 bg-white rounded-[2rem] border-2 border-dashed border-slate-200">
-            <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">No assignments yet</p>
+            <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">No {filterStatus.toLowerCase()} tasks</p>
           </div>
         )}
-        {complains.map((task) => (
+        {filtered.map((task) => (
           <TaskCard key={task._id} task={task} onRefresh={fetchTasks} />
         ))}
       </div>
