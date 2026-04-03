@@ -2,14 +2,12 @@ const express = require("express");
 const cookieParser = require('cookie-parser');
 const path = require('path');
 const app = express();
-const seedAdmin = require("./seedAdmin");
 
 const userRouter = require('./routes/userRoutes');
 const adminRouter = require('./routes/adminRoutes');
 const authRouter = require('./routes/authRouter');
 const profileRouter = require('./routes/profileRouter');
 const inventoryRouter = require('./routes/inventoryRoutes');
-const seedInventory = require("./seedInventory");
 const paymentRouter = require('./routes/paymentRoutes');
 
 const session = require('express-session');
@@ -200,8 +198,6 @@ app.use((err, req, res, next) => {
 mongoose.connect(DB_PATH).then(async () => {
   console.log("[Database Name] :", mongoose.connection.name);
   console.log("Connected to MongoDB");
-  seedAdmin();
-  seedInventory();
   app.listen(PORT, () => {
     console.log(`Server is running at http://localhost:${PORT}`);
   });
