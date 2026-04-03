@@ -6,6 +6,7 @@ const ComplaintAssignmentPage = () => {
   const [staffList, setStaffList] = useState([]);
   const [selectedStaffId, setSelectedStaffId] = useState(null);
   const [selectedComplaints, setSelectedComplaints] = useState([]);
+  const [workType, setWorkType] = useState("Personal");
   const [complaintFilters, setComplaintFilters] = useState({ priority: "All", category: "All" });
   const [staffFilters, setStaffFilters] = useState({ department: "All", availability: "All" });
   const [loading, setLoading] = useState(true);
@@ -54,7 +55,7 @@ const ComplaintAssignmentPage = () => {
       const response = await fetch("http://localhost:3000/users/Assign-Complain", {
         method: "PATCH",
         headers: { "Content-Type": "application/json", ...getAuthHeaders() },
-        body: JSON.stringify({ staffId: selectedStaffId, complaintIds: selectedComplaints }),
+        body: JSON.stringify({ staffId: selectedStaffId, complaintIds: selectedComplaints, workType }),
       });
       if (!response.ok) throw new Error("Assignment failed");
       alert("Tasks assigned successfully!");
@@ -141,7 +142,11 @@ const ComplaintAssignmentPage = () => {
           </div>
 
           {/* FLOAT ACTION BUTTON */}
-          <div className="absolute bottom-8 left-0 right-0 px-8">
+          <div className="absolute bottom-6 left-0 right-0 px-8 flex flex-col gap-3">
+            <div className="flex bg-[#334463] p-1.5 rounded-2xl w-full max-w-sm mx-auto shadow-lg items-center text-center">
+               <button onClick={() => setWorkType("Personal")} className={`flex-1 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${workType === "Personal" ? "bg-blue-500 text-white shadow-sm" : "text-slate-300 hover:text-white"}`}>🏠 Personal Work</button>
+               <button onClick={() => setWorkType("CommonArea")} className={`flex-1 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${workType === "CommonArea" ? "bg-teal-500 text-white shadow-sm" : "text-slate-300 hover:text-white"}`}>🏢 Common Area</button>
+            </div>
             <button onClick={handleDoneSubmit}
               className="w-full bg-white text-[#25334d] py-5 rounded-full font-black uppercase tracking-[0.2em] shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3">
               Deploy Assignment {selectedComplaints.length > 0 && `(${selectedComplaints.length})`}

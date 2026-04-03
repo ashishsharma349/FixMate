@@ -55,14 +55,27 @@ function ComplainCard({ data, onRevoke }) {
 
   return (
     <div className="bg-white rounded-[30px] shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group">
-      {/* Complaint image */}
-      <div className="relative w-full h-48 overflow-hidden bg-gray-100">
-        <img
-          src={data.image_url?.startsWith("/") ? `${API}${data.image_url}` : data.image_url}
-          alt="Complaint proof"
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          onError={(e) => { e.target.src = "/placeholder.png"; }}
-        />
+      {/* Complaint image — shows placeholder if image is missing/broken */}
+      <div className="relative w-full h-48 overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
+        {data.image_url ? (
+          <img
+            src={data.image_url?.startsWith("/") ? `${API}${data.image_url}` : data.image_url}
+            alt="Complaint proof"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            onError={(e) => {
+              e.target.style.display = "none";
+              e.target.nextSibling.style.display = "flex";
+            }}
+          />
+        ) : null}
+        {/* Fallback shown when no image or image fails to load */}
+        <div
+          style={{ display: data.image_url ? "none" : "flex" }}
+          className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-slate-400"
+        >
+          <span className="text-4xl">📷</span>
+          <span className="text-xs font-semibold uppercase tracking-widest">No Photo</span>
+        </div>
         {/* Status badge */}
         <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${getStatusStyle(data.status)}`}>
           {data.status}

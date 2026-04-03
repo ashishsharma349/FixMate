@@ -5,9 +5,34 @@
   "type": "commonjs",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "tailwind": "npx tailwindcss -i ./views/input.css -o ./dist/output.css --watch",
-    "start": "nodemon app.js & npm run tailwind"
+    "start": "nodemon --ignore uploads/ app.js & npm run tailwind"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "<rootDir>/tests/**/*.test.js"
+    ],
+    "collectCoverageFrom": [
+      "controller/**/*.js",
+      "routes/**/*.js",
+      "model/**/*.js",
+      "middleware/**/*.js",
+      "utils/**/*.js",
+      "!**/node_modules/**",
+      "!**/tests/**"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 20,
+        "functions": 20,
+        "lines": 20,
+        "statements": 20
+      }
+    }
   },
   "keywords": [],
   "author": "",
@@ -19,8 +44,10 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
+    "dotenv": "^17.3.1",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.3.2",
     "express-session": "^1.18.2",
     "express-validator": "^7.3.1",
     "jsonwebtoken": "^9.0.3",
@@ -31,5 +58,10 @@
     "nodemailer": "^8.0.1",
     "razorpay": "^2.9.6",
     "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "jest": "^30.3.0",
+    "mongodb-memory-server": "^11.0.1",
+    "supertest": "^7.2.2"
   }
 }

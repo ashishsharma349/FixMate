@@ -76,7 +76,14 @@ function Profile() {
     <div className="min-h-screen flex items-center justify-center text-red-500 font-semibold">{error}</div>
   );
 
-  const photoSrc = photoPreview || profile?.photo || null;
+  const API = "http://localhost:3000";
+  const resolvePhoto = (url) => {
+    if (!url) return null;
+    if (url.startsWith("http")) return url;
+    return `${API}${url}`;
+  };
+
+  const photoSrc = photoPreview || resolvePhoto(profile?.photo) || null;
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans pb-16">

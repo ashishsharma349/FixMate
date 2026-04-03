@@ -60,8 +60,11 @@ const ComplaintForm = () => {
       <div className="relative w-full h-screen sm:h-auto sm:max-w-[480px] bg-white sm:rounded-[40px] shadow-2xl overflow-hidden flex flex-col">
         <div className="flex-[0.2] min-h-[100px] flex items-center px-8 relative bg-white">
           <div className="z-10 flex items-center gap-3">
-            <div className="w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-md overflow-hidden border border-slate-200">
-              <img src="/logo.png" alt="FixMate Logo" className="w-full h-full object-contain" />
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-transparent rounded-xl opacity-0 group-hover:opacity-20 transition-opacity"></div>
+              <div className="w-20 h-16 bg-white/95 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-md overflow-hidden border border-gray-200 group-hover:shadow-lg group-hover:border-gray-300 transition-all p-1">
+                <img src="/logo.png" alt="FixMate" className="w-12 h-12 object-contain opacity-100 hover:opacity-100 transition-opacity" />
+              </div>
             </div>
             <div>
               <h1 className="text-xl font-extrabold text-[#1a365d]">File Complaint</h1>

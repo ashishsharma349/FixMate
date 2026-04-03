@@ -36,9 +36,9 @@ function TaskCard({ task, onRefresh }) {
   const isPersonal = task.workType === "Personal";
   const isCommonArea = task.workType === "CommonArea";
 
-  // Fetch inventory only for CommonArea + EstimateApproved
+  // Fetch inventory for CommonArea during EstimateApproved and InProgress
   useEffect(() => {
-    if (isCommonArea && task.status === "EstimateApproved") {
+    if (isCommonArea && ["EstimateApproved", "InProgress"].includes(task.status)) {
       fetch(`${API}/inventory`, { headers: getAuthHeaders() })
         .then((r) => r.json())
         .then((d) => setInventoryItems(d.items || []))
@@ -291,7 +291,6 @@ function Task() {
   const [filterStatus, setFilterStatus] = useState("Active");
 
   const fetchTasks = useCallback(async () => {
-    setLoading(true);
     try {
       const res = await fetch(`${API}/users/Task`, { headers: getAuthHeaders() });
       const data = await res.json();

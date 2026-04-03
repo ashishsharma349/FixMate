@@ -61,14 +61,14 @@ exports.getAllStaffDetails = async (req, res) => {
 exports.handleComplainAssign = async (req, res) => {
   try {
     const Staff = require("../model/staff");
-    const { staffId, complaintIds } = req.body;
+    const { staffId, complaintIds, workType } = req.body;
     if (!staffId || !Array.isArray(complaintIds) || complaintIds.length === 0)
       return res.status(400).json({ error: "Invalid input data" });
     const staff = await Staff.findById(staffId);
     if (!staff) return res.status(404).json({ error: "Staff not found" });
     const updateResult = await Complain.updateMany(
       { _id: { $in: complaintIds } },
-      { $set: { assignedStaff: staffId, status: "Assigned" } }
+      { $set: { assignedStaff: staffId, status: "Assigned", workType: workType || "Personal" } }
     );
     await Staff.findByIdAndUpdate(staffId, { $set: { isAvailable: false } });
     return res.status(200).json({ message: "Complaints assigned", assignedCount: updateResult.modifiedCount });
@@ -172,10 +172,10 @@ exports.completeTask = async (req, res) => {
     try { materials = JSON.parse(materialsUsed || "[]"); } catch (_) {}
 
     // Personal: use estimatedCost as finalCost
-    // CommonArea: use submitted actualCost
+    // CommonArea: use submitted actualCost, fallback to estimatedCost if not provided
     const finalCost = complaint.workType === "Personal"
       ? complaint.estimatedCost
-      : (Number(actualCost) || 0);
+      : (Number(actualCost) || complaint.estimatedCost || 0);
 
     await Complain.findByIdAndUpdate(complaintId, {
       $set: {

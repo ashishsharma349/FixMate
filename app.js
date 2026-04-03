@@ -17,6 +17,7 @@ const MongoDbStore = require("connect-mongodb-session")(session);
 const cors = require("cors");
 const mongoose = require("mongoose");
 const sessionHeaderMiddleware = require("./middleware/sessionHeader");
+const rateLimit = require("express-rate-limit");
 
 const allowedOrigins = [
   'http://127.0.0.1:5501',
@@ -67,6 +68,32 @@ app.use(session({
   }
 }));
 
+// ── Rate Limiting ─────────────────────────────────────────────────────────────
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: { error: "Too many requests from this IP, please try again later." },
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
+// Apply rate limiting to all requests
+app.use(limiter);
+
+// Stricter rate limiting for auth routes
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // limit each IP to 5 auth requests per windowMs
+  message: { error: "Too many authentication attempts, please try again later." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Apply stricter rate limiting to auth routes
+app.use("/api/auth", authLimiter);
+app.use("/login", authLimiter);
+app.use("/register", authLimiter);
+
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static("dist"));
@@ -95,14 +122,79 @@ app.use("/payments", paymentRouter);
 
 // ── Global error handler ──────────────────────────────────────────────────────
 app.use((err, req, res, next) => {
+  let error = { ...err };
+  error.message = err.message;
+
+  // Log error for debugging
+  console.error(`[${new Date().toISOString()}] ${req.method} ${req.path}:`, {
+    error: err.message,
+    stack: err.stack,
+    body: req.body,
+    params: req.params,
+    query: req.query,
+    user: req.session?.user?.id || 'anonymous'
+  });
+
+  // Mongoose bad ObjectId
   if (err.name === 'CastError') {
-    return res.status(400).json({ error: "Invalid ID format" });
+    const message = "Resource not found (Invalid ID format)";
+    error = { message, statusCode: 400 };
   }
+
+  // Mongoose duplicate key
+  if (err.code === 11000) {
+    const message = "Duplicate field value entered";
+    error = { message, statusCode: 400 };
+  }
+
+  // Mongoose validation error
+  if (err.name === 'ValidationError') {
+    const message = Object.values(err.errors).map(val => val.message).join(', ');
+    error = { message, statusCode: 400 };
+  }
+
+  // JWT errors
+  if (err.name === 'JsonWebTokenError') {
+    const message = "Invalid token";
+    error = { message, statusCode: 401 };
+  }
+
+  if (err.name === 'TokenExpiredError') {
+    const message = "Token expired";
+    error = { message, statusCode: 401 };
+  }
+
+  // CORS errors
   if (err.message && err.message.includes('Not allowed by CORS')) {
-    return res.status(403).json({ error: "CORS: Origin not allowed" });
+    const message = "CORS: Origin not allowed";
+    error = { message, statusCode: 403 };
   }
-  console.error("[Global Error]:", err.message || err);
-  res.status(err.status || 500).json({ error: err.message || "Internal server error" });
+
+  // Rate limit errors
+  if (err.status === 429) {
+    const message = "Too many requests, please try again later";
+    error = { message, statusCode: 429 };
+  }
+
+  // Multer file upload errors
+  if (err.code === 'LIMIT_FILE_SIZE') {
+    const message = "File size too large";
+    error = { message, statusCode: 400 };
+  }
+
+  if (err.code === 'LIMIT_FILE_COUNT') {
+    const message = "Too many files uploaded";
+    error = { message, statusCode: 400 };
+  }
+
+  // Default error
+  const statusCode = error.statusCode || err.statusCode || 500;
+  const message = error.message || "Internal server error";
+
+  res.status(statusCode).json({ 
+    error: message,
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+  });
 });
 
 mongoose.connect(DB_PATH).then(async () => {

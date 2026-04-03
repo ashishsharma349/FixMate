@@ -38,7 +38,7 @@ router.get("/list", adminOnly, async (req, res) => {
     const [maintenance, personal] = await Promise.all([
       Payment.find({ type: "maintenance" })
         .populate("worker", "name department")
-        .populate("complaint", "title")
+        .populate("complaint", "title estimatedCost actualCost")
         .sort({ createdAt: -1 }),
       Payment.find({ type: "personal" })
         .populate("resident", "name flatNumber phone")
@@ -50,30 +50,6 @@ router.get("/list", adminOnly, async (req, res) => {
   }
 });
 
-// GET /payments/monthly-revenue (admin)
-router.get("/monthly-revenue", adminOnly, async (req, res) => {
-  try {
-    const data = await Payment.aggregate([
-      { $match: { status: "Paid" } },
-      {
-        $group: {
-          _id: { month: { $month: "$createdAt" }, year: { $year: "$createdAt" } },
-          revenue: { $sum: "$amount" },
-        },
-      },
-      { $sort: { "_id.year": 1, "_id.month": 1 } },
-      { $limit: 6 },
-    ]);
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const chartData = data.map(d => ({
-      month: months[d._id.month - 1],
-      revenue: d.revenue,
-    }));
-    res.json({ chartData });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
 
 // GET /payments/my-payments (resident)
 router.get("/my-payments", loggedIn, async (req, res) => {
@@ -205,7 +181,11 @@ router.post("/create-order", loggedIn, async (req, res) => {
     });
   } catch (err) {
     console.error("Razorpay Create Order Error:", err);
-    res.status(500).json({ error: err.message });
+    // Handle specific errors
+    if (err.name === 'TypeError') {
+      return res.status(400).json({ error: "Invalid payment amount" });
+    }
+    res.status(500).json({ error: "Payment creation failed. Please try again." });
   }
 });
 
@@ -213,6 +193,11 @@ router.post("/create-order", loggedIn, async (req, res) => {
 router.post("/verify", loggedIn, async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+    // Validate required fields
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return res.status(400).json({ error: "Missing required payment verification fields" });
+    }
 
     const expected = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
@@ -231,12 +216,57 @@ router.post("/verify", loggedIn, async (req, res) => {
         paidAt: new Date(),
       },
       { new: true }
-    );
+    ).populate("resident", "name flatNumber authId");
 
     if (!payment) return res.status(404).json({ error: "Payment not found" });
+
+    // Send email receipt for personal payments
+    if (payment.type === "personal" && payment.resident) {
+      try {
+        const Auth = require("../model/Auth");
+        // Handle both cases: resident might have authId directly or need to look it up
+        let auth;
+        if (payment.resident.authId) {
+          auth = await Auth.findById(payment.resident.authId);
+        } else {
+          // Fallback: find auth record by user reference
+          auth = await Auth.findOne({ _id: payment.resident._id });
+        }
+        
+        if (auth && auth.email) {
+          const mailer = require("../utils/mailer");
+          await mailer.sendPaymentReceipt(auth.email, {
+            residentName: payment.resident.name,
+            flatNumber: payment.resident.flatNumber,
+            amount: payment.amount,
+            refId: payment.refId,
+            paidAt: payment.paidAt,
+            razorpayPaymentId: razorpay_payment_id
+          });
+          console.log(`[Payment Receipt] Email sent to ${auth.email} for payment ${payment.refId}`);
+        } else {
+          console.log("[Payment Receipt] No email found for resident:", payment.resident._id);
+        }
+      } catch (emailErr) {
+        console.error("[Payment Receipt Email Error]:", emailErr.message);
+        // Don't fail the payment verification if email fails
+      }
+    }
+
     res.json({ success: true, payment });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("[Payment Verification Error]:", err);
+    
+    // Handle specific errors
+    if (err.name === 'CastError') {
+      return res.status(400).json({ error: "Invalid payment ID format" });
+    }
+    
+    if (err.message.includes('HMAC')) {
+      return res.status(400).json({ error: "Payment verification failed" });
+    }
+    
+    res.status(500).json({ error: "Payment verification failed. Please try again." });
   }
 });
 
@@ -295,6 +325,15 @@ router.put("/:id", adminOnly, async (req, res) => {
 
     const payment = await Payment.findByIdAndUpdate(req.params.id, { $set: update }, { new: true });
     if (!payment) return res.status(404).json({ error: "Payment not found" });
+
+    // Sync amount to linked complaint's actualCost if this is a maintenance payment with a complaint
+    if (payment.type === "maintenance" && payment.complaint && amount !== undefined) {
+      const Complain = require("../model/Complain");
+      await Complain.findByIdAndUpdate(payment.complaint, { 
+        $set: { actualCost: Number(amount) } 
+      });
+    }
+
     res.json({ success: true, payment });
   } catch (err) {
     res.status(500).json({ error: err.message });

@@ -1,8 +1,8 @@
 // usePolling.js — drop this in frontend/src/hooks/usePolling.js
-// Usage: usePolling(fetchFn, 10000) — calls fetchFn every 10 seconds automatically
+// Originally polled on interval. Now modified to just run on mount to stop typing interruptions.
 import { useEffect, useRef } from "react";
 
-const usePolling = (fetchFn, intervalMs = 10000) => {
+const usePolling = (fetchFn) => {
   const savedFn = useRef(fetchFn);
 
   useEffect(() => {
@@ -10,15 +10,9 @@ const usePolling = (fetchFn, intervalMs = 10000) => {
   }, [fetchFn]);
 
   useEffect(() => {
-    // Call immediately on mount
+    // Call immediately on mount, no interval
     savedFn.current();
-
-    const id = setInterval(() => {
-      savedFn.current();
-    }, intervalMs);
-
-    return () => clearInterval(id);
-  }, [intervalMs]);
+  }, []);
 };
 
 export default usePolling;

@@ -77,18 +77,14 @@ exports.restock = async (req, res) => {
 // ── AUTO-DEDUCT: called internally when staff completes a CommonArea task ────
 // materialsUsed = [{ name, qty }] — deducts from inventory for each item
 exports.deductMaterials = async (materialsUsed = []) => {
-  if (!materialsUsed || materialsUsed.length === 0) return; // no materials used — skip
+  if (!materialsUsed || materialsUsed.length === 0) return;
   for (const mat of materialsUsed) {
+    const item = await Inventory.findOne({ name: mat.name });
+    if (!item) continue;
+    const newQty = Math.max(0, item.quantity - Math.abs(Number(mat.qty)));
     await Inventory.findOneAndUpdate(
       { name: mat.name },
-      [
-        {
-          $set: {
-            quantity: { $max: [{ $subtract: ["$quantity", Math.abs(mat.qty)] }, 0] },
-            updatedAt: new Date(),
-          },
-        },
-      ]
+      { $set: { quantity: newQty, updatedAt: new Date() } }
     );
   }
 };

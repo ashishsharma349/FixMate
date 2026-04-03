@@ -4,32 +4,28 @@ const Staff = require("../model/staff");
 const Complain = require("../model/Complain");
 const Inventory = require("../model/Inventory");
 const Payment = require("../model/Payment");
-const bcrypt = require("bcrypt");
-const nodemailer = require("nodemailer");
+const { sendTempPasswordMail } = require("../utils/mailer");
 
-// ── Email helper ──────────────────────────────────────────────────────────────
-const sendTempPasswordEmail = async (email, tempPassword, role) => {
-  try {
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: { user: process.env.MAIL_USER, pass: process.env.MAIL_PASS },
-    });
-    await transporter.sendMail({
-      from: `"FixMate Admin" <${process.env.MAIL_USER}>`,
-      to: email,
-      subject: "Your FixMate Account Credentials",
-      html: `<p>Your <strong>FixMate</strong> account has been created as <strong>${role}</strong>.</p>
-             <p>Temporary Password: <strong>${tempPassword}</strong></p>
-             <p>Log in and change your password immediately.</p>`,
-    });
-  } catch (err) {
-    console.error("[Email Error]:", err.message);
+// ── Helper: generate a random secure temp password ───────────────────────────
+function generateTempPassword() {
+  const upper = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+  const lower = "abcdefghijkmnpqrstuvwxyz";
+  const digits = "23456789";
+  const special = "@$!%*?&";
+  const all = upper + lower + digits + special;
+
+  let pass =
+    upper[Math.floor(Math.random() * upper.length)] +
+    lower[Math.floor(Math.random() * lower.length)] +
+    digits[Math.floor(Math.random() * digits.length)] +
+    special[Math.floor(Math.random() * special.length)];
+
+  for (let i = 0; i < 4; i++) {
+    pass += all[Math.floor(Math.random() * all.length)];
   }
-};
 
-// ── Generate random temp password ─────────────────────────────────────────────
-const generateTempPassword = () =>
-  Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-4).toUpperCase();
+  return pass.split("").sort(() => Math.random() - 0.5).join("");
+}
 
 // ── DASHBOARD STATS ───────────────────────────────────────────────────────────
 exports.getDashboardStats = async (req, res) => {
@@ -258,7 +254,7 @@ exports.createUser = async (req, res) => {
     const tempPassword = generateTempPassword();
     auth = await Auth.create({ email, password: tempPassword, role: "user", isFirstLogin: true });
     const user = await User.create({ authId: auth._id, name, age, phone: phoneNum, aadhaar, flatNumber: flatNumber || null });
-    await sendTempPasswordEmail(email, tempPassword, "Resident");
+    await sendTempPasswordMail(email, tempPassword, "Resident");
 
     res.status(201).json({ message: "User created", userId: user._id });
   } catch (err) {
@@ -320,7 +316,7 @@ exports.createStaff = async (req, res) => {
     const tempPassword = generateTempPassword();
     auth = await Auth.create({ email, password: tempPassword, role: "staff", isFirstLogin: true });
     const staff = await Staff.create({ authId: auth._id, name, phone: phoneNum, department, aadhaar });
-    await sendTempPasswordEmail(email, tempPassword, "Staff");
+    await sendTempPasswordMail(email, tempPassword, "Staff");
 
     res.status(201).json({ message: "Staff created", staffId: staff._id });
   } catch (err) {

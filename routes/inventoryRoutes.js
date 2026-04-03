@@ -4,11 +4,16 @@ const inventoryControllers = require("../controller/inventory");
 const inventoryRoute = express.Router();
 inventoryRoute.use(express.json());
 
-// ── Guard: admin only ────────────────────────────────────────────────────────
+// ── Guard: admin for modifications, staff allowed to GET ───────────
 inventoryRoute.use((req, res, next) => {
-  if (!req.session.user || req.session.user.role !== "admin")
-    return res.status(403).json({ error: "Admin only" });
-  next();
+  if (!req.session.user)
+    return res.status(401).json({ error: "Not logged in" });
+  
+  const role = req.session.user.role;
+  if (role === "admin") return next();
+  if (role === "staff" && req.method === "GET") return next();
+
+  return res.status(403).json({ error: "Forbidden: Not authorized" });
 });
 
 // ── CRUD + restock ───────────────────────────────────────────────────────────

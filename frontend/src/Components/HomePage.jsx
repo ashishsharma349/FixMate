@@ -53,8 +53,8 @@ const Home = () => {
         <nav className="w-full bg-white/80 backdrop-blur-md border-b border-slate-200 px-6 py-4 sticky top-0 z-50 shadow-sm">
           <div className="max-w-7xl mx-auto flex justify-between items-center">
             <div className="flex items-center gap-3 group">
-              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-md overflow-hidden border border-slate-100 group-hover:scale-110 transition-transform">
-                <img src="/logo.png" alt="FixMate Logo" className="w-full h-full object-contain p-1" />
+              <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center shadow-md overflow-hidden border border-slate-100 group-hover:scale-110 transition-transform p-1">
+                <img src="/logo.png" alt="FixMate Logo" className="w-full h-full object-contain" />
               </div>
               <h1 className="text-2xl font-black tracking-tighter text-[#1a365d]">FixMate</h1>
             </div>
@@ -75,11 +75,11 @@ const Home = () => {
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
           {/* Hero Logo */}
-          <div className="mb-6 flex justify-center">
-            <div className="relative">
-              <div className="absolute inset-0 bg-blue-400 blur-3xl opacity-20 rounded-full animate-pulse"></div>
-              <div className="w-24 h-24 bg-white rounded-[24px] flex items-center justify-center shadow-xl border border-slate-100 overflow-hidden relative z-10">
-                <img src="/logo.png" alt="FixMate" className="w-16 h-16 object-contain" />
+          <div className="mb-8 flex justify-center">
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-100 via-transparent to-purple-100 rounded-3xl opacity-0 group-hover:opacity-30 transition-opacity"></div>
+              <div className="relative w-32 h-24 bg-white/95 backdrop-blur-sm rounded-3xl flex items-center justify-center shadow-xl border border-gray-100 overflow-hidden group-hover:shadow-2xl group-hover:border-gray-200 transition-all">
+                <img src="/logo.png" alt="FixMate" className="w-20 h-16 object-contain opacity-95 group-hover:opacity-100 transition-opacity" />
               </div>
             </div>
           </div>
@@ -161,11 +161,11 @@ const Home = () => {
       <footer className="bg-white py-16 border-t border-slate-100 text-center">
         <div className="max-w-6xl mx-auto flex flex-col items-center gap-6">
           <div className="flex items-center gap-2 grayscale opacity-50">
-            <img src="/logo.png" alt="Footer Logo" className="w-6 h-6 object-contain" />
+            <img src="/logo.png" alt="Footer Logo" className="w-8 h-8 object-contain" />
             <span className="font-bold text-sm">FixMate</span>
           </div>
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">
-            FixMate © 2026 – Lucknow, India
+            FixMate 2026 – Lucknow, India
           </p>
         </div>
       </footer>
