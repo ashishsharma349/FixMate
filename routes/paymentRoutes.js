@@ -35,21 +35,55 @@ const generateRefId = async (type) => {
 // GET /payments/list (admin)
 router.get("/list", adminOnly, async (req, res) => {
   try {
+    const { month, year } = req.query;
+    
+    // Build match conditions for personal payments (maintenance fees)
+    let personalMatch = { type: "personal" };
+    if (month && month !== "") {
+      personalMatch.month = parseInt(month);
+    }
+    if (year && year !== "") {
+      personalMatch.year = parseInt(year);
+    }
+    
+    // Build match conditions for maintenance payments
+    let maintenanceMatch = { type: "maintenance" };
+    if ((month && month !== "") || (year && year !== "")) {
+      const currentYear = new Date().getFullYear();
+      
+      let filterYear = (year && year !== "") ? parseInt(year) : currentYear;
+      let filterMonth = (month && month !== "") ? parseInt(month) : null;
+
+      if (filterMonth !== null) {
+        // Specific month provided (with or without year)
+        startDate = new Date(filterYear, filterMonth - 1, 1);
+        endDate = new Date(filterYear, filterMonth, 0, 23, 59, 59);
+      } else {
+        // Only year provided - show entire year
+        startDate = new Date(filterYear, 0, 1);
+        endDate = new Date(filterYear, 11, 31, 23, 59, 59);
+      }
+      
+      maintenanceMatch.createdAt = {
+        $gte: startDate,
+        $lte: endDate
+      };
+    }
+    
     const [maintenance, personal] = await Promise.all([
-      Payment.find({ type: "maintenance" })
+      Payment.find(maintenanceMatch)
         .populate("worker", "name department")
         .populate("complaint", "title estimatedCost actualCost")
         .sort({ createdAt: -1 }),
-      Payment.find({ type: "personal" })
+      Payment.find(personalMatch)
         .populate("resident", "name flatNumber phone")
         .sort({ createdAt: -1 }),
     ]);
-    res.json({ maintenance, personal });
+    res.json({ maintenance, personal, filters: { month: month ? parseInt(month) : null, year: year ? parseInt(year) : null } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
-
 
 // GET /payments/my-payments (resident)
 router.get("/my-payments", loggedIn, async (req, res) => {
@@ -69,25 +103,43 @@ router.get("/my-payments", loggedIn, async (req, res) => {
 });
 
 // GET /payments/monthly-revenue — resident payments collected, grouped by month (dashboard chart)
+// Query params: ?month=2&year=2024 (optional filters)
 router.get("/monthly-revenue", adminOnly, async (req, res) => {
   try {
+    const { month, year } = req.query;
+    
+    // Build match condition - Only filter if month/year provided, otherwise group all
+    let matchCondition = { type: "personal", status: "Paid" };
+    
+    // Add month/year filters if provided
+    if (month && year) {
+      matchCondition.month = parseInt(month);
+      matchCondition.year = parseInt(year);
+    }
+    
     const data = await Payment.aggregate([
-      { $match: { type: "personal", status: "Paid" } },
+      { $match: matchCondition },
       {
         $group: {
-          _id: { month: { $month: "$paidAt" }, year: { $year: "$paidAt" } },
+          _id: { month: "$month", year: "$year" },
           revenue: { $sum: "$amount" },
+          count: { $sum: 1 }
         },
       },
       { $sort: { "_id.year": 1, "_id.month": 1 } },
-      { $limit: 6 },
+      { $limit: 12 },
     ]);
+    
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const chartData = data.map(d => ({
       month: months[d._id.month - 1],
+      monthNum: d._id.month,
+      year: d._id.year,
       revenue: d.revenue,
+      count: d.count
     }));
-    res.json({ chartData });
+    
+    res.json({ chartData, filters: { month: month ? parseInt(month) : null, year: year ? parseInt(year) : null } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

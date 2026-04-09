@@ -316,7 +316,7 @@ exports.createStaff = async (req, res) => {
     const tempPassword = generateTempPassword();
     auth = await Auth.create({ email, password: tempPassword, role: "staff", isFirstLogin: true });
     const staff = await Staff.create({ authId: auth._id, name, phone: phoneNum, department, aadhaar });
-    await sendTempPasswordMail(email, tempPassword, "Staff");
+    await sendTempPasswordMail(email, name, tempPassword, "Staff");
 
     res.status(201).json({ message: "Staff created", staffId: staff._id });
   } catch (err) {

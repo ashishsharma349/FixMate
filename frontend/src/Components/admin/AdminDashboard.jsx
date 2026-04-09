@@ -102,6 +102,8 @@
 //   const [loading, setLoading] = useState(true);
 //   const [chartData, setChartData] = useState([]);
 //   const [viewEstimateModal, setViewEstimateModal] = useState(null);
+//   const [selectedMonth, setSelectedMonth] = useState("");
+//   const [selectedYear, setSelectedYear] = useState("");
 
 //   const fetchStats = useCallback(async () => {
 //     try {
@@ -117,12 +119,13 @@
 //       setChartData(data.chartData || []);
 //     } catch (err) { console.error("Complaints chart:", err); }
 //     try {
-//       const revenueData = await apiFetch("/payments/monthly-revenue");
-//       const revenueMap = {};
-//       (revenueData.chartData || []).forEach(d => { revenueMap[d.month] = d.revenue; });
-//       setChartData(prev => prev.map(d => ({ ...d, revenue: revenueMap[d.month] || 0 })));
+//       const queryParams = new URLSearchParams();
+//       if (selectedMonth) queryParams.append('month', selectedMonth);
+//       if (selectedYear) queryParams.append('year', selectedYear);
+//       const revenueData = await apiFetch(`/payments/monthly-revenue?${queryParams.toString()}`);
+//       setChartData(revenueData.chartData || []);
 //     } catch (err) { console.error("Revenue chart:", err); }
-//   }, []);
+//   }, [selectedMonth, selectedYear]);
 
 //   // Auto-refresh every 10 seconds
 //   usePolling(fetchStats, 10000);
@@ -317,7 +320,33 @@
 //           </ResponsiveContainer>
 //         </div>
 //         <div className="bg-white rounded-2xl shadow-sm p-5">
-//           <h2 className="text-gray-700 font-bold text-sm mb-1">Monthly Revenue (₹)</h2>
+//           <div className="flex items-center justify-between mb-3">
+//             <h2 className="text-gray-700 font-bold text-sm mb-1">Monthly Revenue (₹)</h2>
+//             <div className="flex gap-2">
+//               <Sel value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)} className="text-xs">
+//                 <option value="">All Months</option>
+//                 <option value="1">Jan</option>
+//                 <option value="2">Feb</option>
+//                 <option value="3">Mar</option>
+//                 <option value="4">Apr</option>
+//                 <option value="5">May</option>
+//                 <option value="6">Jun</option>
+//                 <option value="7">Jul</option>
+//                 <option value="8">Aug</option>
+//                 <option value="9">Sep</option>
+//                 <option value="10">Oct</option>
+//                 <option value="11">Nov</option>
+//                 <option value="12">Dec</option>
+//               </Sel>
+//               <Sel value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)} className="text-xs">
+//                 <option value="">All Years</option>
+//                 <option value="2023">2023</option>
+//                 <option value="2024">2024</option>
+//                 <option value="2025">2025</option>
+//               </Sel>
+//               <Btn color="gray" size="xs" onClick={() => { setSelectedMonth(""); setSelectedYear(""); }}>Clear</Btn>
+//             </div>
+//           </div>
 //           <p className="text-[10px] text-gray-400 mb-3">Maintenance fees collected from residents</p>
 //           <ResponsiveContainer width="100%" height={150}>
 //             <BarChart data={chartData} barSize={22}>
@@ -2700,18 +2729,29 @@ function PaymentsView() {
   const [editModal, setEditModal] = useState(null);
   const [editForm, setEditForm] = useState({});
   const [editSaving, setEditSaving] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
 
   const fmtDate = d => d ? new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : "—";
   const statusBadgeColor = s => ({ Paid: "green", Pending: "yellow", Overdue: "red" }[s] || "gray");
 
   const fetchPayments = useCallback(async () => {
     try {
-      const data = await apiFetch("/payments/list");
+      const queryParams = new URLSearchParams();
+      if (selectedMonth) queryParams.append('month', selectedMonth);
+      if (selectedYear) queryParams.append('year', selectedYear);
+      
+      const url = queryParams.toString() ? `/payments/list?${queryParams.toString()}` : "/payments/list";
+      console.log('Fetching URL:', url);
+      const data = await apiFetch(url);
+      console.log('API Response:', data);
+      console.log('Personal payments count:', data.personal?.length || 0);
+      console.log('April 2026 payments:', data.personal?.filter(p => p.month === 4 && p.year === 2026) || []);
       setMaintenance(data.maintenance || []);
       setPersonal(data.personal || []);
     } catch (err) { console.error("Payments fetch:", err); }
     finally { setLoading(false); }
-  }, []);
+  }, [selectedMonth, selectedYear]);
 
   usePolling(fetchPayments, 15000);
 
@@ -2768,6 +2808,48 @@ function PaymentsView() {
           </button>
         ))}
         <div className="ml-auto flex items-center gap-2">
+          {/* Month/Year Filters */}
+          <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl shadow-sm border border-gray-100">
+            <span className="text-xs text-gray-500 font-semibold">Filter:</span>
+            <select 
+              value={selectedMonth} 
+              onChange={e => setSelectedMonth(e.target.value)}
+              className="text-xs bg-transparent outline-none font-medium text-gray-700 border-r border-gray-200 pr-2"
+            >
+              <option value="">All Months</option>
+              <option value="1">Jan</option>
+              <option value="2">Feb</option>
+              <option value="3">Mar</option>
+              <option value="4">Apr</option>
+              <option value="5">May</option>
+              <option value="6">Jun</option>
+              <option value="7">Jul</option>
+              <option value="8">Aug</option>
+              <option value="9">Sep</option>
+              <option value="10">Oct</option>
+              <option value="11">Nov</option>
+              <option value="12">Dec</option>
+            </select>
+            <select 
+              value={selectedYear} 
+              onChange={e => setSelectedYear(e.target.value)}
+              className="text-xs bg-transparent outline-none font-medium text-gray-700"
+            >
+              <option value="">All Years</option>
+              <option value="2023">2023</option>
+              <option value="2024">2024</option>
+              <option value="2025">2025</option>
+              <option value="2026">2026</option>
+            </select>
+            {(selectedMonth || selectedYear) && (
+              <button 
+                onClick={() => { setSelectedMonth(""); setSelectedYear(""); }}
+                className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+              >
+                Clear
+              </button>
+            )}
+          </div>
           {tab === "personal" && (
             <div className="flex items-center gap-1 bg-white px-2 py-1 rounded-xl shadow-sm border border-gray-100">
               <span className="text-xs text-gray-500 font-semibold pl-2">₹</span>
@@ -2848,7 +2930,19 @@ function PaymentsView() {
           {tab === "personal" && (
             <div className="bg-white rounded-2xl shadow-sm overflow-x-auto">
               <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
-                <h3 className="font-bold text-gray-700 text-sm">Resident Maintenance Fee</h3>
+                <div className="flex items-center gap-3">
+                  <h3 className="font-bold text-gray-700 text-sm">Resident Maintenance Fee</h3>
+                  {(selectedMonth || selectedYear) && (
+                    <div className="flex items-center gap-2 px-2 py-1 bg-blue-50 rounded-lg border border-blue-200">
+                      <span className="text-xs font-semibold text-blue-600">
+                        Filtered: 
+                        {selectedMonth && ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][parseInt(selectedMonth) - 1]}
+                        {selectedMonth && selectedYear && ", "}
+                        {selectedYear}
+                      </span>
+                    </div>
+                  )}
+                </div>
                 <span className="text-xs text-gray-400">
                   {personal.length === 0 ? "Click 'Generate Monthly Requests'" : `${personal.length} records · ${personal.filter(p => p.status === "Paid").length} paid`}
                 </span>
