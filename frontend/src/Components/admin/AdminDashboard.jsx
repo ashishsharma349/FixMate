@@ -1,7 +1,4 @@
-// import { useState, useEffect, useCallback, useRef } from "react";
-// import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-// import { getAuthHeaders } from "../../utils/api";
-// import { clearSessionId } from "../../utils/api";
+
 
 // const API = "http://localhost:3000";
 
@@ -1442,7 +1439,7 @@
 //   );
 // }
 import { useState, useEffect, useCallback, useRef } from "react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell } from "recharts";
 import { getAuthHeaders } from "../../utils/api";
 import { clearSessionId } from "../../utils/api";
 
@@ -1560,15 +1557,25 @@ function DashboardView({ onNavigate }) {
 
   const fetchChartData = useCallback(async () => {
     try {
-      const data = await apiFetch("/admin/monthly-stats");
-      setChartData(data.chartData || []);
-    } catch (err) { console.error("Complaints chart:", err); }
-    try {
-      const revenueData = await apiFetch("/payments/monthly-revenue");
-      const revenueMap = {};
-      (revenueData.chartData || []).forEach(d => { revenueMap[d.month] = d.revenue; });
-      setChartData(prev => prev.map(d => ({ ...d, revenue: revenueMap[d.month] || 0 })));
-    } catch (err) { console.error("Revenue chart:", err); }
+      const [complaintRes, revenueRes] = await Promise.all([
+        apiFetch("/admin/monthly-stats"),
+        apiFetch("/payments/monthly-revenue"),
+      ]);
+      const complaints = complaintRes.chartData || [];
+      const revenues = revenueRes.chartData || [];
+      const revMap = {};
+      revenues.forEach((r) => {
+        if (r.monthNum != null && r.year != null) revMap[`${r.monthNum}-${r.year}`] = r.revenue;
+      });
+      setChartData(
+        complaints.map((c) => ({
+          ...c,
+          revenue: revMap[`${c.monthNum}-${c.year}`] || 0,
+        }))
+      );
+    } catch (err) {
+      console.error("Chart:", err);
+    }
   }, []);
 
   usePolling(fetchStats, 10000);
@@ -1778,14 +1785,16 @@ function DashboardView({ onNavigate }) {
 
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-white rounded-2xl shadow-sm p-5">
-          <h2 className="text-gray-700 font-bold text-sm mb-1">Monthly Complaints</h2>
-          <p className="text-[10px] text-gray-400 mb-3">Total complaints filed per month</p>
-          <ResponsiveContainer width="100%" height={150}>
-            <BarChart data={chartData} barSize={22}>
+          <h2 className="text-gray-700 font-bold text-sm mb-1">Complaints &amp; monthly fees</h2>
+          <p className="text-[10px] text-gray-400 mb-3">Complaints filed per month (blue) vs resident maintenance fees collected (green)</p>
+          <ResponsiveContainer width="100%" height={170}>
+            <BarChart data={chartData} barSize={18}>
               <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
               <YAxis hide />
               <Tooltip contentStyle={{ borderRadius: 8, border: "none", fontSize: 11 }} />
-              <Bar dataKey="complaints" fill="#6088f4" radius={[4, 4, 0, 0]} />
+              <Legend wrapperStyle={{ fontSize: 11 }} />
+              <Bar dataKey="complaints" name="Complaints" fill="#6088f4" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="revenue" name="Fees collected (₹)" fill="#22c55e" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -1795,7 +1804,14 @@ function DashboardView({ onNavigate }) {
               <h2 className="text-gray-700 font-bold text-sm">🛡️ Maintenance Fund (Pooled)</h2>
               <button onClick={() => onNavigate("Payments")} className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-lg font-bold hover:bg-blue-100 transition-colors">Details &rsaquo;</button>
             </div>
-            <p className="text-[10px] text-gray-400 mb-4 font-medium italic">Pooled balance since Feb 2026</p>
+            <p className="text-[10px] text-gray-400 mb-2 font-medium italic">Pooled balance since Feb 2026 (common-area fund)</p>
+            {stats?.residentMonthlyFees && (
+              <div className="mb-3 p-3 rounded-xl bg-slate-50 border border-slate-100 text-[10px] text-slate-600 leading-relaxed">
+                <span className="font-black text-slate-500 uppercase tracking-wide">Resident monthly fees · {["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][stats.residentMonthlyFees.month - 1]} {stats.residentMonthlyFees.year}</span>
+                <p className="mt-1"><span className="text-emerald-600 font-bold">₹{(stats.residentMonthlyFees.collectedAmount ?? 0).toLocaleString()}</span> collected ({stats.residentMonthlyFees.paidCount ?? 0} flats paid)</p>
+                <p><span className="text-amber-600 font-bold">₹{(stats.residentMonthlyFees.pendingAmount ?? 0).toLocaleString()}</span> outstanding ({stats.residentMonthlyFees.pendingCount ?? 0} pending)</p>
+              </div>
+            )}
           </div>
           
           <div className="flex-1 flex flex-col justify-center">
@@ -1860,6 +1876,19 @@ function DashboardView({ onNavigate }) {
                     <span className="text-3xl font-black text-blue-400">₹{viewEstimateModal.estimatedCost || 0}</span>
                 </div>
             </div>
+
+            {(viewEstimateModal.status === "Resolved" || (viewEstimateModal.actualCost > 0)) && (
+              <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-4">
+                <p className="text-[10px] font-black uppercase text-emerald-700 mb-2 tracking-widest">Final pay (actual)</p>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-800 font-medium">Settled amount</span>
+                  <span className="text-2xl font-black text-emerald-700">₹{viewEstimateModal.actualCost ?? 0}</span>
+                </div>
+                {(viewEstimateModal.estimatedCost > 0) && (
+                  <p className="text-[10px] text-gray-500 mt-2">Compared to estimate: ₹{viewEstimateModal.estimatedCost}</p>
+                )}
+              </div>
+            )}
 
             {viewEstimateModal.workType === "Personal" ? (
                 <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100">
@@ -2795,28 +2824,59 @@ function UserManagementView() {
 }
 
 function PaymentsView() {
+  const now = new Date();
   const [tab, setTab] = useState("expenses");
-  const [data, setData] = useState({ staff: [], expenses: [], salaries: [], personalPayments: [], stats: { totalIncome: 0, totalSpent: 0, balance: 0 } });
+  const [finYear, setFinYear] = useState(String(now.getFullYear()));
+  const [finMonth, setFinMonth] = useState(String(now.getMonth() + 1));
+
+  const [data, setData] = useState({ staff: [], expenses: [], salaries: [], personalPayments: [], stats: { totalIncome: 0, totalSpent: 0, balance: 0, fundLimit: 0 }, filters: {} });
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [msg, setMsg] = useState("");
   const [salaryModal, setSalaryModal] = useState(null);
-  const [salaryForm, setSalaryForm] = useState({ amount: "", month: new Date().getMonth() + 1, year: new Date().getFullYear(), description: "" });
-  
+  const [salaryForm, setSalaryForm] = useState({ amount: "", month: now.getMonth() + 1, year: now.getFullYear(), description: "" });
+
   const [addExpenseModal, setAddExpenseModal] = useState(false);
   const [expenseForm, setExpenseForm] = useState({ title: "", category: "CommonRepair", amount: "", date: "" });
   const [billFile, setBillFile] = useState(null);
 
+  const [editFinance, setEditFinance] = useState(null);
+
+  const [monthlyPersonal, setMonthlyPersonal] = useState([]);
+  const [monthlyLoading, setMonthlyLoading] = useState(false);
+  const [mYear, setMYear] = useState(String(now.getFullYear()));
+  const [mMonth, setMMonth] = useState(String(now.getMonth() + 1));
+  const [viewPayment, setViewPayment] = useState(null);
+
+  const buildFinQuery = () => {
+    if (!finYear || finYear === "all") return "";
+    if (finMonth && finMonth !== "all") return `?month=${finMonth}&year=${finYear}`;
+    return `?year=${finYear}`;
+  };
+
   const fetchData = useCallback(async () => {
     try {
-      const d = await apiFetch("/admin/finances-data");
+      const d = await apiFetch(`/admin/finances-data${buildFinQuery()}`);
       setData(d);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
-  }, []);
+  }, [finYear, finMonth]);
+
+  const fetchMonthly = useCallback(async () => {
+    setMonthlyLoading(true);
+    try {
+      const d = await apiFetch(`/payments/list?month=${mMonth}&year=${mYear}`);
+      setMonthlyPersonal(d.personal || []);
+    } catch (err) { console.error(err); }
+    finally { setMonthlyLoading(false); }
+  }, [mMonth, mYear]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
   usePolling(fetchData, 15000);
+
+  useEffect(() => {
+    if (tab === "monthly") fetchMonthly();
+  }, [tab, fetchMonthly]);
 
   const handlePayout = async (financeId) => {
     if (!window.confirm("Confirm payment from Maintenance Fund?")) return;
@@ -2824,6 +2884,49 @@ function PaymentsView() {
     try {
       await apiFetch("/admin/payout-expense", { method: "POST", body: JSON.stringify({ financeId }) });
       setMsg("✅ Payout successful. Fund balance updated.");
+      fetchData();
+    } catch (err) { setMsg("❌ " + err.message); }
+    finally { setProcessing(false); }
+  };
+
+  const handleSaveEditFinance = async () => {
+    if (!editFinance?._id) return;
+    setProcessing(true); setMsg("");
+    try {
+      await apiFetch(`/admin/finance/${editFinance._id}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          description: editFinance.description,
+          amount: Number(editFinance.amount),
+          transactionCategory: editFinance.transactionCategory,
+          status: editFinance.status,
+          date: editFinance.date || undefined,
+        }),
+      });
+      setMsg("✅ Record updated.");
+      setEditFinance(null);
+      fetchData();
+    } catch (err) { setMsg("❌ " + err.message); }
+    finally { setProcessing(false); }
+  };
+
+  const handleDeleteFinance = async (id) => {
+    if (!window.confirm("Delete this record permanently?")) return;
+    setProcessing(true); setMsg("");
+    try {
+      await apiFetch(`/admin/finance/${id}`, { method: "DELETE" });
+      setMsg("✅ Record deleted.");
+      fetchData();
+    } catch (err) { setMsg("❌ " + err.message); }
+    finally { setProcessing(false); }
+  };
+
+  const handleMarkPaidMonthly = async (paymentId) => {
+    setProcessing(true); setMsg("");
+    try {
+      await apiFetch("/payments/mark-paid", { method: "POST", body: JSON.stringify({ paymentId }) });
+      setMsg("✅ Marked as paid (offline).");
+      fetchMonthly();
       fetchData();
     } catch (err) { setMsg("❌ " + err.message); }
     finally { setProcessing(false); }
@@ -2883,33 +2986,60 @@ function PaymentsView() {
 
   if (loading) return <div className="flex items-center justify-center h-64"><div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full" /></div>;
 
-  const fmtDate = d => d ? new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short" }) : "—";
+  const fmtDate = (d) => (d ? new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short" }) : "—");
   const { stats, expenses, salaries, personalPayments, staff } = data;
+  const pendingPayoutSum = expenses.filter((e) => e.status === "Pending").reduce((s, e) => s + e.amount, 0);
+  const filterHint = finYear === "all" ? "All periods" : (finMonth && finMonth !== "all" ? `Month filter` : `Year ${finYear}`);
 
   return (
     <div className="space-y-6">
-      {/* Finance Stats Bar */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {[
-          { label: "Fund Balance", val: `₹${stats.balance.toLocaleString()}`, color: "blue" },
-          { label: "Total Income", val: `₹${stats.totalIncome.toLocaleString()}`, color: "green" },
-          { label: "Total Spent", val: `₹${stats.totalSpent.toLocaleString()}`, color: "red" },
-          { label: "Pending Payouts", val: `₹${expenses.filter(e => e.status === "Pending").reduce((s, e) => s + e.amount, 0).toLocaleString()}`, color: "orange" },
-        ].map(s => (
-          <div key={s.label} className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{s.label}</p>
-            <p className={`text-2xl font-black text-${s.color}-600`}>{s.val}</p>
-          </div>
-        ))}
+        <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Fund Balance</p>
+          <p className="text-2xl font-black text-blue-600">₹{(stats.balance ?? 0).toLocaleString()}</p>
+        </div>
+        <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Income (fees)</p>
+          <p className="text-2xl font-black text-green-600">₹{(stats.totalIncome ?? 0).toLocaleString()}</p>
+        </div>
+        <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Spent</p>
+          <p className="text-2xl font-black text-red-600">₹{(stats.totalSpent ?? 0).toLocaleString()}</p>
+        </div>
+        <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Pending Payouts</p>
+          <p className="text-2xl font-black text-orange-600">₹{pendingPayoutSum.toLocaleString()}</p>
+        </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex items-center bg-white p-2 rounded-2xl shadow-sm border border-gray-100 w-fit">
-        {["expenses", "salaries", "personal"].map(t => (
-          <button key={t} onClick={() => setTab(t)}
-            className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all
-            ${tab === t ? "bg-blue-600 text-white shadow-lg shadow-blue-200" : "text-gray-400 hover:text-gray-600"}`}>
-            {t === "personal" ? "Resident Payments" : t}
+      <div className="flex flex-wrap items-center gap-3 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Expense / salary records</span>
+        <select value={finYear} onChange={(e) => setFinYear(e.target.value)} className="border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-700 bg-gray-50">
+          <option value="all">All years</option>
+          {[2024, 2025, 2026, 2027, 2028].map((y) => (
+            <option key={y} value={String(y)}>{y}</option>
+          ))}
+        </select>
+        <select value={finMonth} onChange={(e) => setFinMonth(e.target.value)} className="border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-700 bg-gray-50" disabled={!finYear || finYear === "all"}>
+          <option value="all">Whole year</option>
+          {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map((m, i) => (
+            <option key={m} value={String(i + 1)}>{m}</option>
+          ))}
+        </select>
+        <span className="text-[10px] text-gray-400">{filterHint}</span>
+      </div>
+
+      <div className="flex flex-wrap items-center bg-white p-2 rounded-2xl shadow-sm border border-gray-100 gap-1">
+        {[
+          { id: "expenses", label: "Expenses" },
+          { id: "salaries", label: "Salaries" },
+          { id: "personal", label: "Resident work pay" },
+          { id: "monthly", label: "Monthly maintenance" },
+        ].map(({ id, label }) => (
+          <button key={id} type="button" onClick={() => setTab(id)}
+            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all
+            ${tab === id ? "bg-blue-600 text-white shadow-lg shadow-blue-200" : "text-gray-400 hover:text-gray-600"}`}>
+            {label}
           </button>
         ))}
       </div>
@@ -2934,11 +3064,11 @@ function PaymentsView() {
                   <th className="px-8 py-4">Description</th>
                   <th className="px-8 py-4 text-center">Amount</th>
                   <th className="px-8 py-4 text-center">Status</th>
-                  <th className="px-8 py-4 text-right">Action</th>
+                  <th className="px-8 py-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {expenses.map(e => (
+                {expenses.map((e) => (
                   <tr key={e._id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-8 py-5 text-[11px] font-bold text-gray-500">{fmtDate(e.date)}</td>
                     <td className="px-8 py-5">
@@ -2949,10 +3079,19 @@ function PaymentsView() {
                     <td className="px-8 py-5 text-center">
                       <Badge color={e.status === "Paid" ? "green" : "yellow"}>{e.status}</Badge>
                     </td>
-                    <td className="px-8 py-5 text-right">
-                      {e.status === "Pending" ? (
-                        <Btn color="blue" size="xs" onClick={() => handlePayout(e._id)} disabled={processing}>PAY</Btn>
-                      ) : <span className="text-[10px] font-black text-gray-300 uppercase">Released</span>}
+                    <td className="px-8 py-5 text-right space-x-1">
+                      {e.status === "Pending" && (
+                        <Btn color="blue" size="xs" onClick={() => handlePayout(e._id)} disabled={processing}>Pay</Btn>
+                      )}
+                      <Btn color="gray" size="xs" onClick={() => setEditFinance({
+                        _id: e._id,
+                        description: e.description,
+                        amount: e.amount,
+                        transactionCategory: e.transactionCategory,
+                        status: e.status,
+                        date: e.date ? new Date(e.date).toISOString().slice(0, 10) : "",
+                      })}>Edit</Btn>
+                      <Btn color="red" size="xs" onClick={() => handleDeleteFinance(e._id)} disabled={processing}>Del</Btn>
                     </td>
                   </tr>
                 ))}
@@ -2965,33 +3104,79 @@ function PaymentsView() {
 
       {/* SECTION: SALARIES */}
       {tab === "salaries" && (
-        <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-50 p-8">
-          <div className="flex justify-between items-center mb-8">
-            <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest">Employee Payroll</h3>
-            <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full">{staff.length} Roles</span>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {staff.map(s => {
-              const alreadyPaid = salaries.some(f => String(f.handledBy?._id || f.handledBy) === String(s._id));
-              return (
-                <div key={s._id} className="border border-gray-100 rounded-[2rem] p-6 hover:shadow-lg transition-all bg-gradient-to-br from-white to-slate-50/50">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <p className="font-black text-gray-800 uppercase tracking-tight">{s.name}</p>
-                      <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{s.department}</p>
+        <div className="space-y-6">
+          <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-50 p-8">
+            <div className="flex justify-between items-center mb-8">
+              <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest">Record new payroll</h3>
+              <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full">{staff.length} staff</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {staff.map((s) => {
+                const alreadyPaid = salaries.some((f) => String(f.handledBy?._id || f.handledBy) === String(s._id));
+                return (
+                  <div key={s._id} className="border border-gray-100 rounded-[2rem] p-6 hover:shadow-lg transition-all bg-gradient-to-br from-white to-slate-50/50">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <p className="font-black text-gray-800 uppercase tracking-tight">{s.name}</p>
+                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{s.department}</p>
+                      </div>
+                      <Badge color={alreadyPaid ? "green" : "gray"}>{alreadyPaid ? "PAID (period)" : "AWAITING"}</Badge>
                     </div>
-                    <Badge color={alreadyPaid ? "green" : "gray"}>{alreadyPaid ? "PAID" : "AWAITING"}</Badge>
+                    <div className="flex justify-between items-center mb-6">
+                      <span className="text-[10px] uppercase font-black text-gray-400">Base salary</span>
+                      <span className="text-xl font-black text-gray-700">₹{s.baseSalary || 8000}</span>
+                    </div>
+                    <Btn color={alreadyPaid ? "gray" : "blue"} className="w-full !rounded-2xl py-3" onClick={() => setSalaryModal(s)} disabled={alreadyPaid}>
+                      {alreadyPaid ? "Salary in period" : "Record Payment"}
+                    </Btn>
                   </div>
-                  <div className="flex justify-between items-center mb-6">
-                    <span className="text-[10px] uppercase font-black text-gray-400">Monthly Compensation</span>
-                    <span className="text-xl font-black text-gray-700">₹{s.baseSalary || 8000}</span>
-                  </div>
-                  <Btn color={alreadyPaid ? "gray" : "blue"} className="w-full !rounded-2xl py-3" onClick={() => setSalaryModal(s)} disabled={alreadyPaid}>
-                    {alreadyPaid ? "Salary Recorded" : "Record Payment"}
-                  </Btn>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="bg-white rounded-[2.5rem] shadow-sm overflow-hidden border border-gray-50">
+            <div className="p-6 border-b border-gray-50">
+              <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest">Salary ledger</h3>
+              <p className="text-[10px] text-gray-400 font-bold mt-1">Edit or remove entries for the selected period</p>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50/50">
+                  <tr className="text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                    <th className="px-6 py-3">Date</th>
+                    <th className="px-6 py-3">Staff</th>
+                    <th className="px-6 py-3">Period</th>
+                    <th className="px-6 py-3 text-center">Amount</th>
+                    <th className="px-6 py-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {salaries.map((row) => (
+                    <tr key={row._id} className="hover:bg-slate-50/50">
+                      <td className="px-6 py-4 text-[11px] font-bold text-gray-500">{fmtDate(row.date)}</td>
+                      <td className="px-6 py-4 font-bold text-gray-800">{row.handledBy?.name || "—"}</td>
+                      <td className="px-6 py-4 text-xs text-gray-600">{row.month}/{row.year}</td>
+                      <td className="px-6 py-4 text-center font-black">₹{row.amount.toLocaleString()}</td>
+                      <td className="px-6 py-4 text-right space-x-1">
+                        <Btn color="gray" size="xs" onClick={() => setEditFinance({
+                          _id: row._id,
+                          description: row.description,
+                          amount: row.amount,
+                          transactionCategory: "Salary",
+                          status: row.status,
+                          date: row.date ? new Date(row.date).toISOString().slice(0, 10) : "",
+                        })}>Edit</Btn>
+                        <Btn color="red" size="xs" onClick={() => handleDeleteFinance(row._id)} disabled={processing}>Del</Btn>
+                      </td>
+                    </tr>
+                  ))}
+                  {salaries.length === 0 && (
+                    <tr><td colSpan={5} className="py-20 text-center text-gray-300 font-black uppercase text-[10px]">No salary rows</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
@@ -3040,6 +3225,130 @@ function PaymentsView() {
         </div>
       )}
 
+      {tab === "monthly" && (
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center gap-3 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Maintenance fee records</span>
+            <select value={mYear} onChange={(e) => setMYear(e.target.value)} className="border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold bg-gray-50">
+              {[2024, 2025, 2026, 2027, 2028].map((y) => <option key={y} value={String(y)}>{y}</option>)}
+            </select>
+            <select value={mMonth} onChange={(e) => setMMonth(e.target.value)} className="border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold bg-gray-50">
+              {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map((m, i) => (
+                <option key={m} value={String(i + 1)}>{m}</option>
+              ))}
+            </select>
+            <Btn color="gray" size="xs" onClick={() => fetchMonthly()}>Refresh</Btn>
+          </div>
+          <p className="text-[10px] text-gray-500 px-1">Online payments trigger a receipt email when verified (Razorpay). Offline collections: use Mark paid.</p>
+          <div className="bg-white rounded-[2.5rem] shadow-sm overflow-hidden border border-gray-50">
+            {monthlyLoading ? (
+              <div className="py-20 flex justify-center"><div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full" /></div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm min-w-[800px]">
+                  <thead className="bg-gray-50/50">
+                    <tr className="text-[10px] font-black text-gray-400 uppercase tracking-widest text-left">
+                      <th className="px-6 py-4">Ref</th>
+                      <th className="px-6 py-4">Resident</th>
+                      <th className="px-6 py-4 text-center">Amount</th>
+                      <th className="px-6 py-4 text-center">Status</th>
+                      <th className="px-6 py-4 text-center">Due</th>
+                      <th className="px-6 py-4 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                    {monthlyPersonal.map((p) => (
+                      <tr key={p._id} className="hover:bg-slate-50/50">
+                        <td className="px-6 py-4 font-mono text-xs">{p.refId}</td>
+                        <td className="px-6 py-4">
+                          <p className="font-bold text-gray-800">{p.resident?.name || "—"}</p>
+                          <p className="text-[10px] text-gray-400">Flat {p.flatNumber || p.resident?.flatNumber || "—"}</p>
+                        </td>
+                        <td className="px-6 py-4 text-center font-black">₹{p.amount?.toLocaleString?.() ?? p.amount}</td>
+                        <td className="px-6 py-4 text-center"><Badge color={p.status === "Paid" ? "green" : p.status === "Overdue" ? "red" : "yellow"}>{p.status}</Badge></td>
+                        <td className="px-6 py-4 text-center text-[11px] text-gray-500">{p.dueDate ? fmtDate(p.dueDate) : "—"}</td>
+                        <td className="px-6 py-4 text-right space-x-1">
+                          <Btn color="gray" size="xs" onClick={() => setViewPayment(p)}>View</Btn>
+                          {p.status !== "Paid" && (
+                            <Btn color="green" size="xs" onClick={() => handleMarkPaidMonthly(p._id)} disabled={processing}>Mark paid</Btn>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                    {monthlyPersonal.length === 0 && (
+                      <tr><td colSpan={6} className="py-20 text-center text-gray-300 font-black uppercase text-[10px]">No monthly fee rows (generate dues or pick another month)</td></tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {viewPayment && (
+        <Modal title={`Payment ${viewPayment.refId}`} onClose={() => setViewPayment(null)}>
+          <div className="space-y-3 text-sm text-gray-700">
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <span className="text-gray-400">Resident</span>
+              <span className="font-bold">{viewPayment.resident?.name}</span>
+              <span className="text-gray-400">Flat</span>
+              <span className="font-bold">{viewPayment.flatNumber || viewPayment.resident?.flatNumber}</span>
+              <span className="text-gray-400">Amount</span>
+              <span className="font-bold">₹{viewPayment.amount?.toLocaleString?.() ?? viewPayment.amount}</span>
+              <span className="text-gray-400">Status</span>
+              <span className="font-bold">{viewPayment.status}</span>
+              <span className="text-gray-400">Month / Year</span>
+              <span className="font-bold">{viewPayment.month}/{viewPayment.year}</span>
+              <span className="text-gray-400">Paid at</span>
+              <span className="font-bold">{viewPayment.paidAt ? fmtDate(viewPayment.paidAt) : "—"}</span>
+              <span className="text-gray-400">Razorpay order</span>
+              <span className="font-mono text-[10px] break-all">{viewPayment.razorpayOrderId || "—"}</span>
+              <span className="text-gray-400">Razorpay payment id</span>
+              <span className="font-mono text-[10px] break-all">{viewPayment.razorpayPaymentId || "—"}</span>
+            </div>
+            <Btn color="gray" className="w-full mt-2" onClick={() => setViewPayment(null)}>Close</Btn>
+          </div>
+        </Modal>
+      )}
+
+      {editFinance && (
+        <Modal title="Edit finance record" onClose={() => setEditFinance(null)}>
+          <div className="space-y-3">
+            <Input label="Description" value={editFinance.description} onChange={(e) => setEditFinance((prev) => ({ ...prev, description: e.target.value }))} />
+            <Input label="Amount (₹)" type="number" value={editFinance.amount} onChange={(e) => setEditFinance((prev) => ({ ...prev, amount: e.target.value }))} />
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-semibold text-gray-600">Category</label>
+              <select
+                className="border border-gray-200 rounded-xl px-3 py-2 text-sm bg-gray-50"
+                value={editFinance.transactionCategory}
+                onChange={(e) => setEditFinance((prev) => ({ ...prev, transactionCategory: e.target.value }))}
+              >
+                {["Salary", "CommonRepair", "Inventory", "FundTopUp", "DirectPayment", "Incentive"].map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-semibold text-gray-600">Status</label>
+              <select
+                className="border border-gray-200 rounded-xl px-3 py-2 text-sm bg-gray-50"
+                value={editFinance.status}
+                onChange={(e) => setEditFinance((prev) => ({ ...prev, status: e.target.value }))}
+              >
+                <option value="Pending">Pending</option>
+                <option value="Paid">Paid</option>
+              </select>
+            </div>
+            <Input label="Date" type="date" value={editFinance.date || ""} onChange={(e) => setEditFinance((prev) => ({ ...prev, date: e.target.value }))} />
+            <div className="flex gap-2 pt-2">
+              <Btn color="gray" className="flex-1" onClick={() => setEditFinance(null)}>Cancel</Btn>
+              <Btn color="blue" className="flex-1" onClick={handleSaveEditFinance} disabled={processing}>Save</Btn>
+            </div>
+          </div>
+        </Modal>
+      )}
+
       {/* Salary Record Modal */}
       {salaryModal && (
         <Modal title={`Record Salary: ${salaryModal.name}`} onClose={() => setSalaryModal(null)}>
@@ -3061,7 +3370,7 @@ function PaymentsView() {
                   <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">Year</label>
                   <select className="col-span-1 w-full border border-gray-100 bg-slate-50 rounded-xl px-3 py-2 text-xs font-bold"
                     value={salaryForm.year} onChange={e => setSalaryForm({...salaryForm, year: e.target.value})}>
-                    <option value="2026">2026</option>
+                    {[2024, 2025, 2026, 2027, 2028].map((y) => <option key={y} value={y}>{y}</option>)}
                   </select>
                </div>
             </div>
@@ -3092,7 +3401,8 @@ function PaymentsView() {
                 <select className="border border-gray-100 bg-slate-50 rounded-xl px-3 py-2 text-xs font-bold" {...fExt("category")}>
                   <option value="CommonRepair">Common Repair</option>
                   <option value="Inventory">Inventory Supply</option>
-                  <option value="Other">Other Expenses</option>
+                  <option value="DirectPayment">Direct Payment</option>
+                  <option value="Incentive">Incentive</option>
                 </select>
               </div>
               <Input label="Total Amount (₹) *" type="number" placeholder="1500" {...fExt("amount")} />
@@ -3397,9 +3707,11 @@ export default function AdminDashboard() {
   return (
     <div className="flex h-screen bg-slate-100 font-sans overflow-hidden">
       <aside className="w-56 bg-white flex flex-col shadow-md z-10 flex-shrink-0">
-        <div className="flex items-center gap-3 px-5 py-3 border-b border-gray-100">
-          <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white text-lg">🔧</div>
-          <span className="text-blue-700 font-bold text-lg tracking-tight">FixMate</span>
+        <div className="flex items-center gap-3 px-5 py-3 border-b border-gray-100 min-w-0">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center">
+            <img src="/image.png" alt="" className="h-full w-full object-contain" aria-hidden />
+          </div>
+          <span className="text-blue-700 font-bold text-lg tracking-tight truncate">FixMate</span>
         </div>
         <nav className="flex-1 py-4 px-2 flex flex-col gap-0.5 overflow-y-auto">
           {navItems.map(({ label, icon, isLink }) => (

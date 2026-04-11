@@ -43,6 +43,8 @@ adminRoute.get("/finances-data", adminControllers.getFinancesData);
 adminRoute.post("/record-salary", adminControllers.recordSalaryPayment);
 adminRoute.post("/payout-expense", adminControllers.payoutExpense);
 adminRoute.post("/add-expense", upload.single("billImage"), adminControllers.addExpense);
+adminRoute.put("/finance/:id", adminControllers.updateFinanceRecord);
+adminRoute.delete("/finance/:id", adminControllers.deleteFinanceRecord);
 
 // ── Settings (admin profile update) ──────────────────────────────────────────
 adminRoute.put("/settings/profile", adminControllers.updateAdminProfile);

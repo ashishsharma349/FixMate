@@ -86,12 +86,32 @@ exports.getDashboardStats = async (req, res) => {
     ]);
     const totalFundSpent = fundExpenses[0]?.total || 0;
 
+    const monthlyFeesMatch = { type: "personal", month: currentMonth, year: currentYear };
+    const [paidFeesAgg, pendingFeesAgg] = await Promise.all([
+      Payment.aggregate([
+        { $match: { ...monthlyFeesMatch, status: "Paid" } },
+        { $group: { _id: null, total: { $sum: "$amount" }, count: { $sum: 1 } } },
+      ]),
+      Payment.aggregate([
+        { $match: { ...monthlyFeesMatch, status: "Pending" } },
+        { $group: { _id: null, total: { $sum: "$amount" }, count: { $sum: 1 } } },
+      ]),
+    ]);
+
     res.json({
       stats: { totalComplaints, inProgress, pendingApproval, pendingEstimates, resolvedComplaints, totalResidents, totalStaff },
       fund: {
         limit: cumulativeLimit,
         spent: totalFundSpent,
-        balance: cumulativeLimit - totalFundSpent
+        balance: cumulativeLimit - totalFundSpent,
+      },
+      residentMonthlyFees: {
+        month: currentMonth,
+        year: currentYear,
+        collectedAmount: paidFeesAgg[0]?.total || 0,
+        paidCount: paidFeesAgg[0]?.count || 0,
+        pendingAmount: pendingFeesAgg[0]?.total || 0,
+        pendingCount: pendingFeesAgg[0]?.count || 0,
       },
       recentComplaints,
       pendingEstimatesList,
@@ -115,11 +135,13 @@ exports.getMonthlyStats = async (req, res) => {
         },
       },
       { $sort: { "_id.year": 1, "_id.month": 1 } },
-      { $limit: 6 },
+      { $limit: 12 },
     ]);
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const chartData = data.map(d => ({
-      month: months[d._id.month - 1],
+    const chartData = data.map((d) => ({
+      month: `${months[d._id.month - 1]} ${String(d._id.year).slice(-2)}`,
+      monthNum: d._id.month,
+      year: d._id.year,
       complaints: d.complaints,
     }));
     res.json({ chartData });
@@ -617,9 +639,12 @@ exports.addExpense = async (req, res) => {
 
     const expenseDate = date ? new Date(date) : new Date();
 
+    const allowedCat = ["Salary", "CommonRepair", "Inventory", "FundTopUp", "DirectPayment", "Incentive"];
+    const cat = allowedCat.includes(category) ? category : "CommonRepair";
+
     const expense = await Finance.create({
       transactionType: "Expense",
-      transactionCategory: category || "Other",
+      transactionCategory: cat,
       amount: Number(amount),
       description: title,
       status: status || "Paid",
@@ -640,34 +665,38 @@ exports.addExpense = async (req, res) => {
 exports.getFinancesData = async (req, res) => {
   try {
     const { month, year } = req.query;
-    const filterMonth = parseInt(month);
-    const filterYear = parseInt(year);
+    const filterMonth = month !== undefined && month !== "" ? parseInt(month, 10) : NaN;
+    const filterYear = year !== undefined && year !== "" ? parseInt(year, 10) : NaN;
+
+    let financeQuery = {};
+    if (!isNaN(filterMonth) && !isNaN(filterYear)) {
+      financeQuery = { month: filterMonth, year: filterYear };
+    } else if (!isNaN(filterYear) && isNaN(filterMonth)) {
+      financeQuery = { year: filterYear };
+    }
 
     const [staff, allFinances, complaints] = await Promise.all([
       Staff.find().populate("authId", "email"),
-      Finance.find(filterMonth && filterYear ? { month: filterMonth, year: filterYear } : {})
-        .sort({ date: -1 })
-        .populate("handledBy", "name department"),
+      Finance.find(financeQuery).sort({ date: -1 }).populate("handledBy", "name department"),
       Complain.find({
         workType: "Personal",
-        status: { $in: ["PaymentPending", "Resolved"] }
-      }).populate("resident", "name flatNumber").populate("assignedStaff", "name")
+        status: { $in: ["PaymentPending", "Resolved"] },
+      })
+        .populate("resident", "name flatNumber")
+        .populate("assignedStaff", "name"),
     ]);
 
-    // Grouping for UI sections
-    const expenses = allFinances.filter(f => f.transactionCategory !== "Salary");
-    const salaries = allFinances.filter(f => f.transactionCategory === "Salary");
-    
-    // Personal payments status matching
-    const personalPayments = complaints.map(c => {
+    const expenses = allFinances.filter((f) => f.transactionCategory !== "Salary");
+    const salaries = allFinances.filter((f) => f.transactionCategory === "Salary");
+
+    const personalPayments = complaints.map((c) => {
       const match = c.userPaymentAmount === c.staffPaymentAmount && c.userPaymentAmount !== null;
       return {
         ...c.toObject(),
-        paymentMatchStatus: match ? "Match" : "Mismatch"
+        paymentMatchStatus: match ? "Match" : "Mismatch",
       };
     });
 
-    // Monthly grouping for Bills/Records section
     const groupedBills = allFinances.reduce((acc, f) => {
       const key = `${f.month}-${f.year}`;
       if (!acc[key]) acc[key] = { month: f.month, year: f.year, items: [] };
@@ -675,34 +704,93 @@ exports.getFinancesData = async (req, res) => {
       return acc;
     }, {});
 
-    // Maintenance Fund Stats
-    const totalIncome = await Payment.aggregate([
-      { $match: { type: "maintenance", status: "Paid" } },
-      { $group: { _id: null, total: { $sum: "$amount" } } }
+    const incomeMatch = { type: "personal", status: "Paid" };
+    if (!isNaN(filterMonth) && !isNaN(filterYear)) {
+      incomeMatch.month = filterMonth;
+      incomeMatch.year = filterYear;
+    } else if (!isNaN(filterYear) && isNaN(filterMonth)) {
+      incomeMatch.year = filterYear;
+    }
+
+    const totalIncomeAgg = await Payment.aggregate([
+      { $match: incomeMatch },
+      { $group: { _id: null, total: { $sum: "$amount" } } },
     ]);
-    
+
     const totalSpent = allFinances
-      .filter(f => f.status === "Paid" && f.transactionType === "Expense")
+      .filter((f) => f.status === "Paid" && f.transactionType === "Expense")
       .reduce((sum, f) => sum + f.amount, 0);
 
     const residentsCount = await User.countDocuments();
-    const fundLimit = residentsCount * 3500; // Simplified limit logic for project
+    let fundLimit = residentsCount * 3500;
+    if (!isNaN(filterYear) && isNaN(filterMonth)) fundLimit = residentsCount * 3500 * 12;
+    if (isNaN(filterYear) && isNaN(filterMonth)) fundLimit = residentsCount * 3500;
+
+    const totalIncome = totalIncomeAgg[0]?.total || 0;
 
     res.json({
       staff,
       expenses,
       salaries,
       personalPayments,
-      groupedBills: Object.values(groupedBills).sort((a,b) => b.year - a.year || b.month - a.month),
+      groupedBills: Object.values(groupedBills).sort((a, b) => b.year - a.year || b.month - a.month),
       stats: {
-        totalIncome: totalIncome[0]?.total || 0,
+        totalIncome,
         totalSpent,
-        balance: (totalIncome[0]?.total || 0) - totalSpent,
-        fundLimit
-      }
+        balance: totalIncome - totalSpent,
+        fundLimit,
+      },
+      filters: {
+        month: !isNaN(filterMonth) ? filterMonth : null,
+        year: !isNaN(filterYear) ? filterYear : null,
+      },
     });
   } catch (err) {
     console.error("[getFinancesData]:", err);
     res.status(500).json({ error: "Server error" });
+  }
+};
+
+// ── UPDATE / DELETE FINANCE RECORD (admin) ───────────────────────────────────
+const FINANCE_CATS = ["Salary", "CommonRepair", "Inventory", "FundTopUp", "DirectPayment", "Incentive"];
+
+exports.updateFinanceRecord = async (req, res) => {
+  try {
+    const fin = await Finance.findById(req.params.id);
+    if (!fin) return res.status(404).json({ error: "Record not found" });
+
+    const { description, amount, transactionCategory, status, date, month, year } = req.body;
+    if (description !== undefined) fin.description = String(description);
+    if (amount !== undefined) fin.amount = Number(amount);
+    if (transactionCategory !== undefined && FINANCE_CATS.includes(transactionCategory)) {
+      fin.transactionCategory = transactionCategory;
+    }
+    if (status !== undefined && ["Pending", "Paid"].includes(status)) fin.status = status;
+    if (date !== undefined && date !== null && date !== "") {
+      const d = new Date(date);
+      if (!Number.isNaN(d.getTime())) {
+        fin.date = d;
+        fin.month = d.getMonth() + 1;
+        fin.year = d.getFullYear();
+      }
+    }
+    if (month !== undefined && !Number.isNaN(Number(month))) fin.month = Number(month);
+    if (year !== undefined && !Number.isNaN(Number(year))) fin.year = Number(year);
+
+    await fin.save();
+    res.json({ success: true, finance: fin });
+  } catch (err) {
+    console.error("[updateFinanceRecord]:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.deleteFinanceRecord = async (req, res) => {
+  try {
+    const fin = await Finance.findByIdAndDelete(req.params.id);
+    if (!fin) return res.status(404).json({ error: "Record not found" });
+    res.json({ success: true, message: "Record deleted" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };

@@ -54,19 +54,19 @@ router.get("/list", adminOnly, async (req, res) => {
       let filterYear = (year && year !== "") ? parseInt(year) : currentYear;
       let filterMonth = (month && month !== "") ? parseInt(month) : null;
 
+      let startDate;
+      let endDate;
       if (filterMonth !== null) {
-        // Specific month provided (with or without year)
         startDate = new Date(filterYear, filterMonth - 1, 1);
         endDate = new Date(filterYear, filterMonth, 0, 23, 59, 59);
       } else {
-        // Only year provided - show entire year
         startDate = new Date(filterYear, 0, 1);
         endDate = new Date(filterYear, 11, 31, 23, 59, 59);
       }
-      
+
       maintenanceMatch.createdAt = {
         $gte: startDate,
-        $lte: endDate
+        $lte: endDate,
       };
     }
     
@@ -137,12 +137,12 @@ router.get("/monthly-revenue", adminOnly, async (req, res) => {
     ]);
     
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const chartData = data.map(d => ({
-      month: months[d._id.month - 1],
+    const chartData = data.map((d) => ({
+      month: `${months[d._id.month - 1]} ${String(d._id.year).slice(-2)}`,
       monthNum: d._id.month,
       year: d._id.year,
       revenue: d.revenue,
-      count: d.count
+      count: d.count,
     }));
     
     res.json({ chartData, filters: { month: month ? parseInt(month) : null, year: year ? parseInt(year) : null } });

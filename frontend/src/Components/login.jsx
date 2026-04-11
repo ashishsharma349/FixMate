@@ -59,9 +59,8 @@ function Login() {
           <div className="z-10 flex flex-col items-center">
             {/* The Building Logo Badge */}
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-white rounded-full opacity-60"></div>
-              <div className="relative w-36 h-24 bg-white/90 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-6 shadow-xl border border-gray-200 overflow-hidden">
-                <img src="/logo.png" alt="FixMate" className="w-20 h-16 object-contain opacity-100" />
+              <div className="relative w-36 h-28 flex items-center justify-center mb-6">
+                <img src="/image.png" alt="FixMate" className="w-24 h-20 object-contain" />
               </div>
             </div>
             <h1 className="text-4xl font-black text-[#1a365d] tracking-tighter">FixMate</h1>

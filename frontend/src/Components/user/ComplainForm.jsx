@@ -138,9 +138,8 @@ const ComplaintForm = () => {
         <div className="flex-[0.2] min-h-[100px] flex items-center px-8 relative bg-white">
           <div className="z-10 flex items-center gap-3">
             <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-transparent rounded-xl opacity-0 group-hover:opacity-20 transition-opacity"></div>
-              <div className="w-16 h-16 bg-white/90 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-md overflow-hidden border border-gray-200 group-hover:shadow-lg group-hover:border-gray-300 transition-all p-1">
-                <img src="/logo.png" alt="FixMate" className="w-10 h-10 object-contain opacity-90 group-hover:opacity-100 transition-opacity" />
+              <div className="w-16 h-16 flex items-center justify-center">
+                <img src="/image.png" alt="FixMate" className="w-12 h-12 object-contain" />
               </div>
             </div>
             <div>

@@ -3,8 +3,16 @@ import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../Context/AuthContext";
 
+const logoMark = (
+  <span className="inline-flex shrink-0 items-center justify-center h-10 w-10">
+    <img src="/image.png" alt="" className="h-full w-full object-contain" aria-hidden />
+  </span>
+);
+
 function Header() {
   const { isLoggedIn, role } = useContext(AuthContext);
+
+  const homeNavStyle = { ...navItemStyle, display: "inline-flex", alignItems: "center", gap: "0.5rem" };
 
   return (
     <div>
@@ -13,7 +21,7 @@ function Header() {
         {/* Resident nav */}
         {isLoggedIn && role === "user" && (
           <>
-            <Link to="/" style={navItemStyle}>🏠 Home</Link>
+            <Link to="/" style={homeNavStyle}>{logoMark}Home</Link>
             <Link to="/profile" style={navItemStyle}>Profile</Link>
             <Link to="/FileComplain" style={navItemStyle}>Register Complaint</Link>
             <Link to="/All-Complains" style={navItemStyle}>All Complaints</Link>
@@ -24,7 +32,7 @@ function Header() {
         {/* Staff nav */}
         {isLoggedIn && role === "staff" && (
           <>
-            <Link to="/" style={navItemStyle}>🏠 Home</Link>
+            <Link to="/" style={homeNavStyle}>{logoMark}Home</Link>
             <Link to="/profile" style={navItemStyle}>Profile</Link>
             <Link to="/Assigned-Tasks" style={navItemStyle}>Assigned Tasks</Link>
           </>
@@ -33,7 +41,7 @@ function Header() {
         {/* Admin nav */}
         {isLoggedIn && role === "admin" && (
           <>
-            <Link to="/" style={navItemStyle}>🏠 Home</Link>
+            <Link to="/" style={homeNavStyle}>{logoMark}Home</Link>
             <Link to="/profile" style={navItemStyle}>Profile</Link>
             <Link to="/AssignStaff" style={navItemStyle}>Assign Staff</Link>
             <Link to="/create-user" style={navItemStyle}>Create User</Link>
