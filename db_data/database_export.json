@@ -1,1 +1,4757 @@
-{}
+{
+  "payments": [
+    {
+      "_id": "69d8b66621027898dd975871",
+      "type": "personal",
+      "resident": "69d8b66621027898dd9757fb",
+      "flatNumber": "A-101",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - February",
+      "refId": "FEB-DUES-A-101",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-05T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.387Z",
+      "updatedAt": "2026-04-10T08:35:50.387Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975873",
+      "type": "personal",
+      "resident": "69d8b66621027898dd9757ff",
+      "flatNumber": "A-102",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - February",
+      "refId": "FEB-DUES-A-102",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-09T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.388Z",
+      "updatedAt": "2026-04-10T08:35:50.388Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975875",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975803",
+      "flatNumber": "A-103",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - February",
+      "refId": "FEB-DUES-A-103",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-12T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.389Z",
+      "updatedAt": "2026-04-10T08:35:50.389Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975877",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975807",
+      "flatNumber": "A-104",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - February",
+      "refId": "FEB-DUES-A-104",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-12T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.390Z",
+      "updatedAt": "2026-04-10T08:35:50.390Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975879",
+      "type": "personal",
+      "resident": "69d8b66621027898dd97580b",
+      "flatNumber": "A-105",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - February",
+      "refId": "FEB-DUES-A-105",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-11T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.391Z",
+      "updatedAt": "2026-04-10T08:35:50.391Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97587b",
+      "type": "personal",
+      "resident": "69d8b66621027898dd97580f",
+      "flatNumber": "B-106",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - February",
+      "refId": "FEB-DUES-B-106",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-06T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.392Z",
+      "updatedAt": "2026-04-10T08:35:50.392Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97587d",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975813",
+      "flatNumber": "B-107",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - February",
+      "refId": "FEB-DUES-B-107",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-04T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.393Z",
+      "updatedAt": "2026-04-10T08:35:50.393Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97587f",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975817",
+      "flatNumber": "B-108",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - February",
+      "refId": "FEB-DUES-B-108",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-04T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.394Z",
+      "updatedAt": "2026-04-10T08:35:50.394Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975881",
+      "type": "personal",
+      "resident": "69d8b66621027898dd97581b",
+      "flatNumber": "B-109",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - February",
+      "refId": "FEB-DUES-B-109",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-10T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.395Z",
+      "updatedAt": "2026-04-10T08:35:50.395Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975883",
+      "type": "personal",
+      "resident": "69d8b66621027898dd97581f",
+      "flatNumber": "B-110",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - February",
+      "refId": "FEB-DUES-B-110",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-06T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.396Z",
+      "updatedAt": "2026-04-10T08:35:50.396Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975885",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975823",
+      "flatNumber": "C-111",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - February",
+      "refId": "FEB-DUES-C-111",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-13T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.397Z",
+      "updatedAt": "2026-04-10T08:35:50.397Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975887",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975827",
+      "flatNumber": "C-112",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - February",
+      "refId": "FEB-DUES-C-112",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-06T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.397Z",
+      "updatedAt": "2026-04-10T08:35:50.397Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975889",
+      "type": "personal",
+      "resident": "69d8b66621027898dd97582b",
+      "flatNumber": "C-113",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - February",
+      "refId": "FEB-DUES-C-113",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-06T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.399Z",
+      "updatedAt": "2026-04-10T08:35:50.399Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97588b",
+      "type": "personal",
+      "resident": "69d8b66621027898dd97582f",
+      "flatNumber": "C-114",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - February",
+      "refId": "FEB-DUES-C-114",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-12T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.400Z",
+      "updatedAt": "2026-04-10T08:35:50.400Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97588d",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975833",
+      "flatNumber": "C-115",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - February",
+      "refId": "FEB-DUES-C-115",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-10T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.401Z",
+      "updatedAt": "2026-04-10T08:35:50.401Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97588f",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975837",
+      "flatNumber": "D-116",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - February",
+      "refId": "FEB-DUES-D-116",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-08T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.403Z",
+      "updatedAt": "2026-04-10T08:35:50.403Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975891",
+      "type": "personal",
+      "resident": "69d8b66621027898dd97583b",
+      "flatNumber": "D-117",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - February",
+      "refId": "FEB-DUES-D-117",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-04T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.404Z",
+      "updatedAt": "2026-04-10T08:35:50.404Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975893",
+      "type": "personal",
+      "resident": "69d8b66621027898dd97583f",
+      "flatNumber": "D-118",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - February",
+      "refId": "FEB-DUES-D-118",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-05T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.405Z",
+      "updatedAt": "2026-04-10T08:35:50.405Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975895",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975843",
+      "flatNumber": "D-119",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - February",
+      "refId": "FEB-DUES-D-119",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-08T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.406Z",
+      "updatedAt": "2026-04-10T08:35:50.406Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975897",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975847",
+      "flatNumber": "D-120",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - February",
+      "refId": "FEB-DUES-D-120",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-06T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.407Z",
+      "updatedAt": "2026-04-10T08:35:50.407Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97589b",
+      "type": "maintenance",
+      "amount": 15000,
+      "status": "Paid",
+      "worker": "69d8b66621027898dd9757db",
+      "workerName": "Ramlal Sharma",
+      "purpose": "Monthly Salary - February",
+      "refId": "FEB-SAL-RAM-70",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-27T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.409Z",
+      "updatedAt": "2026-04-10T08:35:50.409Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97589f",
+      "type": "maintenance",
+      "amount": 12000,
+      "status": "Paid",
+      "worker": "69d8b66621027898dd9757df",
+      "workerName": "Suresh Kumar",
+      "purpose": "Monthly Salary - February",
+      "refId": "FEB-SAL-SUR-88",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-27T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.410Z",
+      "updatedAt": "2026-04-10T08:35:50.410Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758a3",
+      "type": "maintenance",
+      "amount": 13000,
+      "status": "Paid",
+      "worker": "69d8b66621027898dd9757e3",
+      "workerName": "Amit Singh",
+      "purpose": "Monthly Salary - February",
+      "refId": "FEB-SAL-AMI-51",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-27T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.412Z",
+      "updatedAt": "2026-04-10T08:35:50.412Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758a7",
+      "type": "maintenance",
+      "amount": 11000,
+      "status": "Paid",
+      "worker": "69d8b66621027898dd9757e7",
+      "workerName": "Deepak Verma",
+      "purpose": "Monthly Salary - February",
+      "refId": "FEB-SAL-DEE-14",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-27T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.414Z",
+      "updatedAt": "2026-04-10T08:35:50.414Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758ab",
+      "type": "maintenance",
+      "amount": 9000,
+      "status": "Paid",
+      "worker": "69d8b66621027898dd9757eb",
+      "workerName": "Kailash Nath",
+      "purpose": "Monthly Salary - February",
+      "refId": "FEB-SAL-KAI-42",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-27T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.416Z",
+      "updatedAt": "2026-04-10T08:35:50.416Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758af",
+      "type": "maintenance",
+      "amount": 14000,
+      "status": "Paid",
+      "worker": "69d8b66621027898dd9757ef",
+      "workerName": "Sohan Lal",
+      "purpose": "Monthly Salary - February",
+      "refId": "FEB-SAL-SOH-64",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-27T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.417Z",
+      "updatedAt": "2026-04-10T08:35:50.417Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758b3",
+      "type": "maintenance",
+      "amount": 12500,
+      "status": "Paid",
+      "worker": "69d8b66621027898dd9757f3",
+      "workerName": "Vikram Singh",
+      "purpose": "Monthly Salary - February",
+      "refId": "FEB-SAL-VIK-83",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-27T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.420Z",
+      "updatedAt": "2026-04-10T08:35:50.420Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758b7",
+      "type": "maintenance",
+      "amount": 13500,
+      "status": "Paid",
+      "worker": "69d8b66621027898dd9757f7",
+      "workerName": "Rahul Gupta",
+      "purpose": "Monthly Salary - February",
+      "refId": "FEB-SAL-RAH-80",
+      "month": 2,
+      "year": 2026,
+      "paidAt": "2026-02-27T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.421Z",
+      "updatedAt": "2026-04-10T08:35:50.421Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758b9",
+      "type": "personal",
+      "resident": "69d8b66621027898dd9757fb",
+      "flatNumber": "A-101",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - March",
+      "refId": "MAR-DUES-A-101",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-11T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.422Z",
+      "updatedAt": "2026-04-10T08:35:50.422Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758bb",
+      "type": "personal",
+      "resident": "69d8b66621027898dd9757ff",
+      "flatNumber": "A-102",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - March",
+      "refId": "MAR-DUES-A-102",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-12T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.423Z",
+      "updatedAt": "2026-04-10T08:35:50.423Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758bd",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975803",
+      "flatNumber": "A-103",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - March",
+      "refId": "MAR-DUES-A-103",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-10T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.424Z",
+      "updatedAt": "2026-04-10T08:35:50.424Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758bf",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975807",
+      "flatNumber": "A-104",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - March",
+      "refId": "MAR-DUES-A-104",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-09T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.425Z",
+      "updatedAt": "2026-04-10T08:35:50.425Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758c1",
+      "type": "personal",
+      "resident": "69d8b66621027898dd97580b",
+      "flatNumber": "A-105",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - March",
+      "refId": "MAR-DUES-A-105",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-09T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.426Z",
+      "updatedAt": "2026-04-10T08:35:50.426Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758c3",
+      "type": "personal",
+      "resident": "69d8b66621027898dd97580f",
+      "flatNumber": "B-106",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - March",
+      "refId": "MAR-DUES-B-106",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-05T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.427Z",
+      "updatedAt": "2026-04-10T08:35:50.427Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758c5",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975813",
+      "flatNumber": "B-107",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - March",
+      "refId": "MAR-DUES-B-107",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-05T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.428Z",
+      "updatedAt": "2026-04-10T08:35:50.428Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758c7",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975817",
+      "flatNumber": "B-108",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - March",
+      "refId": "MAR-DUES-B-108",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-07T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.429Z",
+      "updatedAt": "2026-04-10T08:35:50.429Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758c9",
+      "type": "personal",
+      "resident": "69d8b66621027898dd97581b",
+      "flatNumber": "B-109",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - March",
+      "refId": "MAR-DUES-B-109",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-11T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.430Z",
+      "updatedAt": "2026-04-10T08:35:50.430Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758cb",
+      "type": "personal",
+      "resident": "69d8b66621027898dd97581f",
+      "flatNumber": "B-110",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - March",
+      "refId": "MAR-DUES-B-110",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-10T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.432Z",
+      "updatedAt": "2026-04-10T08:35:50.432Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758cd",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975823",
+      "flatNumber": "C-111",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - March",
+      "refId": "MAR-DUES-C-111",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-10T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.433Z",
+      "updatedAt": "2026-04-10T08:35:50.433Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758cf",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975827",
+      "flatNumber": "C-112",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - March",
+      "refId": "MAR-DUES-C-112",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-05T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.434Z",
+      "updatedAt": "2026-04-10T08:35:50.434Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758d1",
+      "type": "personal",
+      "resident": "69d8b66621027898dd97582b",
+      "flatNumber": "C-113",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - March",
+      "refId": "MAR-DUES-C-113",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-10T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.435Z",
+      "updatedAt": "2026-04-10T08:35:50.435Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758d3",
+      "type": "personal",
+      "resident": "69d8b66621027898dd97582f",
+      "flatNumber": "C-114",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - March",
+      "refId": "MAR-DUES-C-114",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-04T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.436Z",
+      "updatedAt": "2026-04-10T08:35:50.436Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758d5",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975833",
+      "flatNumber": "C-115",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - March",
+      "refId": "MAR-DUES-C-115",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-12T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.437Z",
+      "updatedAt": "2026-04-10T08:35:50.437Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758d7",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975837",
+      "flatNumber": "D-116",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - March",
+      "refId": "MAR-DUES-D-116",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-09T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.438Z",
+      "updatedAt": "2026-04-10T08:35:50.438Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758d9",
+      "type": "personal",
+      "resident": "69d8b66621027898dd97583b",
+      "flatNumber": "D-117",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - March",
+      "refId": "MAR-DUES-D-117",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-13T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.439Z",
+      "updatedAt": "2026-04-10T08:35:50.439Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758db",
+      "type": "personal",
+      "resident": "69d8b66621027898dd97583f",
+      "flatNumber": "D-118",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - March",
+      "refId": "MAR-DUES-D-118",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-10T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.440Z",
+      "updatedAt": "2026-04-10T08:35:50.440Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758dd",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975843",
+      "flatNumber": "D-119",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - March",
+      "refId": "MAR-DUES-D-119",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-06T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.441Z",
+      "updatedAt": "2026-04-10T08:35:50.441Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758df",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975847",
+      "flatNumber": "D-120",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - March",
+      "refId": "MAR-DUES-D-120",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-12T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.442Z",
+      "updatedAt": "2026-04-10T08:35:50.442Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758e3",
+      "type": "maintenance",
+      "amount": 15000,
+      "status": "Paid",
+      "worker": "69d8b66621027898dd9757db",
+      "workerName": "Ramlal Sharma",
+      "purpose": "Monthly Salary - March",
+      "refId": "MAR-SAL-RAM-90",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-27T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.444Z",
+      "updatedAt": "2026-04-10T08:35:50.444Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758e7",
+      "type": "maintenance",
+      "amount": 12000,
+      "status": "Paid",
+      "worker": "69d8b66621027898dd9757df",
+      "workerName": "Suresh Kumar",
+      "purpose": "Monthly Salary - March",
+      "refId": "MAR-SAL-SUR-51",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-27T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.446Z",
+      "updatedAt": "2026-04-10T08:35:50.446Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758eb",
+      "type": "maintenance",
+      "amount": 13000,
+      "status": "Paid",
+      "worker": "69d8b66621027898dd9757e3",
+      "workerName": "Amit Singh",
+      "purpose": "Monthly Salary - March",
+      "refId": "MAR-SAL-AMI-24",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-27T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.449Z",
+      "updatedAt": "2026-04-10T08:35:50.449Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758ef",
+      "type": "maintenance",
+      "amount": 11000,
+      "status": "Paid",
+      "worker": "69d8b66621027898dd9757e7",
+      "workerName": "Deepak Verma",
+      "purpose": "Monthly Salary - March",
+      "refId": "MAR-SAL-DEE-79",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-27T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.451Z",
+      "updatedAt": "2026-04-10T08:35:50.451Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758f3",
+      "type": "maintenance",
+      "amount": 9000,
+      "status": "Paid",
+      "worker": "69d8b66621027898dd9757eb",
+      "workerName": "Kailash Nath",
+      "purpose": "Monthly Salary - March",
+      "refId": "MAR-SAL-KAI-77",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-27T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.453Z",
+      "updatedAt": "2026-04-10T08:35:50.453Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758f7",
+      "type": "maintenance",
+      "amount": 14000,
+      "status": "Paid",
+      "worker": "69d8b66621027898dd9757ef",
+      "workerName": "Sohan Lal",
+      "purpose": "Monthly Salary - March",
+      "refId": "MAR-SAL-SOH-92",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-27T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.455Z",
+      "updatedAt": "2026-04-10T08:35:50.455Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758fb",
+      "type": "maintenance",
+      "amount": 12500,
+      "status": "Paid",
+      "worker": "69d8b66621027898dd9757f3",
+      "workerName": "Vikram Singh",
+      "purpose": "Monthly Salary - March",
+      "refId": "MAR-SAL-VIK-59",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-27T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.457Z",
+      "updatedAt": "2026-04-10T08:35:50.457Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758ff",
+      "type": "maintenance",
+      "amount": 13500,
+      "status": "Paid",
+      "worker": "69d8b66621027898dd9757f7",
+      "workerName": "Rahul Gupta",
+      "purpose": "Monthly Salary - March",
+      "refId": "MAR-SAL-RAH-96",
+      "month": 3,
+      "year": 2026,
+      "paidAt": "2026-03-27T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.459Z",
+      "updatedAt": "2026-04-10T08:35:50.459Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975901",
+      "type": "personal",
+      "resident": "69d8b66621027898dd9757fb",
+      "flatNumber": "A-101",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - April",
+      "refId": "APR-DUES-A-101",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-13T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.460Z",
+      "updatedAt": "2026-04-10T08:35:50.460Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975903",
+      "type": "personal",
+      "resident": "69d8b66621027898dd9757ff",
+      "flatNumber": "A-102",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - April",
+      "refId": "APR-DUES-A-102",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-05T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.461Z",
+      "updatedAt": "2026-04-10T08:35:50.461Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975905",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975803",
+      "flatNumber": "A-103",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - April",
+      "refId": "APR-DUES-A-103",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-13T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.462Z",
+      "updatedAt": "2026-04-10T08:35:50.462Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975907",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975807",
+      "flatNumber": "A-104",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - April",
+      "refId": "APR-DUES-A-104",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-06T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.463Z",
+      "updatedAt": "2026-04-10T08:35:50.463Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975909",
+      "type": "personal",
+      "resident": "69d8b66621027898dd97580b",
+      "flatNumber": "A-105",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - April",
+      "refId": "APR-DUES-A-105",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-07T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.463Z",
+      "updatedAt": "2026-04-10T08:35:50.463Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97590b",
+      "type": "personal",
+      "resident": "69d8b66621027898dd97580f",
+      "flatNumber": "B-106",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - April",
+      "refId": "APR-DUES-B-106",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-05T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.464Z",
+      "updatedAt": "2026-04-10T08:35:50.464Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97590d",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975813",
+      "flatNumber": "B-107",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - April",
+      "refId": "APR-DUES-B-107",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-12T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.464Z",
+      "updatedAt": "2026-04-10T08:35:50.464Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97590f",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975817",
+      "flatNumber": "B-108",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - April",
+      "refId": "APR-DUES-B-108",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-05T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.465Z",
+      "updatedAt": "2026-04-10T08:35:50.465Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975911",
+      "type": "personal",
+      "resident": "69d8b66621027898dd97581b",
+      "flatNumber": "B-109",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - April",
+      "refId": "APR-DUES-B-109",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-04T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.466Z",
+      "updatedAt": "2026-04-10T08:35:50.466Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975913",
+      "type": "personal",
+      "resident": "69d8b66621027898dd97581f",
+      "flatNumber": "B-110",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - April",
+      "refId": "APR-DUES-B-110",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-12T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.466Z",
+      "updatedAt": "2026-04-10T08:35:50.466Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975915",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975823",
+      "flatNumber": "C-111",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - April",
+      "refId": "APR-DUES-C-111",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-12T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.467Z",
+      "updatedAt": "2026-04-10T08:35:50.467Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975917",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975827",
+      "flatNumber": "C-112",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - April",
+      "refId": "APR-DUES-C-112",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-07T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.468Z",
+      "updatedAt": "2026-04-10T08:35:50.468Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975919",
+      "type": "personal",
+      "resident": "69d8b66621027898dd97582b",
+      "flatNumber": "C-113",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - April",
+      "refId": "APR-DUES-C-113",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-05T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.469Z",
+      "updatedAt": "2026-04-10T08:35:50.469Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97591b",
+      "type": "personal",
+      "resident": "69d8b66621027898dd97582f",
+      "flatNumber": "C-114",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - April",
+      "refId": "APR-DUES-C-114",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-04T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.470Z",
+      "updatedAt": "2026-04-10T08:35:50.470Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97591d",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975833",
+      "flatNumber": "C-115",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - April",
+      "refId": "APR-DUES-C-115",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-07T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.471Z",
+      "updatedAt": "2026-04-10T08:35:50.471Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97591f",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975837",
+      "flatNumber": "D-116",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - April",
+      "refId": "APR-DUES-D-116",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-04T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.472Z",
+      "updatedAt": "2026-04-10T08:35:50.472Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975921",
+      "type": "personal",
+      "resident": "69d8b66621027898dd97583b",
+      "flatNumber": "D-117",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - April",
+      "refId": "APR-DUES-D-117",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-08T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.473Z",
+      "updatedAt": "2026-04-10T08:35:50.473Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975923",
+      "type": "personal",
+      "resident": "69d8b66621027898dd97583f",
+      "flatNumber": "D-118",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - April",
+      "refId": "APR-DUES-D-118",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-13T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.473Z",
+      "updatedAt": "2026-04-10T08:35:50.473Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975925",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975843",
+      "flatNumber": "D-119",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - April",
+      "refId": "APR-DUES-D-119",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-10T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.474Z",
+      "updatedAt": "2026-04-10T08:35:50.474Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975927",
+      "type": "personal",
+      "resident": "69d8b66621027898dd975847",
+      "flatNumber": "D-120",
+      "amount": 3500,
+      "status": "Paid",
+      "purpose": "Maintenance Fee - April",
+      "refId": "APR-DUES-D-120",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-05T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.475Z",
+      "updatedAt": "2026-04-10T08:35:50.475Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97592b",
+      "type": "maintenance",
+      "amount": 15000,
+      "status": "Paid",
+      "worker": "69d8b66621027898dd9757db",
+      "workerName": "Ramlal Sharma",
+      "purpose": "Monthly Salary - April",
+      "refId": "APR-SAL-RAM-58",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-27T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.477Z",
+      "updatedAt": "2026-04-10T08:35:50.477Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97592f",
+      "type": "maintenance",
+      "amount": 12000,
+      "status": "Paid",
+      "worker": "69d8b66621027898dd9757df",
+      "workerName": "Suresh Kumar",
+      "purpose": "Monthly Salary - April",
+      "refId": "APR-SAL-SUR-48",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-27T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.478Z",
+      "updatedAt": "2026-04-10T08:35:50.478Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975933",
+      "type": "maintenance",
+      "amount": 13000,
+      "status": "Paid",
+      "worker": "69d8b66621027898dd9757e3",
+      "workerName": "Amit Singh",
+      "purpose": "Monthly Salary - April",
+      "refId": "APR-SAL-AMI-23",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-27T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.479Z",
+      "updatedAt": "2026-04-10T08:35:50.479Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975937",
+      "type": "maintenance",
+      "amount": 11000,
+      "status": "Paid",
+      "worker": "69d8b66621027898dd9757e7",
+      "workerName": "Deepak Verma",
+      "purpose": "Monthly Salary - April",
+      "refId": "APR-SAL-DEE-66",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-27T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.481Z",
+      "updatedAt": "2026-04-10T08:35:50.481Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97593b",
+      "type": "maintenance",
+      "amount": 9000,
+      "status": "Paid",
+      "worker": "69d8b66621027898dd9757eb",
+      "workerName": "Kailash Nath",
+      "purpose": "Monthly Salary - April",
+      "refId": "APR-SAL-KAI-95",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-27T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.482Z",
+      "updatedAt": "2026-04-10T08:35:50.482Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97593f",
+      "type": "maintenance",
+      "amount": 14000,
+      "status": "Paid",
+      "worker": "69d8b66621027898dd9757ef",
+      "workerName": "Sohan Lal",
+      "purpose": "Monthly Salary - April",
+      "refId": "APR-SAL-SOH-53",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-27T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.484Z",
+      "updatedAt": "2026-04-10T08:35:50.484Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975943",
+      "type": "maintenance",
+      "amount": 12500,
+      "status": "Paid",
+      "worker": "69d8b66621027898dd9757f3",
+      "workerName": "Vikram Singh",
+      "purpose": "Monthly Salary - April",
+      "refId": "APR-SAL-VIK-34",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-27T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.485Z",
+      "updatedAt": "2026-04-10T08:35:50.485Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975947",
+      "type": "maintenance",
+      "amount": 13500,
+      "status": "Paid",
+      "worker": "69d8b66621027898dd9757f7",
+      "workerName": "Rahul Gupta",
+      "purpose": "Monthly Salary - April",
+      "refId": "APR-SAL-RAH-42",
+      "month": 4,
+      "year": 2026,
+      "paidAt": "2026-04-27T18:30:00.000Z",
+      "createdAt": "2026-04-10T08:35:50.486Z",
+      "updatedAt": "2026-04-10T08:35:50.486Z",
+      "__v": 0
+    }
+  ],
+  "staffs": [
+    {
+      "_id": "69d8b66621027898dd9757db",
+      "authId": "69d8b66621027898dd9757d9",
+      "name": "Ramlal Sharma",
+      "phone": "9876543210",
+      "department": "Security",
+      "aadhaar": "123456782106",
+      "photo": null,
+      "isAvailable": false,
+      "baseSalary": 15000,
+      "rating": 3,
+      "createdAt": "2026-04-10T08:35:50.280Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9757df",
+      "authId": "69d8b66621027898dd9757dd",
+      "name": "Suresh Kumar",
+      "phone": "9876543211",
+      "department": "Plumbing",
+      "aadhaar": "123456789629",
+      "photo": null,
+      "isAvailable": false,
+      "baseSalary": 12000,
+      "rating": 3,
+      "createdAt": "2026-04-10T08:35:50.284Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9757e3",
+      "authId": "69d8b66621027898dd9757e1",
+      "name": "Amit Singh",
+      "phone": "9876543212",
+      "department": "Electrical",
+      "aadhaar": "123456781216",
+      "photo": null,
+      "isAvailable": false,
+      "baseSalary": 13000,
+      "rating": 3,
+      "createdAt": "2026-04-10T08:35:50.287Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9757e7",
+      "authId": "69d8b66621027898dd9757e5",
+      "name": "Deepak Verma",
+      "phone": "9876543213",
+      "department": "Carpentry",
+      "aadhaar": "123456783033",
+      "photo": null,
+      "isAvailable": false,
+      "baseSalary": 11000,
+      "rating": 3,
+      "createdAt": "2026-04-10T08:35:50.291Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9757eb",
+      "authId": "69d8b66621027898dd9757e9",
+      "name": "Kailash Nath",
+      "phone": "9876543214",
+      "department": "Cleaning",
+      "aadhaar": "123456789920",
+      "photo": null,
+      "isAvailable": false,
+      "baseSalary": 9000,
+      "rating": 3,
+      "createdAt": "2026-04-10T08:35:50.294Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9757ef",
+      "authId": "69d8b66621027898dd9757ed",
+      "name": "Sohan Lal",
+      "phone": "9876543215",
+      "department": "Security",
+      "aadhaar": "123456782564",
+      "photo": null,
+      "isAvailable": true,
+      "baseSalary": 14000,
+      "rating": 3,
+      "createdAt": "2026-04-10T08:35:50.297Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9757f3",
+      "authId": "69d8b66621027898dd9757f1",
+      "name": "Vikram Singh",
+      "phone": "9876543216",
+      "department": "Plumbing",
+      "aadhaar": "123456784921",
+      "photo": null,
+      "isAvailable": true,
+      "baseSalary": 12500,
+      "rating": 3,
+      "createdAt": "2026-04-10T08:35:50.299Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9757f7",
+      "authId": "69d8b66621027898dd9757f5",
+      "name": "Rahul Gupta",
+      "phone": "9876543217",
+      "department": "Electrical",
+      "aadhaar": "123456786311",
+      "photo": null,
+      "isAvailable": true,
+      "baseSalary": 13500,
+      "rating": 3,
+      "createdAt": "2026-04-10T08:35:50.301Z",
+      "__v": 0
+    }
+  ],
+  "complains": [
+    {
+      "_id": "69d8b66621027898dd975849",
+      "image_url": "/uploads/demo-placeholder.jpg",
+      "title": "Water leakage in kitchen #1",
+      "category": "Plumbing",
+      "status": "Resolved",
+      "priority": "High",
+      "description": "The pipe under the sink is leaking water.",
+      "resident": "69d8b66621027898dd9757fb",
+      "assignedStaff": null,
+      "scheduledAt": null,
+      "scheduledSlot": null,
+      "workType": null,
+      "staffIncentive": 0,
+      "estimatedCost": null,
+      "estimateStatus": null,
+      "proofImage": null,
+      "worklog": null,
+      "actualCost": null,
+      "materialsUsed": [],
+      "revokedAt": null,
+      "revokeReason": null,
+      "createdAt": "2026-04-05T16:07:51.664Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97584b",
+      "image_url": "/uploads/demo-placeholder.jpg",
+      "title": "Ceiling fan making noise #2",
+      "category": "Electrical",
+      "status": "Resolved",
+      "priority": "Medium",
+      "description": "Master bedroom fan makes clicking sound.",
+      "resident": "69d8b66621027898dd9757ff",
+      "assignedStaff": null,
+      "scheduledAt": null,
+      "scheduledSlot": null,
+      "workType": null,
+      "staffIncentive": 0,
+      "estimatedCost": null,
+      "estimateStatus": null,
+      "proofImage": null,
+      "worklog": null,
+      "actualCost": null,
+      "materialsUsed": [],
+      "revokedAt": null,
+      "revokeReason": null,
+      "createdAt": "2026-04-03T09:39:11.800Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97584d",
+      "image_url": "/uploads/demo-placeholder.jpg",
+      "title": "Wooden door jammed #3",
+      "category": "Carpentry",
+      "status": "InProgress",
+      "priority": "Low",
+      "description": "Main balcony door is hard to open.",
+      "resident": "69d8b66621027898dd975803",
+      "assignedStaff": "69d8b66621027898dd9757e7",
+      "scheduledAt": "2026-04-11T08:35:50.371Z",
+      "scheduledSlot": "10 AM - 1 PM",
+      "workType": "Personal",
+      "staffIncentive": 0,
+      "estimatedCost": null,
+      "estimateStatus": null,
+      "proofImage": null,
+      "worklog": null,
+      "actualCost": null,
+      "materialsUsed": [],
+      "revokedAt": null,
+      "revokeReason": null,
+      "createdAt": "2026-04-03T16:27:43.523Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97584f",
+      "image_url": "/uploads/demo-placeholder.jpg",
+      "title": "Corridor needs deep cleaning #4",
+      "category": "Cleaning",
+      "status": "Pending",
+      "priority": "Medium",
+      "description": "Spillage near elevator on 3rd floor.",
+      "resident": "69d8b66621027898dd975807",
+      "assignedStaff": null,
+      "scheduledAt": null,
+      "scheduledSlot": null,
+      "workType": null,
+      "staffIncentive": 0,
+      "estimatedCost": null,
+      "estimateStatus": null,
+      "proofImage": null,
+      "worklog": null,
+      "actualCost": null,
+      "materialsUsed": [],
+      "revokedAt": null,
+      "revokeReason": null,
+      "createdAt": "2026-04-05T18:18:26.444Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975851",
+      "image_url": "/uploads/demo-placeholder.jpg",
+      "title": "Intercom not working #5",
+      "category": "Security",
+      "status": "Resolved",
+      "priority": "High",
+      "description": "Cannot talk to main gate security.",
+      "resident": "69d8b66621027898dd97580b",
+      "assignedStaff": null,
+      "scheduledAt": null,
+      "scheduledSlot": null,
+      "workType": null,
+      "staffIncentive": 0,
+      "estimatedCost": null,
+      "estimateStatus": null,
+      "proofImage": null,
+      "worklog": null,
+      "actualCost": null,
+      "materialsUsed": [],
+      "revokedAt": null,
+      "revokeReason": null,
+      "createdAt": "2026-04-06T08:11:26.739Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975853",
+      "image_url": "/uploads/demo-placeholder.jpg",
+      "title": "Tap replacement #6",
+      "category": "Plumbing",
+      "status": "Pending",
+      "priority": "Low",
+      "description": "Bathroom tap is loose and dripping.",
+      "resident": "69d8b66621027898dd97580f",
+      "assignedStaff": null,
+      "scheduledAt": null,
+      "scheduledSlot": null,
+      "workType": null,
+      "staffIncentive": 0,
+      "estimatedCost": null,
+      "estimateStatus": null,
+      "proofImage": null,
+      "worklog": null,
+      "actualCost": null,
+      "materialsUsed": [],
+      "revokedAt": null,
+      "revokeReason": null,
+      "createdAt": "2026-04-09T13:30:13.522Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975855",
+      "image_url": "/uploads/demo-placeholder.jpg",
+      "title": "Short circuit in balcony #7",
+      "category": "Electrical",
+      "status": "Pending",
+      "priority": "Emergency",
+      "description": "Sparking noticed in outdoor socket.",
+      "resident": "69d8b66621027898dd975813",
+      "assignedStaff": null,
+      "scheduledAt": null,
+      "scheduledSlot": null,
+      "workType": null,
+      "staffIncentive": 0,
+      "estimatedCost": null,
+      "estimateStatus": null,
+      "proofImage": null,
+      "worklog": null,
+      "actualCost": null,
+      "materialsUsed": [],
+      "revokedAt": null,
+      "revokeReason": null,
+      "createdAt": "2026-04-05T03:23:13.642Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975857",
+      "image_url": "/uploads/demo-placeholder.jpg",
+      "title": "Hinges loose on wardrobe #8",
+      "category": "Carpentry",
+      "status": "Pending",
+      "priority": "Medium",
+      "description": "Wardrobe door in kids room is sagging.",
+      "resident": "69d8b66621027898dd975817",
+      "assignedStaff": null,
+      "scheduledAt": null,
+      "scheduledSlot": null,
+      "workType": null,
+      "staffIncentive": 0,
+      "estimatedCost": null,
+      "estimateStatus": null,
+      "proofImage": null,
+      "worklog": null,
+      "actualCost": null,
+      "materialsUsed": [],
+      "revokedAt": null,
+      "revokeReason": null,
+      "createdAt": "2026-04-05T16:45:12.165Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975859",
+      "image_url": "/uploads/demo-placeholder.jpg",
+      "title": "External wall seepage #9",
+      "category": "General",
+      "status": "Assigned",
+      "priority": "High",
+      "description": "Water marks appearing on living room wall.",
+      "resident": "69d8b66621027898dd97581b",
+      "assignedStaff": "69d8b66621027898dd9757df",
+      "scheduledAt": "2026-04-12T08:35:50.376Z",
+      "scheduledSlot": "1 PM - 4 PM",
+      "workType": "CommonArea",
+      "staffIncentive": 0,
+      "estimatedCost": null,
+      "estimateStatus": null,
+      "proofImage": null,
+      "worklog": null,
+      "actualCost": null,
+      "materialsUsed": [],
+      "revokedAt": null,
+      "revokeReason": null,
+      "createdAt": "2026-04-07T17:07:57.207Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97585b",
+      "image_url": "/uploads/demo-placeholder.jpg",
+      "title": "Lobby light off #10",
+      "category": "Electrical",
+      "status": "Pending",
+      "priority": "Low",
+      "description": "One of the LED panels in lobby is dead.",
+      "resident": "69d8b66621027898dd97581f",
+      "assignedStaff": null,
+      "scheduledAt": null,
+      "scheduledSlot": null,
+      "workType": null,
+      "staffIncentive": 0,
+      "estimatedCost": null,
+      "estimateStatus": null,
+      "proofImage": null,
+      "worklog": null,
+      "actualCost": null,
+      "materialsUsed": [],
+      "revokedAt": null,
+      "revokeReason": null,
+      "createdAt": "2026-04-08T04:43:03.076Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97585d",
+      "image_url": "/uploads/demo-placeholder.jpg",
+      "title": "Water leakage in kitchen #11",
+      "category": "Plumbing",
+      "status": "Pending",
+      "priority": "High",
+      "description": "The pipe under the sink is leaking water.",
+      "resident": "69d8b66621027898dd975823",
+      "assignedStaff": null,
+      "scheduledAt": null,
+      "scheduledSlot": null,
+      "workType": null,
+      "staffIncentive": 0,
+      "estimatedCost": null,
+      "estimateStatus": null,
+      "proofImage": null,
+      "worklog": null,
+      "actualCost": null,
+      "materialsUsed": [],
+      "revokedAt": null,
+      "revokeReason": null,
+      "createdAt": "2026-04-08T21:30:17.722Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97585f",
+      "image_url": "/uploads/demo-placeholder.jpg",
+      "title": "Ceiling fan making noise #12",
+      "category": "Electrical",
+      "status": "Assigned",
+      "priority": "Medium",
+      "description": "Master bedroom fan makes clicking sound.",
+      "resident": "69d8b66621027898dd975827",
+      "assignedStaff": "69d8b66621027898dd9757e3",
+      "scheduledAt": "2026-04-10T08:35:50.379Z",
+      "scheduledSlot": "4 PM - 7 PM",
+      "workType": "Personal",
+      "staffIncentive": 0,
+      "estimatedCost": null,
+      "estimateStatus": null,
+      "proofImage": null,
+      "worklog": null,
+      "actualCost": null,
+      "materialsUsed": [],
+      "revokedAt": null,
+      "revokeReason": null,
+      "createdAt": "2026-04-05T02:48:02.086Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975861",
+      "image_url": "/uploads/demo-placeholder.jpg",
+      "title": "Wooden door jammed #13",
+      "category": "Carpentry",
+      "status": "Resolved",
+      "priority": "Low",
+      "description": "Main balcony door is hard to open.",
+      "resident": "69d8b66621027898dd97582b",
+      "assignedStaff": null,
+      "scheduledAt": null,
+      "scheduledSlot": null,
+      "workType": null,
+      "staffIncentive": 0,
+      "estimatedCost": null,
+      "estimateStatus": null,
+      "proofImage": null,
+      "worklog": null,
+      "actualCost": null,
+      "materialsUsed": [],
+      "revokedAt": null,
+      "revokeReason": null,
+      "createdAt": "2026-04-04T09:46:41.965Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975863",
+      "image_url": "/uploads/demo-placeholder.jpg",
+      "title": "Corridor needs deep cleaning #14",
+      "category": "Cleaning",
+      "status": "InProgress",
+      "priority": "Medium",
+      "description": "Spillage near elevator on 3rd floor.",
+      "resident": "69d8b66621027898dd97582f",
+      "assignedStaff": "69d8b66621027898dd9757eb",
+      "scheduledAt": "2026-04-10T08:35:50.381Z",
+      "scheduledSlot": "7 PM - 10 PM",
+      "workType": "CommonArea",
+      "staffIncentive": 0,
+      "estimatedCost": null,
+      "estimateStatus": null,
+      "proofImage": null,
+      "worklog": null,
+      "actualCost": null,
+      "materialsUsed": [],
+      "revokedAt": null,
+      "revokeReason": null,
+      "createdAt": "2026-04-09T11:13:03.517Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975865",
+      "image_url": "/uploads/demo-placeholder.jpg",
+      "title": "Intercom not working #15",
+      "category": "Security",
+      "status": "Assigned",
+      "priority": "High",
+      "description": "Cannot talk to main gate security.",
+      "resident": "69d8b66621027898dd975833",
+      "assignedStaff": "69d8b66621027898dd9757db",
+      "scheduledAt": "2026-04-11T08:35:50.383Z",
+      "scheduledSlot": "10 AM - 1 PM",
+      "workType": "Personal",
+      "staffIncentive": 0,
+      "estimatedCost": null,
+      "estimateStatus": null,
+      "proofImage": null,
+      "worklog": null,
+      "actualCost": null,
+      "materialsUsed": [],
+      "revokedAt": null,
+      "revokeReason": null,
+      "createdAt": "2026-04-09T20:05:02.404Z",
+      "__v": 0
+    }
+  ],
+  "maintenancefunds": [
+    {
+      "_id": "69d8a3f1f847a7b0ccc160ab",
+      "currentBalance": 50000,
+      "totalCollected": 75000,
+      "totalSpent": 25000,
+      "month": 4,
+      "year": 2026,
+      "transactions": [
+        {
+          "type": "credit",
+          "amount": 75000,
+          "description": "Monthly maintenance collection - April 2024",
+          "referenceId": "COLLECT001",
+          "referenceType": "payment",
+          "date": "2026-03-31T18:30:00.000Z",
+          "createdBy": "69d8a3f1f847a7b0ccc1606c",
+          "_id": "69d8a3f1f847a7b0ccc160ac"
+        },
+        {
+          "type": "debit",
+          "amount": 15000,
+          "description": "Purchase of electrical supplies from Sharma Electrical Supplies",
+          "referenceId": "TXN001",
+          "referenceType": "purchase",
+          "date": "2026-04-04T18:30:00.000Z",
+          "createdBy": "69d8a3f1f847a7b0ccc1606c",
+          "_id": "69d8a3f1f847a7b0ccc160ad"
+        },
+        {
+          "type": "debit",
+          "amount": 10000,
+          "description": "Plumbing materials from Gupta Hardware Store",
+          "referenceId": "TXN002",
+          "referenceType": "purchase",
+          "date": "2026-04-11T18:30:00.000Z",
+          "createdBy": "69d8a3f1f847a7b0ccc1606c",
+          "_id": "69d8a3f1f847a7b0ccc160ae"
+        }
+      ],
+      "lastUpdated": "2026-04-10T07:17:05.171Z",
+      "createdAt": "2026-04-10T07:17:05.172Z",
+      "updatedAt": "2026-04-10T07:17:05.172Z",
+      "__v": 0
+    }
+  ],
+  "staffcalendars": [
+    {
+      "_id": "69d8a3f1f847a7b0ccc160e1",
+      "staffId": "69d8a3f1f847a7b0ccc1608c",
+      "date": "2026-04-09T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc160e2"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc160e3"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc160e4"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc160e5"
+        }
+      ],
+      "notes": "Schedule for Raj Kumar - Fri Apr 10 2026",
+      "createdAt": "2026-04-10T07:17:05.233Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc160e7",
+      "staffId": "69d8a3f1f847a7b0ccc1608c",
+      "date": "2026-04-10T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc160e8"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc160e9"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc160ea"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc160eb"
+        }
+      ],
+      "notes": "Schedule for Raj Kumar - Sat Apr 11 2026",
+      "createdAt": "2026-04-10T07:17:05.236Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc160ed",
+      "staffId": "69d8a3f1f847a7b0ccc1608c",
+      "date": "2026-04-11T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc160ee"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc160ef"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc160f0"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc160f1"
+        }
+      ],
+      "notes": "Schedule for Raj Kumar - Sun Apr 12 2026",
+      "createdAt": "2026-04-10T07:17:05.238Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc160f3",
+      "staffId": "69d8a3f1f847a7b0ccc1608c",
+      "date": "2026-04-12T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc160f4"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc160f5"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc160f6"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc160f7"
+        }
+      ],
+      "notes": "Schedule for Raj Kumar - Mon Apr 13 2026",
+      "createdAt": "2026-04-10T07:17:05.240Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc160f9",
+      "staffId": "69d8a3f1f847a7b0ccc1608c",
+      "date": "2026-04-13T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc160fa"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc160fb"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc160fc"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc160fd"
+        }
+      ],
+      "notes": "Schedule for Raj Kumar - Tue Apr 14 2026",
+      "createdAt": "2026-04-10T07:17:05.242Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc160ff",
+      "staffId": "69d8a3f1f847a7b0ccc1608c",
+      "date": "2026-04-14T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc16100"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc16101"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc16102"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc16103"
+        }
+      ],
+      "notes": "Schedule for Raj Kumar - Wed Apr 15 2026",
+      "createdAt": "2026-04-10T07:17:05.244Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc16105",
+      "staffId": "69d8a3f1f847a7b0ccc1608c",
+      "date": "2026-04-15T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc16106"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc16107"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc16108"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc16109"
+        }
+      ],
+      "notes": "Schedule for Raj Kumar - Thu Apr 16 2026",
+      "createdAt": "2026-04-10T07:17:05.246Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc1610b",
+      "staffId": "69d8a3f1f847a7b0ccc1608e",
+      "date": "2026-04-09T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc1610c"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc1610d"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc1610e"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc1610f"
+        }
+      ],
+      "notes": "Schedule for Amit Singh - Fri Apr 10 2026",
+      "createdAt": "2026-04-10T07:17:05.248Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc16111",
+      "staffId": "69d8a3f1f847a7b0ccc1608e",
+      "date": "2026-04-10T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc16112"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc16113"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc16114"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc16115"
+        }
+      ],
+      "notes": "Schedule for Amit Singh - Sat Apr 11 2026",
+      "createdAt": "2026-04-10T07:17:05.250Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc16117",
+      "staffId": "69d8a3f1f847a7b0ccc1608e",
+      "date": "2026-04-11T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc16118"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc16119"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc1611a"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc1611b"
+        }
+      ],
+      "notes": "Schedule for Amit Singh - Sun Apr 12 2026",
+      "createdAt": "2026-04-10T07:17:05.253Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc1611d",
+      "staffId": "69d8a3f1f847a7b0ccc1608e",
+      "date": "2026-04-12T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc1611e"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc1611f"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc16120"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc16121"
+        }
+      ],
+      "notes": "Schedule for Amit Singh - Mon Apr 13 2026",
+      "createdAt": "2026-04-10T07:17:05.257Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc16123",
+      "staffId": "69d8a3f1f847a7b0ccc1608e",
+      "date": "2026-04-13T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc16124"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc16125"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc16126"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc16127"
+        }
+      ],
+      "notes": "Schedule for Amit Singh - Tue Apr 14 2026",
+      "createdAt": "2026-04-10T07:17:05.261Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc16129",
+      "staffId": "69d8a3f1f847a7b0ccc1608e",
+      "date": "2026-04-14T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc1612a"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc1612b"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc1612c"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc1612d"
+        }
+      ],
+      "notes": "Schedule for Amit Singh - Wed Apr 15 2026",
+      "createdAt": "2026-04-10T07:17:05.263Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc1612f",
+      "staffId": "69d8a3f1f847a7b0ccc1608e",
+      "date": "2026-04-15T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc16130"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc16131"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc16132"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc16133"
+        }
+      ],
+      "notes": "Schedule for Amit Singh - Thu Apr 16 2026",
+      "createdAt": "2026-04-10T07:17:05.265Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc16135",
+      "staffId": "69d8a3f1f847a7b0ccc16090",
+      "date": "2026-04-09T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc16136"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc16137"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc16138"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc16139"
+        }
+      ],
+      "notes": "Schedule for Priya Sharma - Fri Apr 10 2026",
+      "createdAt": "2026-04-10T07:17:05.268Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc1613b",
+      "staffId": "69d8a3f1f847a7b0ccc16090",
+      "date": "2026-04-10T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc1613c"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc1613d"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc1613e"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc1613f"
+        }
+      ],
+      "notes": "Schedule for Priya Sharma - Sat Apr 11 2026",
+      "createdAt": "2026-04-10T07:17:05.270Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc16141",
+      "staffId": "69d8a3f1f847a7b0ccc16090",
+      "date": "2026-04-11T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc16142"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc16143"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc16144"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc16145"
+        }
+      ],
+      "notes": "Schedule for Priya Sharma - Sun Apr 12 2026",
+      "createdAt": "2026-04-10T07:17:05.272Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc16147",
+      "staffId": "69d8a3f1f847a7b0ccc16090",
+      "date": "2026-04-12T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc16148"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc16149"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc1614a"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc1614b"
+        }
+      ],
+      "notes": "Schedule for Priya Sharma - Mon Apr 13 2026",
+      "createdAt": "2026-04-10T07:17:05.274Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc1614d",
+      "staffId": "69d8a3f1f847a7b0ccc16090",
+      "date": "2026-04-13T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc1614e"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc1614f"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc16150"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc16151"
+        }
+      ],
+      "notes": "Schedule for Priya Sharma - Tue Apr 14 2026",
+      "createdAt": "2026-04-10T07:17:05.276Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc16153",
+      "staffId": "69d8a3f1f847a7b0ccc16090",
+      "date": "2026-04-14T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc16154"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc16155"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc16156"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc16157"
+        }
+      ],
+      "notes": "Schedule for Priya Sharma - Wed Apr 15 2026",
+      "createdAt": "2026-04-10T07:17:05.277Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc16159",
+      "staffId": "69d8a3f1f847a7b0ccc16090",
+      "date": "2026-04-15T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc1615a"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc1615b"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc1615c"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc1615d"
+        }
+      ],
+      "notes": "Schedule for Priya Sharma - Thu Apr 16 2026",
+      "createdAt": "2026-04-10T07:17:05.278Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc1615f",
+      "staffId": "69d8a3f1f847a7b0ccc16092",
+      "date": "2026-04-09T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc16160"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc16161"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc16162"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc16163"
+        }
+      ],
+      "notes": "Schedule for Vijay Kumar - Fri Apr 10 2026",
+      "createdAt": "2026-04-10T07:17:05.280Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc16165",
+      "staffId": "69d8a3f1f847a7b0ccc16092",
+      "date": "2026-04-10T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc16166"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc16167"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc16168"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc16169"
+        }
+      ],
+      "notes": "Schedule for Vijay Kumar - Sat Apr 11 2026",
+      "createdAt": "2026-04-10T07:17:05.282Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc1616b",
+      "staffId": "69d8a3f1f847a7b0ccc16092",
+      "date": "2026-04-11T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc1616c"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc1616d"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc1616e"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc1616f"
+        }
+      ],
+      "notes": "Schedule for Vijay Kumar - Sun Apr 12 2026",
+      "createdAt": "2026-04-10T07:17:05.284Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc16171",
+      "staffId": "69d8a3f1f847a7b0ccc16092",
+      "date": "2026-04-12T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc16172"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc16173"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc16174"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc16175"
+        }
+      ],
+      "notes": "Schedule for Vijay Kumar - Mon Apr 13 2026",
+      "createdAt": "2026-04-10T07:17:05.286Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc16177",
+      "staffId": "69d8a3f1f847a7b0ccc16092",
+      "date": "2026-04-13T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc16178"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc16179"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc1617a"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc1617b"
+        }
+      ],
+      "notes": "Schedule for Vijay Kumar - Tue Apr 14 2026",
+      "createdAt": "2026-04-10T07:17:05.288Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc1617d",
+      "staffId": "69d8a3f1f847a7b0ccc16092",
+      "date": "2026-04-14T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc1617e"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc1617f"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc16180"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc16181"
+        }
+      ],
+      "notes": "Schedule for Vijay Kumar - Wed Apr 15 2026",
+      "createdAt": "2026-04-10T07:17:05.290Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc16183",
+      "staffId": "69d8a3f1f847a7b0ccc16092",
+      "date": "2026-04-15T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc16184"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc16185"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc16186"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc16187"
+        }
+      ],
+      "notes": "Schedule for Vijay Kumar - Thu Apr 16 2026",
+      "createdAt": "2026-04-10T07:17:05.292Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc16189",
+      "staffId": "69d8a3f1f847a7b0ccc16094",
+      "date": "2026-04-09T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc1618a"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc1618b"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc1618c"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc1618d"
+        }
+      ],
+      "notes": "Schedule for Anita Gupta - Fri Apr 10 2026",
+      "createdAt": "2026-04-10T07:17:05.294Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc1618f",
+      "staffId": "69d8a3f1f847a7b0ccc16094",
+      "date": "2026-04-10T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc16190"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc16191"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc16192"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc16193"
+        }
+      ],
+      "notes": "Schedule for Anita Gupta - Sat Apr 11 2026",
+      "createdAt": "2026-04-10T07:17:05.297Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc16195",
+      "staffId": "69d8a3f1f847a7b0ccc16094",
+      "date": "2026-04-11T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc16196"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc16197"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc16198"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc16199"
+        }
+      ],
+      "notes": "Schedule for Anita Gupta - Sun Apr 12 2026",
+      "createdAt": "2026-04-10T07:17:05.300Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc1619b",
+      "staffId": "69d8a3f1f847a7b0ccc16094",
+      "date": "2026-04-12T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc1619c"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc1619d"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc1619e"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc1619f"
+        }
+      ],
+      "notes": "Schedule for Anita Gupta - Mon Apr 13 2026",
+      "createdAt": "2026-04-10T07:17:05.303Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc161a1",
+      "staffId": "69d8a3f1f847a7b0ccc16094",
+      "date": "2026-04-13T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc161a2"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc161a3"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc161a4"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc161a5"
+        }
+      ],
+      "notes": "Schedule for Anita Gupta - Tue Apr 14 2026",
+      "createdAt": "2026-04-10T07:17:05.307Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc161a7",
+      "staffId": "69d8a3f1f847a7b0ccc16094",
+      "date": "2026-04-14T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc161a8"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc161a9"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc161aa"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc161ab"
+        }
+      ],
+      "notes": "Schedule for Anita Gupta - Wed Apr 15 2026",
+      "createdAt": "2026-04-10T07:17:05.309Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc161ad",
+      "staffId": "69d8a3f1f847a7b0ccc16094",
+      "date": "2026-04-15T18:30:00.000Z",
+      "slots": [
+        {
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "10 AM - 1 PM",
+          "_id": "69d8a3f1f847a7b0ccc161ae"
+        },
+        {
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "1 PM - 4 PM",
+          "_id": "69d8a3f1f847a7b0ccc161af"
+        },
+        {
+          "startTime": "16:00",
+          "endTime": "19:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "4 PM - 7 PM",
+          "_id": "69d8a3f1f847a7b0ccc161b0"
+        },
+        {
+          "startTime": "19:00",
+          "endTime": "22:00",
+          "isAvailable": true,
+          "assignedComplaint": null,
+          "slotLabel": "7 PM - 10 PM",
+          "_id": "69d8a3f1f847a7b0ccc161b1"
+        }
+      ],
+      "notes": "Schedule for Anita Gupta - Thu Apr 16 2026",
+      "createdAt": "2026-04-10T07:17:05.311Z",
+      "__v": 0
+    }
+  ],
+  "finances": [
+    {
+      "_id": "69d8b66621027898dd975899",
+      "transactionType": "Expense",
+      "amount": 15000,
+      "transactionCategory": "Salary",
+      "description": "February Salary - Ramlal Sharma",
+      "relatedComplaint": null,
+      "handledBy": "69d8b66621027898dd9757db",
+      "date": "2026-02-27T18:30:00.000Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97589d",
+      "transactionType": "Expense",
+      "amount": 12000,
+      "transactionCategory": "Salary",
+      "description": "February Salary - Suresh Kumar",
+      "relatedComplaint": null,
+      "handledBy": "69d8b66621027898dd9757df",
+      "date": "2026-02-27T18:30:00.000Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758a1",
+      "transactionType": "Expense",
+      "amount": 13000,
+      "transactionCategory": "Salary",
+      "description": "February Salary - Amit Singh",
+      "relatedComplaint": null,
+      "handledBy": "69d8b66621027898dd9757e3",
+      "date": "2026-02-27T18:30:00.000Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758a5",
+      "transactionType": "Expense",
+      "amount": 11000,
+      "transactionCategory": "Salary",
+      "description": "February Salary - Deepak Verma",
+      "relatedComplaint": null,
+      "handledBy": "69d8b66621027898dd9757e7",
+      "date": "2026-02-27T18:30:00.000Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758a9",
+      "transactionType": "Expense",
+      "amount": 9000,
+      "transactionCategory": "Salary",
+      "description": "February Salary - Kailash Nath",
+      "relatedComplaint": null,
+      "handledBy": "69d8b66621027898dd9757eb",
+      "date": "2026-02-27T18:30:00.000Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758ad",
+      "transactionType": "Expense",
+      "amount": 14000,
+      "transactionCategory": "Salary",
+      "description": "February Salary - Sohan Lal",
+      "relatedComplaint": null,
+      "handledBy": "69d8b66621027898dd9757ef",
+      "date": "2026-02-27T18:30:00.000Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758b1",
+      "transactionType": "Expense",
+      "amount": 12500,
+      "transactionCategory": "Salary",
+      "description": "February Salary - Vikram Singh",
+      "relatedComplaint": null,
+      "handledBy": "69d8b66621027898dd9757f3",
+      "date": "2026-02-27T18:30:00.000Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758b5",
+      "transactionType": "Expense",
+      "amount": 13500,
+      "transactionCategory": "Salary",
+      "description": "February Salary - Rahul Gupta",
+      "relatedComplaint": null,
+      "handledBy": "69d8b66621027898dd9757f7",
+      "date": "2026-02-27T18:30:00.000Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758e1",
+      "transactionType": "Expense",
+      "amount": 15000,
+      "transactionCategory": "Salary",
+      "description": "March Salary - Ramlal Sharma",
+      "relatedComplaint": null,
+      "handledBy": "69d8b66621027898dd9757db",
+      "date": "2026-03-27T18:30:00.000Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758e5",
+      "transactionType": "Expense",
+      "amount": 12000,
+      "transactionCategory": "Salary",
+      "description": "March Salary - Suresh Kumar",
+      "relatedComplaint": null,
+      "handledBy": "69d8b66621027898dd9757df",
+      "date": "2026-03-27T18:30:00.000Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758e9",
+      "transactionType": "Expense",
+      "amount": 13000,
+      "transactionCategory": "Salary",
+      "description": "March Salary - Amit Singh",
+      "relatedComplaint": null,
+      "handledBy": "69d8b66621027898dd9757e3",
+      "date": "2026-03-27T18:30:00.000Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758ed",
+      "transactionType": "Expense",
+      "amount": 11000,
+      "transactionCategory": "Salary",
+      "description": "March Salary - Deepak Verma",
+      "relatedComplaint": null,
+      "handledBy": "69d8b66621027898dd9757e7",
+      "date": "2026-03-27T18:30:00.000Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758f1",
+      "transactionType": "Expense",
+      "amount": 9000,
+      "transactionCategory": "Salary",
+      "description": "March Salary - Kailash Nath",
+      "relatedComplaint": null,
+      "handledBy": "69d8b66621027898dd9757eb",
+      "date": "2026-03-27T18:30:00.000Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758f5",
+      "transactionType": "Expense",
+      "amount": 14000,
+      "transactionCategory": "Salary",
+      "description": "March Salary - Sohan Lal",
+      "relatedComplaint": null,
+      "handledBy": "69d8b66621027898dd9757ef",
+      "date": "2026-03-27T18:30:00.000Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758f9",
+      "transactionType": "Expense",
+      "amount": 12500,
+      "transactionCategory": "Salary",
+      "description": "March Salary - Vikram Singh",
+      "relatedComplaint": null,
+      "handledBy": "69d8b66621027898dd9757f3",
+      "date": "2026-03-27T18:30:00.000Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9758fd",
+      "transactionType": "Expense",
+      "amount": 13500,
+      "transactionCategory": "Salary",
+      "description": "March Salary - Rahul Gupta",
+      "relatedComplaint": null,
+      "handledBy": "69d8b66621027898dd9757f7",
+      "date": "2026-03-27T18:30:00.000Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975929",
+      "transactionType": "Expense",
+      "amount": 15000,
+      "transactionCategory": "Salary",
+      "description": "April Salary - Ramlal Sharma",
+      "relatedComplaint": null,
+      "handledBy": "69d8b66621027898dd9757db",
+      "date": "2026-04-27T18:30:00.000Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97592d",
+      "transactionType": "Expense",
+      "amount": 12000,
+      "transactionCategory": "Salary",
+      "description": "April Salary - Suresh Kumar",
+      "relatedComplaint": null,
+      "handledBy": "69d8b66621027898dd9757df",
+      "date": "2026-04-27T18:30:00.000Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975931",
+      "transactionType": "Expense",
+      "amount": 13000,
+      "transactionCategory": "Salary",
+      "description": "April Salary - Amit Singh",
+      "relatedComplaint": null,
+      "handledBy": "69d8b66621027898dd9757e3",
+      "date": "2026-04-27T18:30:00.000Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975935",
+      "transactionType": "Expense",
+      "amount": 11000,
+      "transactionCategory": "Salary",
+      "description": "April Salary - Deepak Verma",
+      "relatedComplaint": null,
+      "handledBy": "69d8b66621027898dd9757e7",
+      "date": "2026-04-27T18:30:00.000Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975939",
+      "transactionType": "Expense",
+      "amount": 9000,
+      "transactionCategory": "Salary",
+      "description": "April Salary - Kailash Nath",
+      "relatedComplaint": null,
+      "handledBy": "69d8b66621027898dd9757eb",
+      "date": "2026-04-27T18:30:00.000Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97593d",
+      "transactionType": "Expense",
+      "amount": 14000,
+      "transactionCategory": "Salary",
+      "description": "April Salary - Sohan Lal",
+      "relatedComplaint": null,
+      "handledBy": "69d8b66621027898dd9757ef",
+      "date": "2026-04-27T18:30:00.000Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975941",
+      "transactionType": "Expense",
+      "amount": 12500,
+      "transactionCategory": "Salary",
+      "description": "April Salary - Vikram Singh",
+      "relatedComplaint": null,
+      "handledBy": "69d8b66621027898dd9757f3",
+      "date": "2026-04-27T18:30:00.000Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975945",
+      "transactionType": "Expense",
+      "amount": 13500,
+      "transactionCategory": "Salary",
+      "description": "April Salary - Rahul Gupta",
+      "relatedComplaint": null,
+      "handledBy": "69d8b66621027898dd9757f7",
+      "date": "2026-04-27T18:30:00.000Z",
+      "__v": 0
+    }
+  ],
+  "sessions": [
+    {
+      "_id": "dL7ZSm5Suw-rbpmGEPovRMnzhSKZ-02R",
+      "expires": "2026-04-16T15:41:46.137Z",
+      "session": {
+        "cookie": {
+          "originalMaxAge": 604800000,
+          "partitioned": null,
+          "priority": null,
+          "expires": "2026-04-16T15:41:46.137Z",
+          "secure": false,
+          "httpOnly": true,
+          "domain": null,
+          "path": "/",
+          "sameSite": "lax"
+        },
+        "user": {
+          "id": "69d7c887eecba345cc6e57c7",
+          "email": "admin@gmail.com",
+          "role": "admin",
+          "profileId": null,
+          "isFirstLogin": false
+        },
+        "isLoggedIn": true
+      }
+    },
+    {
+      "_id": "g5gdLcH-ilTKWSOPWz8xLmM6x875tQv8",
+      "expires": "2026-04-16T19:17:09.602Z",
+      "session": {
+        "cookie": {
+          "originalMaxAge": 604800000,
+          "partitioned": null,
+          "priority": null,
+          "expires": "2026-04-16T19:17:09.602Z",
+          "secure": false,
+          "httpOnly": true,
+          "domain": null,
+          "path": "/",
+          "sameSite": "lax"
+        },
+        "user": {
+          "id": "69988107df69da01e3a5b797",
+          "email": "admin@gmail.com",
+          "role": "admin",
+          "profileId": null,
+          "isFirstLogin": false
+        },
+        "isLoggedIn": true
+      }
+    },
+    {
+      "_id": "fTObN4gfSoEe0cB5LfedoseqYkeMUNyk",
+      "expires": "2026-04-16T19:19:29.648Z",
+      "session": {
+        "cookie": {
+          "originalMaxAge": 604800000,
+          "partitioned": null,
+          "priority": null,
+          "expires": "2026-04-16T19:19:29.648Z",
+          "secure": false,
+          "httpOnly": true,
+          "domain": null,
+          "path": "/",
+          "sameSite": "lax"
+        },
+        "user": {
+          "id": "699ae57a050e407305573788",
+          "email": "kirtiagarwal17aug2004@gmail.com",
+          "role": "user",
+          "profileId": "699ae57a050e40730557378a",
+          "isFirstLogin": true
+        },
+        "isLoggedIn": true
+      }
+    },
+    {
+      "_id": "GvCK5ZfdDBgrgZnKrMlUQN7ts35OQz8B",
+      "expires": "2026-04-16T19:38:09.497Z",
+      "session": {
+        "cookie": {
+          "originalMaxAge": 604800000,
+          "partitioned": null,
+          "priority": null,
+          "expires": "2026-04-16T19:38:09.497Z",
+          "secure": false,
+          "httpOnly": true,
+          "domain": null,
+          "path": "/",
+          "sameSite": "lax"
+        },
+        "user": {
+          "id": "699b46ad61d5371c3656c821",
+          "email": "ramesh.g3@testmail.com",
+          "role": "staff",
+          "profileId": "699b46ad61d5371c3656c823",
+          "isFirstLogin": true
+        },
+        "isLoggedIn": true
+      }
+    },
+    {
+      "_id": "LM75zmYLNQHWhu3hKXe4WK_eRt_bGuUs",
+      "expires": "2026-04-17T06:02:17.385Z",
+      "session": {
+        "cookie": {
+          "originalMaxAge": 604800000,
+          "partitioned": null,
+          "priority": null,
+          "expires": "2026-04-17T06:02:17.385Z",
+          "secure": false,
+          "httpOnly": true,
+          "domain": null,
+          "path": "/",
+          "sameSite": "lax"
+        },
+        "user": {
+          "id": "69988107df69da01e3a5b797",
+          "email": "admin@gmail.com",
+          "role": "admin",
+          "profileId": null,
+          "isFirstLogin": false
+        },
+        "isLoggedIn": true
+      }
+    },
+    {
+      "_id": "Lu0ZS-wH_lcdmE5L-7-yt1Zja1wuGO3l",
+      "expires": "2026-04-17T06:21:31.709Z",
+      "session": {
+        "cookie": {
+          "originalMaxAge": 604800000,
+          "partitioned": null,
+          "priority": null,
+          "expires": "2026-04-17T06:21:31.709Z",
+          "secure": false,
+          "httpOnly": true,
+          "domain": null,
+          "path": "/",
+          "sameSite": "lax"
+        },
+        "user": {
+          "id": "699ae57a050e407305573788",
+          "email": "kirtiagarwal17aug2004@gmail.com",
+          "role": "user",
+          "profileId": "699ae57a050e40730557378a",
+          "isFirstLogin": true
+        },
+        "isLoggedIn": true
+      }
+    },
+    {
+      "_id": "u4XzcfQk2QH2IzjuTtwBMCi7Am3UeYRw",
+      "expires": "2026-04-17T07:01:27.479Z",
+      "session": {
+        "cookie": {
+          "originalMaxAge": 604800000,
+          "partitioned": null,
+          "priority": null,
+          "expires": "2026-04-17T07:01:27.479Z",
+          "secure": false,
+          "httpOnly": true,
+          "domain": null,
+          "path": "/",
+          "sameSite": "lax"
+        },
+        "user": {
+          "id": "69988107df69da01e3a5b797",
+          "email": "admin@gmail.com",
+          "role": "admin",
+          "profileId": null,
+          "isFirstLogin": false
+        },
+        "isLoggedIn": true
+      }
+    },
+    {
+      "_id": "rhhLaEZpBtQRTzcF6irPLtRDB1NuiMF3",
+      "expires": "2026-04-17T07:27:20.432Z",
+      "session": {
+        "cookie": {
+          "originalMaxAge": 604800000,
+          "partitioned": null,
+          "priority": null,
+          "expires": "2026-04-17T07:27:20.432Z",
+          "secure": false,
+          "httpOnly": true,
+          "domain": null,
+          "path": "/",
+          "sameSite": "lax"
+        },
+        "user": {
+          "id": "69d8a3f1f847a7b0ccc1606c",
+          "email": "admin@gmail.com",
+          "role": "admin",
+          "profileId": null,
+          "isFirstLogin": false
+        },
+        "isLoggedIn": true
+      }
+    },
+    {
+      "_id": "B1e_zktyzBkwbJMOiOJ3HJs_sQmSAOJg",
+      "expires": "2026-04-17T07:49:51.250Z",
+      "session": {
+        "cookie": {
+          "originalMaxAge": 604800000,
+          "partitioned": null,
+          "priority": null,
+          "expires": "2026-04-17T07:49:51.250Z",
+          "secure": false,
+          "httpOnly": true,
+          "domain": null,
+          "path": "/",
+          "sameSite": "lax"
+        },
+        "user": {
+          "id": "69988107df69da01e3a5b797",
+          "email": "admin@gmail.com",
+          "role": "admin",
+          "profileId": null,
+          "isFirstLogin": false
+        },
+        "isLoggedIn": true
+      }
+    },
+    {
+      "_id": "3pWB3WY_REVN_NwApn7GLRALujxH7YhU",
+      "expires": "2026-04-17T07:58:53.024Z",
+      "session": {
+        "cookie": {
+          "originalMaxAge": 604800000,
+          "partitioned": null,
+          "priority": null,
+          "expires": "2026-04-17T07:58:53.024Z",
+          "secure": false,
+          "httpOnly": true,
+          "domain": null,
+          "path": "/",
+          "sameSite": "lax"
+        },
+        "user": {
+          "id": "69988107df69da01e3a5b797",
+          "email": "admin@gmail.com",
+          "role": "admin",
+          "profileId": null,
+          "isFirstLogin": false
+        },
+        "isLoggedIn": true
+      }
+    }
+  ],
+  "inventories": [
+    {
+      "_id": "699b34f5fc29e1808f1cc4a8",
+      "name": "PVC Pipe (1m)",
+      "__v": 0,
+      "category": "Plumbing",
+      "minimum": 5,
+      "quantity": 20,
+      "unit": "pcs",
+      "updatedAt": "2026-02-22T16:55:14.080Z"
+    },
+    {
+      "_id": "699b34f5fc29e1808f1cc4a9",
+      "name": "Tap Washer",
+      "__v": 0,
+      "category": "Plumbing",
+      "minimum": 10,
+      "quantity": 30,
+      "unit": "pcs",
+      "updatedAt": "2026-02-22T16:55:14.477Z"
+    },
+    {
+      "_id": "699b34f5fc29e1808f1cc4aa",
+      "name": "PVC Fitting",
+      "__v": 0,
+      "category": "Plumbing",
+      "minimum": 8,
+      "quantity": 25,
+      "unit": "pcs",
+      "updatedAt": "2026-02-22T16:55:14.611Z"
+    },
+    {
+      "_id": "699b34f5fc29e1808f1cc4ab",
+      "name": "Sealant Tape",
+      "__v": 0,
+      "category": "Plumbing",
+      "minimum": 5,
+      "quantity": 15,
+      "unit": "rolls",
+      "updatedAt": "2026-02-22T16:55:14.676Z"
+    },
+    {
+      "_id": "699b34f5fc29e1808f1cc4ac",
+      "name": "Water Tap",
+      "__v": 0,
+      "category": "Plumbing",
+      "minimum": 3,
+      "quantity": 10,
+      "unit": "pcs",
+      "updatedAt": "2026-02-22T16:55:14.732Z"
+    },
+    {
+      "_id": "699b34f5fc29e1808f1cc4ad",
+      "name": "LED Bulb 9W",
+      "__v": 0,
+      "category": "Electrical",
+      "minimum": 5,
+      "quantity": 20,
+      "unit": "pcs",
+      "updatedAt": "2026-02-22T16:55:14.788Z"
+    },
+    {
+      "_id": "699b34f5fc29e1808f1cc4ae",
+      "name": "Switch Board",
+      "__v": 0,
+      "category": "Electrical",
+      "minimum": 3,
+      "quantity": 10,
+      "unit": "pcs",
+      "updatedAt": "2026-02-22T16:55:14.838Z"
+    },
+    {
+      "_id": "699b34f5fc29e1808f1cc4af",
+      "name": "Electric Wire (m)",
+      "__v": 0,
+      "category": "Electrical",
+      "minimum": 10,
+      "quantity": 50,
+      "unit": "m",
+      "updatedAt": "2026-02-22T16:55:14.889Z"
+    },
+    {
+      "_id": "699b34f5fc29e1808f1cc4b0",
+      "name": "MCB Breaker",
+      "__v": 0,
+      "category": "Electrical",
+      "minimum": 2,
+      "quantity": 8,
+      "unit": "pcs",
+      "updatedAt": "2026-02-22T16:55:14.958Z"
+    },
+    {
+      "_id": "699b34f5fc29e1808f1cc4b1",
+      "name": "Socket Outlet",
+      "__v": 0,
+      "category": "Electrical",
+      "minimum": 4,
+      "quantity": 12,
+      "unit": "pcs",
+      "updatedAt": "2026-02-22T16:55:15.020Z"
+    },
+    {
+      "_id": "699b34f5fc29e1808f1cc4b2",
+      "name": "Wood Screws",
+      "__v": 0,
+      "category": "Carpentry",
+      "minimum": 20,
+      "quantity": 100,
+      "unit": "pcs",
+      "updatedAt": "2026-02-22T16:55:15.080Z"
+    },
+    {
+      "_id": "699b34f6fc29e1808f1cc4b3",
+      "name": "Door Hinge",
+      "__v": 0,
+      "category": "Carpentry",
+      "minimum": 5,
+      "quantity": 20,
+      "unit": "pcs",
+      "updatedAt": "2026-02-22T16:55:15.147Z"
+    },
+    {
+      "_id": "699b34f6fc29e1808f1cc4b4",
+      "name": "Door Handle",
+      "__v": 0,
+      "category": "Carpentry",
+      "minimum": 2,
+      "quantity": 8,
+      "unit": "pcs",
+      "updatedAt": "2026-02-22T16:55:15.199Z"
+    },
+    {
+      "_id": "699b34f6fc29e1808f1cc4b5",
+      "name": "Sandpaper Sheet",
+      "__v": 0,
+      "category": "Carpentry",
+      "minimum": 5,
+      "quantity": 15,
+      "unit": "pcs",
+      "updatedAt": "2026-02-22T16:55:15.270Z"
+    },
+    {
+      "_id": "699b34f6fc29e1808f1cc4b6",
+      "name": "Wood Polish",
+      "__v": 0,
+      "category": "Carpentry",
+      "minimum": 2,
+      "quantity": 5,
+      "unit": "L",
+      "updatedAt": "2026-02-22T16:55:15.328Z"
+    },
+    {
+      "_id": "699b34f6fc29e1808f1cc4b7",
+      "name": "Floor Cleaner",
+      "__v": 0,
+      "category": "Cleaning",
+      "minimum": 3,
+      "quantity": 10,
+      "unit": "L",
+      "updatedAt": "2026-02-22T16:55:15.391Z"
+    },
+    {
+      "_id": "699b34f6fc29e1808f1cc4b8",
+      "name": "Garbage Bags",
+      "__v": 0,
+      "category": "Cleaning",
+      "minimum": 10,
+      "quantity": 50,
+      "unit": "pcs",
+      "updatedAt": "2026-02-22T16:55:15.455Z"
+    },
+    {
+      "_id": "699b34f6fc29e1808f1cc4b9",
+      "name": "Mop Head",
+      "__v": 0,
+      "category": "Cleaning",
+      "minimum": 2,
+      "quantity": 5,
+      "unit": "pcs",
+      "updatedAt": "2026-02-22T16:55:15.521Z"
+    },
+    {
+      "_id": "699b34f6fc29e1808f1cc4ba",
+      "name": "Disinfectant",
+      "__v": 0,
+      "category": "Cleaning",
+      "minimum": 2,
+      "quantity": 8,
+      "unit": "L",
+      "updatedAt": "2026-02-22T16:55:15.580Z"
+    },
+    {
+      "_id": "699b34f6fc29e1808f1cc4bb",
+      "name": "Door Lock",
+      "__v": 0,
+      "category": "Security",
+      "minimum": 2,
+      "quantity": 6,
+      "unit": "pcs",
+      "updatedAt": "2026-02-22T16:55:15.643Z"
+    },
+    {
+      "_id": "699b34f6fc29e1808f1cc4bc",
+      "name": "Door Bolt",
+      "__v": 0,
+      "category": "Security",
+      "minimum": 3,
+      "quantity": 10,
+      "unit": "pcs",
+      "updatedAt": "2026-02-22T16:55:15.701Z"
+    },
+    {
+      "_id": "699b34f6fc29e1808f1cc4bd",
+      "name": "Door Chain",
+      "__v": 0,
+      "category": "Security",
+      "minimum": 2,
+      "quantity": 8,
+      "unit": "pcs",
+      "updatedAt": "2026-02-22T16:55:15.760Z"
+    },
+    {
+      "_id": "699b34f6fc29e1808f1cc4be",
+      "name": "Cement (kg)",
+      "__v": 0,
+      "category": "General",
+      "minimum": 10,
+      "quantity": 30,
+      "unit": "kg",
+      "updatedAt": "2026-02-22T16:55:15.820Z"
+    },
+    {
+      "_id": "699b34f6fc29e1808f1cc4bf",
+      "name": "Wall Paint (L)",
+      "__v": 0,
+      "category": "General",
+      "minimum": 3,
+      "quantity": 10,
+      "unit": "L",
+      "updatedAt": "2026-02-22T16:55:15.880Z"
+    },
+    {
+      "_id": "699b34f6fc29e1808f1cc4c0",
+      "name": "Putty",
+      "__v": 0,
+      "category": "General",
+      "minimum": 3,
+      "quantity": 10,
+      "unit": "kg",
+      "updatedAt": "2026-02-22T16:55:15.945Z"
+    },
+    {
+      "_id": "699b34f6fc29e1808f1cc4c1",
+      "name": "Adhesive",
+      "__v": 0,
+      "category": "General",
+      "minimum": 2,
+      "quantity": 8,
+      "unit": "pcs",
+      "updatedAt": "2026-02-22T16:55:16.009Z"
+    }
+  ],
+  "auths": [
+    {
+      "_id": "69988107df69da01e3a5b797",
+      "email": "admin@gmail.com",
+      "password": "$2b$10$fvfegFd2DzNEpM6Ll6ti6.jeCuYD7Gplwn4GJLx6kvpkODdGzdtuC",
+      "role": "admin",
+      "isFirstLogin": false,
+      "createdAt": "2026-02-20T15:43:03.671Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9757d9",
+      "email": "ramlal@fixmate.com",
+      "password": "password123",
+      "role": "staff",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.272Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9757dd",
+      "email": "suresh@fixmate.com",
+      "password": "password123",
+      "role": "staff",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.282Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9757e1",
+      "email": "amit@fixmate.com",
+      "password": "password123",
+      "role": "staff",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.285Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9757e5",
+      "email": "deepak@fixmate.com",
+      "password": "password123",
+      "role": "staff",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.289Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9757e9",
+      "email": "kailash@fixmate.com",
+      "password": "password123",
+      "role": "staff",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.292Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9757ed",
+      "email": "sohan@fixmate.com",
+      "password": "password123",
+      "role": "staff",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.296Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9757f1",
+      "email": "vikram@fixmate.com",
+      "password": "password123",
+      "role": "staff",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.298Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9757f5",
+      "email": "rahul@fixmate.com",
+      "password": "password123",
+      "role": "staff",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.300Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9757f9",
+      "email": "resident1@example.com",
+      "password": "password123",
+      "role": "user",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.303Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9757fd",
+      "email": "resident2@example.com",
+      "password": "password123",
+      "role": "user",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.305Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975801",
+      "email": "resident3@example.com",
+      "password": "password123",
+      "role": "user",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.306Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975805",
+      "email": "resident4@example.com",
+      "password": "password123",
+      "role": "user",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.309Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975809",
+      "email": "resident5@example.com",
+      "password": "password123",
+      "role": "user",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.311Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97580d",
+      "email": "resident6@example.com",
+      "password": "password123",
+      "role": "user",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.313Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975811",
+      "email": "resident7@example.com",
+      "password": "password123",
+      "role": "user",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.316Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975815",
+      "email": "resident8@example.com",
+      "password": "password123",
+      "role": "user",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.321Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975819",
+      "email": "resident9@example.com",
+      "password": "password123",
+      "role": "user",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.325Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97581d",
+      "email": "resident10@example.com",
+      "password": "password123",
+      "role": "user",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.328Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975821",
+      "email": "resident11@example.com",
+      "password": "password123",
+      "role": "user",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.330Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975825",
+      "email": "resident12@example.com",
+      "password": "password123",
+      "role": "user",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.332Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975829",
+      "email": "resident13@example.com",
+      "password": "password123",
+      "role": "user",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.334Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97582d",
+      "email": "resident14@example.com",
+      "password": "password123",
+      "role": "user",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.336Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975831",
+      "email": "resident15@example.com",
+      "password": "password123",
+      "role": "user",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.338Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975835",
+      "email": "resident16@example.com",
+      "password": "password123",
+      "role": "user",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.340Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975839",
+      "email": "resident17@example.com",
+      "password": "password123",
+      "role": "user",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.343Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97583d",
+      "email": "resident18@example.com",
+      "password": "password123",
+      "role": "user",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.345Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975841",
+      "email": "resident19@example.com",
+      "password": "password123",
+      "role": "user",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.346Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975845",
+      "email": "resident20@example.com",
+      "password": "password123",
+      "role": "user",
+      "isFirstLogin": true,
+      "createdAt": "2026-04-10T08:35:50.348Z",
+      "__v": 0
+    }
+  ],
+  "users": [
+    {
+      "_id": "69d8b66621027898dd9757fb",
+      "authId": "69d8b66621027898dd9757f9",
+      "name": "Resident 1",
+      "age": 26,
+      "phone": "9000000011",
+      "aadhaar": "800070001001",
+      "flatNumber": "A-101",
+      "photo": null,
+      "createdAt": "2026-04-10T08:35:50.304Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd9757ff",
+      "authId": "69d8b66621027898dd9757fd",
+      "name": "Resident 2",
+      "age": 27,
+      "phone": "9000000012",
+      "aadhaar": "800070001002",
+      "flatNumber": "A-102",
+      "photo": null,
+      "createdAt": "2026-04-10T08:35:50.306Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975803",
+      "authId": "69d8b66621027898dd975801",
+      "name": "Resident 3",
+      "age": 28,
+      "phone": "9000000013",
+      "aadhaar": "800070001003",
+      "flatNumber": "A-103",
+      "photo": null,
+      "createdAt": "2026-04-10T08:35:50.308Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975807",
+      "authId": "69d8b66621027898dd975805",
+      "name": "Resident 4",
+      "age": 29,
+      "phone": "9000000014",
+      "aadhaar": "800070001004",
+      "flatNumber": "A-104",
+      "photo": null,
+      "createdAt": "2026-04-10T08:35:50.310Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97580b",
+      "authId": "69d8b66621027898dd975809",
+      "name": "Resident 5",
+      "age": 30,
+      "phone": "9000000015",
+      "aadhaar": "800070001005",
+      "flatNumber": "A-105",
+      "photo": null,
+      "createdAt": "2026-04-10T08:35:50.312Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97580f",
+      "authId": "69d8b66621027898dd97580d",
+      "name": "Resident 6",
+      "age": 31,
+      "phone": "9000000016",
+      "aadhaar": "800070001006",
+      "flatNumber": "B-106",
+      "photo": null,
+      "createdAt": "2026-04-10T08:35:50.314Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975813",
+      "authId": "69d8b66621027898dd975811",
+      "name": "Resident 7",
+      "age": 32,
+      "phone": "9000000017",
+      "aadhaar": "800070001007",
+      "flatNumber": "B-107",
+      "photo": null,
+      "createdAt": "2026-04-10T08:35:50.319Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975817",
+      "authId": "69d8b66621027898dd975815",
+      "name": "Resident 8",
+      "age": 33,
+      "phone": "9000000018",
+      "aadhaar": "800070001008",
+      "flatNumber": "B-108",
+      "photo": null,
+      "createdAt": "2026-04-10T08:35:50.324Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97581b",
+      "authId": "69d8b66621027898dd975819",
+      "name": "Resident 9",
+      "age": 34,
+      "phone": "9000000019",
+      "aadhaar": "800070001009",
+      "flatNumber": "B-109",
+      "photo": null,
+      "createdAt": "2026-04-10T08:35:50.327Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97581f",
+      "authId": "69d8b66621027898dd97581d",
+      "name": "Resident 10",
+      "age": 35,
+      "phone": "9000000020",
+      "aadhaar": "800070001010",
+      "flatNumber": "B-110",
+      "photo": null,
+      "createdAt": "2026-04-10T08:35:50.329Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975823",
+      "authId": "69d8b66621027898dd975821",
+      "name": "Resident 11",
+      "age": 36,
+      "phone": "9000000021",
+      "aadhaar": "800070001011",
+      "flatNumber": "C-111",
+      "photo": null,
+      "createdAt": "2026-04-10T08:35:50.331Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975827",
+      "authId": "69d8b66621027898dd975825",
+      "name": "Resident 12",
+      "age": 37,
+      "phone": "9000000022",
+      "aadhaar": "800070001012",
+      "flatNumber": "C-112",
+      "photo": null,
+      "createdAt": "2026-04-10T08:35:50.333Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97582b",
+      "authId": "69d8b66621027898dd975829",
+      "name": "Resident 13",
+      "age": 38,
+      "phone": "9000000023",
+      "aadhaar": "800070001013",
+      "flatNumber": "C-113",
+      "photo": null,
+      "createdAt": "2026-04-10T08:35:50.335Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97582f",
+      "authId": "69d8b66621027898dd97582d",
+      "name": "Resident 14",
+      "age": 39,
+      "phone": "9000000024",
+      "aadhaar": "800070001014",
+      "flatNumber": "C-114",
+      "photo": null,
+      "createdAt": "2026-04-10T08:35:50.337Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975833",
+      "authId": "69d8b66621027898dd975831",
+      "name": "Resident 15",
+      "age": 40,
+      "phone": "9000000025",
+      "aadhaar": "800070001015",
+      "flatNumber": "C-115",
+      "photo": null,
+      "createdAt": "2026-04-10T08:35:50.339Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975837",
+      "authId": "69d8b66621027898dd975835",
+      "name": "Resident 16",
+      "age": 41,
+      "phone": "9000000026",
+      "aadhaar": "800070001016",
+      "flatNumber": "D-116",
+      "photo": null,
+      "createdAt": "2026-04-10T08:35:50.341Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97583b",
+      "authId": "69d8b66621027898dd975839",
+      "name": "Resident 17",
+      "age": 42,
+      "phone": "9000000027",
+      "aadhaar": "800070001017",
+      "flatNumber": "D-117",
+      "photo": null,
+      "createdAt": "2026-04-10T08:35:50.344Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd97583f",
+      "authId": "69d8b66621027898dd97583d",
+      "name": "Resident 18",
+      "age": 43,
+      "phone": "9000000028",
+      "aadhaar": "800070001018",
+      "flatNumber": "D-118",
+      "photo": null,
+      "createdAt": "2026-04-10T08:35:50.345Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975843",
+      "authId": "69d8b66621027898dd975841",
+      "name": "Resident 19",
+      "age": 44,
+      "phone": "9000000029",
+      "aadhaar": "800070001019",
+      "flatNumber": "D-119",
+      "photo": null,
+      "createdAt": "2026-04-10T08:35:50.347Z",
+      "__v": 0
+    },
+    {
+      "_id": "69d8b66621027898dd975847",
+      "authId": "69d8b66621027898dd975845",
+      "name": "Resident 20",
+      "age": 45,
+      "phone": "9000000030",
+      "aadhaar": "800070001020",
+      "flatNumber": "D-120",
+      "photo": null,
+      "createdAt": "2026-04-10T08:35:50.349Z",
+      "__v": 0
+    }
+  ],
+  "purchases": [
+    {
+      "_id": "69d8a3f1f847a7b0ccc160b2",
+      "itemId": "699b34f5fc29e1808f1cc4ad",
+      "itemName": "LED Bulb 9W",
+      "supplierName": "Sharma Electrical Supplies",
+      "quantity": 20,
+      "unitCost": 60,
+      "totalCost": 1200,
+      "billImage": "/uploads/sample_bill_1.jpg",
+      "date": "2026-04-10T07:17:05.181Z",
+      "purchaseType": "maintenance",
+      "deductedFromMaintenanceFund": true,
+      "maintenanceFundTransactionId": "TXN001",
+      "approvedBy": "69d8a3f1f847a7b0ccc1606c",
+      "approvedAt": "2026-04-10T07:17:05.181Z",
+      "purchaseOrderNumber": "PO2024001",
+      "invoiceNumber": "INV-2024-001",
+      "paymentMethod": "bank_transfer",
+      "paymentStatus": "paid",
+      "warrantyExpiry": "2025-12-31T00:00:00.000Z",
+      "notes": "High quality LED bulbs for common area lighting",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc160b5",
+      "itemId": "699b34f5fc29e1808f1cc4a8",
+      "itemName": "PVC Pipe (1m)",
+      "supplierName": "Gupta Hardware Store",
+      "quantity": 15,
+      "unitCost": 150,
+      "totalCost": 2250,
+      "billImage": "/uploads/sample_bill_2.jpg",
+      "date": "2026-04-09T07:17:05.187Z",
+      "purchaseType": "maintenance",
+      "deductedFromMaintenanceFund": true,
+      "maintenanceFundTransactionId": "TXN002",
+      "approvedBy": "69d8a3f1f847a7b0ccc1606c",
+      "approvedAt": "2026-04-09T07:17:05.187Z",
+      "purchaseOrderNumber": "PO2024002",
+      "invoiceNumber": "INV-2024-002",
+      "paymentMethod": "cash",
+      "paymentStatus": "paid",
+      "warrantyExpiry": "2026-06-30T00:00:00.000Z",
+      "notes": "Heavy-duty PVC pipes for plumbing repairs",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc160b8",
+      "itemId": "699b34f5fc29e1808f1cc4b2",
+      "itemName": "Wood Screws",
+      "supplierName": "Metro Building Materials",
+      "quantity": 200,
+      "unitCost": 4,
+      "totalCost": 800,
+      "billImage": "/uploads/sample_bill_3.jpg",
+      "date": "2026-04-08T07:17:05.190Z",
+      "purchaseType": "maintenance",
+      "deductedFromMaintenanceFund": true,
+      "maintenanceFundTransactionId": "TXN003",
+      "approvedBy": "69d8a3f1f847a7b0ccc1606c",
+      "approvedAt": "2026-04-08T07:17:05.190Z",
+      "purchaseOrderNumber": "PO2024003",
+      "invoiceNumber": "INV-2024-003",
+      "paymentMethod": "upi",
+      "paymentStatus": "paid",
+      "notes": "Assorted wood screws for carpentry work",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc160bb",
+      "itemId": "699b34f6fc29e1808f1cc4b7",
+      "itemName": "Floor Cleaner",
+      "supplierName": "Clean India Traders",
+      "quantity": 8,
+      "unitCost": 150,
+      "totalCost": 1200,
+      "billImage": "/uploads/sample_bill_4.jpg",
+      "date": "2026-04-07T07:17:05.193Z",
+      "purchaseType": "maintenance",
+      "deductedFromMaintenanceFund": true,
+      "maintenanceFundTransactionId": "TXN004",
+      "approvedBy": "69d8a3f1f847a7b0ccc1606c",
+      "approvedAt": "2026-04-07T07:17:05.193Z",
+      "purchaseOrderNumber": "PO2024004",
+      "invoiceNumber": "INV-2024-004",
+      "paymentMethod": "bank_transfer",
+      "paymentStatus": "paid",
+      "notes": "Industrial floor cleaner for janitorial services",
+      "__v": 0
+    },
+    {
+      "_id": "69d8a3f1f847a7b0ccc160be",
+      "itemId": "699b34f6fc29e1808f1cc4bb",
+      "itemName": "Door Lock",
+      "supplierName": "SecureAll Distributors",
+      "quantity": 5,
+      "unitCost": 500,
+      "totalCost": 2500,
+      "billImage": "/uploads/sample_bill_5.jpg",
+      "date": "2026-04-06T07:17:05.195Z",
+      "purchaseType": "maintenance",
+      "deductedFromMaintenanceFund": true,
+      "maintenanceFundTransactionId": "TXN005",
+      "approvedBy": "69d8a3f1f847a7b0ccc1606c",
+      "approvedAt": "2026-04-06T07:17:05.195Z",
+      "purchaseOrderNumber": "PO2024005",
+      "invoiceNumber": "INV-2024-005",
+      "paymentMethod": "cheque",
+      "paymentStatus": "paid",
+      "warrantyExpiry": "2027-03-31T00:00:00.000Z",
+      "notes": "High-security door locks for main entrances",
+      "__v": 0
+    }
+  ]
+}

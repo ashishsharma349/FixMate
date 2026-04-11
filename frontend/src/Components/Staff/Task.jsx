@@ -14,31 +14,37 @@ const usePolling = (fetchFn, intervalMs = 15000) => {
 
 const statusColors = {
   Assigned: "bg-blue-100 text-blue-700",
-  EstimatePending: "bg-yellow-100 text-yellow-700",
-  EstimateApproved: "bg-green-100 text-green-700",
+  EstimateSubmitted: "bg-orange-100 text-orange-700",
+  EstimateApproved: "bg-teal-100 text-teal-700",
   InProgress: "bg-purple-100 text-purple-700",
-  Resolved: "bg-gray-100 text-gray-500",
+  PaymentPending: "bg-yellow-100 text-yellow-700",
+  Resolved: "bg-green-100 text-green-700",
 };
 
 function TaskCard({ task, onRefresh }) {
-  const [estimateCost, setEstimateCost] = useState("");
+  const [labourEst, setLabourEst] = useState("");
   const [submittingEst, setSubmittingEst] = useState(false);
   const [estMsg, setEstMsg] = useState("");
 
   const [worklog, setWorklog] = useState("");
-  const [actualCost, setActualCost] = useState("");
+  const [actualLabour, setActualLabour] = useState("");
   const [proofFile, setProofFile] = useState(null);
-  const [materials, setMaterials] = useState([]);
+  const [estMaterials, setEstMaterials] = useState([]); // used during estimate
+  const [materialsUsed, setMaterialsUsed] = useState([]); // used during completion
   const [inventoryItems, setInventoryItems] = useState([]);
   const [submittingProof, setSubmittingProof] = useState(false);
   const [proofMsg, setProofMsg] = useState("");
 
+  const [paymentAmount, setPaymentAmount] = useState("");
+  const [verifyingPayment, setVerifyingPayment] = useState(false);
+  const [payMsg, setPayMsg] = useState("");
+
   const isPersonal = task.workType === "Personal";
   const isCommonArea = task.workType === "CommonArea";
 
-  // Fetch inventory for CommonArea during EstimateApproved and InProgress
+  // Fetch inventory for CommonArea during Assigned (Estimate) AND InProgress (Completion)
   useEffect(() => {
-    if (isCommonArea && ["EstimateApproved", "InProgress"].includes(task.status)) {
+    if (isCommonArea && ["Assigned", "InProgress", "EstimateApproved"].includes(task.status)) {
       fetch(`${API}/inventory`, { headers: getAuthHeaders() })
         .then((r) => r.json())
         .then((d) => setInventoryItems(d.items || []))
@@ -46,27 +52,38 @@ function TaskCard({ task, onRefresh }) {
     }
   }, [isCommonArea, task.status]);
 
-  const addMaterial = (name) => {
-    if (!name || materials.find((m) => m.name === name)) return;
-    setMaterials([...materials, { name, qty: 1 }]);
+  const addEstimateMaterial = (id) => {
+    const item = inventoryItems.find(i => i._id === id);
+    if (!item || estMaterials.find(m => m.itemId === id)) return;
+    setEstMaterials([...estMaterials, { itemId: id, name: item.name, qty: 1, price: item.unitPrice || 0 }]);
   };
-  const removeMaterial = (idx) => setMaterials(materials.filter((_, i) => i !== idx));
-  const updateQty = (idx, qty) => {
-    const updated = [...materials];
+
+  const addActualMaterial = (id) => {
+    const item = inventoryItems.find(i => i._id === id);
+    if (!item || materialsUsed.find(m => m.itemId === id)) return;
+    setMaterialsUsed([...materialsUsed, { itemId: id, name: item.name, qty: 1, price: item.unitPrice || 0 }]);
+  };
+
+  const updateMaterialQty = (list, setter, idx, qty) => {
+    const updated = [...list];
     updated[idx].qty = Math.max(1, Number(qty) || 1);
-    setMaterials(updated);
+    setter(updated);
   };
 
   // Submit estimate
   const handleSubmitEstimate = async () => {
-    if (!estimateCost) return;
+    if (!labourEst) return;
     setSubmittingEst(true);
     setEstMsg("");
     try {
       const res = await fetch(`${API}/users/submit-estimate`, {
         method: "POST",
         headers: jsonAuthHeaders(),
-        body: JSON.stringify({ complaintId: task._id, estimatedCost: estimateCost }),
+        body: JSON.stringify({ 
+            complaintId: task._id, 
+            labourEstimate: labourEst,
+            inventoryEstimate: isCommonArea ? estMaterials : []
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
@@ -88,9 +105,8 @@ function TaskCard({ task, onRefresh }) {
       const formData = new FormData();
       formData.append("complaintId", task._id);
       formData.append("worklog", worklog);
-      // Only send actualCost for CommonArea — Personal uses estimatedCost on backend
-      if (isCommonArea) formData.append("actualCost", actualCost);
-      formData.append("materialsUsed", JSON.stringify(isCommonArea ? materials : []));
+      formData.append("actualLabourCost", actualLabour || task.labourEstimate);
+      formData.append("actualInventoryUsed", JSON.stringify(isCommonArea ? materialsUsed : []));
       formData.append("proof", proofFile);
 
       const res = await fetch(`${API}/users/complete-task`, {
@@ -109,7 +125,32 @@ function TaskCard({ task, onRefresh }) {
     }
   };
 
-  const isDone = ["InProgress", "Resolved"].includes(task.status);
+  const handleVerifyPayment = async () => {
+    if (!paymentAmount) return;
+    setVerifyingPayment(true);
+    try {
+        const res = await fetch(`${API}/users/record-payment`, {
+            method: "POST",
+            headers: jsonAuthHeaders(),
+            body: JSON.stringify({ complaintId: task._id, amount: paymentAmount }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        if (data.mismatch) {
+          setPayMsg(`⚠️ ${data.message}`);
+          setPaymentAmount("");
+        } else {
+          setPayMsg("✅ " + data.message);
+        }
+        onRefresh();
+    } catch (err) {
+        setPayMsg("❌ " + err.message);
+    } finally {
+        setVerifyingPayment(false);
+    }
+  };
+
+  const isDone = ["Resolved"].includes(task.status);
 
   return (
     <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-100">
@@ -135,126 +176,144 @@ function TaskCard({ task, onRefresh }) {
       {task.status === "Assigned" && (
         <div className="bg-slate-50 rounded-2xl p-4 mb-4">
           <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">
-            Step 1 — Your Estimated Labour Cost (₹)
+            Step 1 — Labour Cost Estimate (₹)
           </p>
           <div className={`text-[11px] px-3 py-2 rounded-xl mb-3 font-medium ${isPersonal ? "bg-blue-50 text-blue-600" : "bg-teal-50 text-teal-600"}`}>
             {isPersonal
-              ? "🏠 Personal work — estimate auto-approved, resident sees it. No admin step."
-              : "🏢 Common area — admin will approve your estimate before work begins."}
+              ? "🏠 Personal work — resident must approve your estimate before you can start."
+              : "🏢 Common area — admin will approve labour + materials before work begins."}
           </div>
           <input
             type="number"
-            placeholder="Enter amount in ₹"
+            placeholder="Enter labour amount in ₹"
             className="w-full p-4 bg-white rounded-2xl border border-slate-200 font-black text-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-300 mb-3"
-            value={estimateCost}
-            onChange={(e) => setEstimateCost(e.target.value)}
+            value={labourEst}
+            onChange={(e) => setLabourEst(e.target.value)}
           />
+
+          {isCommonArea && (
+            <div className="mb-4">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block ml-1 mb-2">Estimated Materials</label>
+              <select
+                className="w-full p-3 bg-white rounded-xl border border-slate-200 font-bold text-xs mb-3"
+                onChange={(e) => { addEstimateMaterial(e.target.value); e.target.value = ""; }}
+              >
+                <option value="">+ Add materials needed</option>
+                {inventoryItems.map((i) => (
+                  <option key={i._id} value={i._id}>{i.name} (₹{i.unitPrice}/{i.unit})</option>
+                ))}
+              </select>
+              <div className="space-y-2">
+                {estMaterials.map((m, idx) => (
+                  <div key={m.itemId} className="flex justify-between items-center bg-white px-3 py-2 rounded-xl border border-slate-100">
+                    <span className="text-[11px] font-bold text-slate-600">{m.name}</span>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        className="w-12 text-center bg-slate-50 rounded-lg border border-slate-200 text-xs font-bold py-1"
+                        value={m.qty}
+                        onChange={(e) => updateMaterialQty(estMaterials, setEstMaterials, idx, e.target.value)}
+                      />
+                      <button onClick={() => setEstMaterials(estMaterials.filter((_, i) => i !== idx))} className="text-red-400 hover:text-red-600 font-bold px-1">✕</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {estMsg && <p className="text-xs mb-3 font-medium">{estMsg}</p>}
           <button
             onClick={handleSubmitEstimate}
-            disabled={!estimateCost || submittingEst}
-            className="w-full py-3 rounded-2xl bg-slate-900 text-white font-black text-[11px] tracking-widest disabled:bg-slate-200 disabled:text-slate-400 transition-all"
+            disabled={!labourEst || submittingEst}
+            className="w-full py-3 rounded-2xl bg-slate-900 text-white font-black text-[11px] tracking-widest disabled:bg-slate-200 disabled:text-slate-400 transition-all font-sans"
           >
             {submittingEst ? "SUBMITTING..." : "SUBMIT ESTIMATE"}
           </button>
         </div>
       )}
 
-      {/* ── Waiting for admin (CommonArea EstimatePending only) ── */}
-      {task.status === "EstimatePending" && (
-        <div className="bg-yellow-50 rounded-2xl p-4 mb-4 text-center">
+      {/* ── Waiting for approval ── */}
+      {task.status === "EstimateSubmitted" && (
+        <div className="bg-orange-50 rounded-2xl p-4 mb-4 text-center">
           <p className="text-2xl mb-1">⏳</p>
-          <p className="text-sm font-bold text-yellow-700">Estimate submitted: ₹{task.estimatedCost}</p>
-          <p className="text-xs text-yellow-500 mt-1">Waiting for admin approval before work begins.</p>
+          <p className="text-sm font-bold text-orange-700">Estimate submitted: ₹{task.estimatedCost}</p>
+          <p className="text-xs text-orange-500 mt-1">
+            {isPersonal ? "Waiting for resident to accept the estimate." : "Waiting for admin approval before work begins."}
+          </p>
         </div>
       )}
 
-      {/* ── STEP 2: Submit Proof — after estimate approved ── */}
-      {task.status === "EstimateApproved" && (
+      {/* ── STEP 2: Work & Proof — after approval ── */}
+      {(task.status === "EstimateApproved" || (task.status === "InProgress" && !task.proofImage)) && (
         <div className="space-y-4">
           <div className="bg-green-50 rounded-2xl px-4 py-3 text-center">
-            <p className="text-sm font-bold text-green-700">✅ Approved — ₹{task.estimatedCost}</p>
-            <p className="text-xs text-green-500">Submit your proof below once work is done.</p>
+            <p className="text-sm font-bold text-green-700">✅ Approved — Estimated Cost: ₹{task.estimatedCost}</p>
+            <p className="text-xs text-green-500">
+              {task.status === "InProgress" 
+                ? "Work is in progress. Upload proof and confirm payment details when done."
+                : "Submit completion details below once fix is done."}
+            </p>
           </div>
 
-          {/* Work description */}
           <div>
             <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block ml-1 mb-1">Work Done</label>
             <textarea
               className="w-full p-4 bg-slate-50 rounded-2xl border border-slate-100 text-sm h-20 focus:outline-none resize-none"
-              placeholder="Briefly describe the fix..."
+              placeholder="Briefly describe what you did..."
               value={worklog}
               onChange={(e) => setWorklog(e.target.value)}
             />
           </div>
 
-          {/* Materials — CommonArea ONLY */}
           {isCommonArea && (
             <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block ml-1 mb-1">
-                Materials Used <span className="text-slate-300 normal-case font-normal">(optional)</span>
-              </label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block ml-1 mb-1">Actual Materials Used</label>
               <select
                 className="w-full p-3 bg-blue-50 text-blue-700 rounded-xl border-none font-bold text-xs"
-                onChange={(e) => { addMaterial(e.target.value); e.target.value = ""; }}
+                onChange={(e) => { addActualMaterial(e.target.value); e.target.value = ""; }}
               >
-                <option value="">+ Add material from inventory (optional)</option>
+                <option value="">+ Add used items</option>
                 {inventoryItems.map((i) => (
-                  <option key={i._id} value={i.name}>{i.name} ({i.quantity} {i.unit} available)</option>
+                  <option key={i._id} value={i._id}>{i.name} ({i.quantity} left)</option>
                 ))}
               </select>
-              {materials.length > 0 && (
-                <div className="mt-2 space-y-2">
-                  {materials.map((item, idx) => (
-                    <div key={idx} className="flex justify-between items-center bg-slate-50 px-3 py-2 rounded-xl border border-slate-100">
-                      <span className="text-[11px] font-bold text-slate-600">{item.name}</span>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="number"
-                          className="w-12 text-center bg-white rounded-lg border border-slate-200 text-xs font-bold py-1"
-                          value={item.qty}
-                          onChange={(e) => updateQty(idx, e.target.value)}
-                        />
-                        <button onClick={() => removeMaterial(idx)} className="text-red-400 hover:text-red-600 font-bold px-1">✕</button>
-                      </div>
+              <div className="mt-2 space-y-2">
+                {materialsUsed.map((m, idx) => (
+                  <div key={m.itemId} className="flex justify-between items-center bg-slate-50 px-3 py-2 rounded-xl border border-slate-100">
+                    <span className="text-[11px] font-bold text-slate-600">{m.name}</span>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        className="w-12 text-center bg-white rounded-lg border border-slate-200 text-xs font-bold py-1"
+                        value={m.qty}
+                        onChange={(e) => updateMaterialQty(materialsUsed, setMaterialsUsed, idx, e.target.value)}
+                      />
+                      <button onClick={() => setMaterialsUsed(materialsUsed.filter((_, i) => i !== idx))} className="text-red-400 hover:text-red-600 font-bold px-1">✕</button>
                     </div>
-                  ))}
-                </div>
-              )}
-              {materials.length === 0 && (
-                <p className="text-[11px] text-slate-400 mt-2 ml-1">No materials added — labour only job.</p>
-              )}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
-          {/* Actual cost — CommonArea ONLY (Personal uses estimate automatically) */}
-          {isCommonArea && (
-            <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block ml-1 mb-1">
-                Final Amount Charged (₹)
-              </label>
-              <input
-                type="number"
-                placeholder="Enter final amount"
-                className="w-full p-4 bg-slate-50 rounded-2xl border border-slate-100 font-black text-xl text-slate-800 focus:outline-none"
-                value={actualCost}
-                onChange={(e) => setActualCost(e.target.value)}
-              />
-            </div>
-          )}
+          <div>
+            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block ml-1 mb-1">
+              Final Labour Cost (₹)
+            </label>
+            <input
+              type="number"
+              placeholder={task.labourEstimate || "Enter amount"}
+              className="w-full p-4 bg-slate-50 rounded-2xl border border-slate-100 font-black text-xl text-slate-800 focus:outline-none"
+              value={actualLabour}
+              onChange={(e) => setActualLabour(e.target.value)}
+            />
+          </div>
 
-          {/* Personal info note */}
-          {isPersonal && (
-            <div className="bg-blue-50 rounded-2xl px-4 py-3 text-xs text-blue-600 font-medium">
-              🏠 Personal work — final amount is your approved estimate of ₹{task.estimatedCost}. Just upload proof.
-            </div>
-          )}
-
-          {/* Proof photo */}
           <div className={`py-8 rounded-[2rem] border-2 border-dashed flex flex-col items-center justify-center transition-all ${proofFile ? "bg-green-50 border-green-200" : "bg-slate-50 border-slate-200"}`}>
             <label className="cursor-pointer flex flex-col items-center">
               <span className="text-3xl mb-1">{proofFile ? "✅" : "📸"}</span>
-              <span className="text-[9px] font-black uppercase text-slate-400">{proofFile ? proofFile.name : "Take Proof Photo (Required)"}</span>
+              <span className="text-[9px] font-black uppercase text-slate-400">{proofFile ? proofFile.name : "Upload Proof Photo"}</span>
               <input type="file" accept="image/*" className="hidden" onChange={(e) => setProofFile(e.target.files[0])} />
             </label>
           </div>
@@ -266,19 +325,73 @@ function TaskCard({ task, onRefresh }) {
             disabled={!proofFile || submittingProof}
             className="w-full py-5 rounded-2xl bg-slate-900 text-white font-black text-[10px] tracking-[0.2em] disabled:bg-slate-100 disabled:text-slate-300 transition-all"
           >
-            {submittingProof ? "SUBMITTING..." : "SUBMIT COMPLETION PROOF"}
+            {submittingProof ? "SUBMITTING..." : "SUBMIT COMPLETION"}
           </button>
         </div>
       )}
 
-      {/* Already submitted */}
-      {isDone && (
-        <div className="bg-gray-50 rounded-2xl p-4 text-center">
-          <p className="text-2xl mb-1">🎉</p>
-          <p className="text-sm font-bold text-gray-600">Proof Submitted — Awaiting Admin Verification</p>
-          {task.materialsUsed?.length > 0 && (
-            <p className="text-xs text-gray-400 mt-1">Materials: {task.materialsUsed.map(m => `${m.name} x${m.qty}`).join(", ")}</p>
+      {/* ── Show when InProgress with proof already submitted, or PaymentPending ── */}
+      {task.status === "InProgress" && task.proofImage && isPersonal && (
+        <div className="bg-blue-50 rounded-2xl p-4 text-center mb-4">
+          <p className="text-2xl mb-1">✅</p>
+          <p className="text-sm font-bold text-blue-700">Proof submitted! Awaiting payment verification.</p>
+          <p className="text-xs text-blue-500 mt-1">The resident will confirm payment on their end.</p>
+        </div>
+      )}
+
+      {/* ── STEP 3: Payment Verification (Personal Only) ── */}
+      {task.status === "PaymentPending" && (
+        <div className="bg-yellow-50 rounded-[2rem] p-6 border border-yellow-100">
+          <p className="text-[10px] font-black uppercase tracking-widest text-yellow-600 mb-2">Final Step: Verify Payment</p>
+          
+          {task.paymentMismatchCount > 0 && (
+            <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-4">
+              <p className="text-xs font-black text-red-600 uppercase mb-1">⚠️ Payment Mismatch Detected ({task.paymentMismatchCount}x)</p>
+              <p className="text-[11px] text-red-500">
+                Last attempt — You entered: ₹{task.lastMismatchStaffAmount}, Resident entered: ₹{task.lastMismatchUserAmount}. 
+                Please verify with the resident and re-enter the correct amount.
+              </p>
+            </div>
           )}
+          
+          <p className="text-xs font-medium text-yellow-700 mb-4">
+            Enter the exact amount you received from the resident. Once both parties enter matching amounts, the task will be resolved.
+          </p>
+          <input
+            type="number"
+            placeholder="Amount received ₹"
+            className="w-full p-4 bg-white rounded-2xl border border-yellow-200 font-black text-xl text-slate-800 focus:outline-none mb-3"
+            value={paymentAmount}
+            onChange={(e) => setPaymentAmount(e.target.value)}
+          />
+          {payMsg && <p className="text-xs mb-3 font-semibold">{payMsg}</p>}
+          <button
+            onClick={handleVerifyPayment}
+            disabled={!paymentAmount || verifyingPayment}
+            className="w-full py-3 rounded-2xl bg-slate-900 text-white font-black text-[11px] tracking-widest disabled:opacity-50"
+          >
+            {verifyingPayment ? "RECORDING..." : "CONFIRM RECEIPT"}
+          </button>
+          
+          <div className="mt-4 flex flex-col gap-2">
+            <div className={`p-3 rounded-xl flex items-center justify-between text-[10px] font-bold uppercase ${task.staffPaymentAmount !== null ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-400"}`}>
+                <span>Staff Record</span>
+                <span>{task.staffPaymentAmount !== null ? `₹${task.staffPaymentAmount}` : "Pending"}</span>
+            </div>
+            <div className={`p-3 rounded-xl flex items-center justify-between text-[10px] font-bold uppercase ${task.userPaymentAmount !== null ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-400"}`}>
+                <span>Resident Record</span>
+                <span>{task.userPaymentAmount !== null ? `₹${task.userPaymentAmount}` : "Pending"}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Already submitted (Resolved) */}
+      {task.status === "Resolved" && (
+        <div className="bg-green-50 rounded-2xl p-4 text-center">
+          <p className="text-2xl mb-1">🎉</p>
+          <p className="text-sm font-bold text-green-600">Task Successfully Resolved</p>
+          <p className="text-xs text-green-500 mt-1">Total Final Cost: ₹{task.actualCost}</p>
         </div>
       )}
     </div>
@@ -312,7 +425,7 @@ function Task() {
     );
 
   const filtered = complains.filter(c => {
-    if (filterStatus === "Active") return ["Assigned", "InProgress", "EstimatePending", "EstimateApproved"].includes(c.status);
+    if (filterStatus === "Active") return ["Assigned", "InProgress", "EstimateSubmitted", "EstimateApproved", "PaymentPending"].includes(c.status);
     if (filterStatus === "Resolved") return c.status === "Resolved";
     return true;
   });

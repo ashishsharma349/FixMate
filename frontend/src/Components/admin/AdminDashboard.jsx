@@ -1124,266 +1124,6 @@
 //     try {
 //       await apiFetch(`/payments/${editModal._id}`, {
 //         method: "PUT",
-//         body: JSON.stringify(editForm),
-//       });
-//       setEditModal(null);
-//       fetchPayments();
-//     } catch (err) { alert("❌ " + err.message); }
-//     finally { setEditSaving(false); }
-//   };
-
-//   const totalFund = maintenance.filter(p => p.status === "Paid").reduce((s, p) => s + p.amount, 0);
-//   const totalCollectedRaw = personal.filter(p => p.status === "Paid").reduce((s, p) => s + p.amount, 0);
-//   const totalCollected = totalCollectedRaw - totalFund; // Available balance after maintenance deductions
-//   const totalOverdue = personal.filter(p => p.status === "Overdue").reduce((s, p) => s + p.amount, 0);
-//   const totalPending = personal.filter(p => p.status === "Pending").length;
-//             className={`px-5 py-2 rounded-xl text-sm font-semibold transition-colors ${tab === t.key ? "bg-blue-600 text-white" : "bg-white text-gray-600 shadow-sm hover:bg-gray-50"}`}>
-//             {t.label}
-//           </button>
-//         ))}
-//         <div className="ml-auto flex items-center gap-2">
-//           {tab === "personal" && (
-//             <div className="flex items-center gap-1 bg-white px-2 py-1 rounded-xl shadow-sm border border-gray-100">
-//               <span className="text-xs text-gray-500 font-semibold pl-2">₹</span>
-//               <input type="number" value={monthlyAmount} onChange={e => setMonthlyAmount(e.target.value)} className="w-16 bg-transparent text-sm outline-none font-bold text-gray-700 placeholder-gray-300" placeholder="5000" />
-//               <Btn color="teal" size="sm" onClick={handleGenerateMonthly} disabled={generating}>
-//                 {generating ? "Generating..." : "⟳ Generate"}
-//               </Btn>
-//             </div>
-//           )}
-//           <Btn color="gray" size="sm" onClick={fetchPayments}>↻ Refresh</Btn>
-//         </div>
-//       </div>
-
-//       {genMsg && (
-//         <div className={`px-4 py-2 rounded-xl text-sm font-medium flex items-center justify-between ${genMsg.startsWith("✅") ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
-//           {genMsg}<button className="text-xs underline ml-4" onClick={() => setGenMsg("")}>dismiss</button>
-//         </div>
-//       )}
-
-//       {loading ? (
-//         <div className="flex items-center justify-center h-40"><div className="animate-spin w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full" /></div>
-//       ) : (
-//         <>
-//           {tab === "maintenance" && (
-//             <div className="bg-white rounded-2xl shadow-sm overflow-x-auto">
-//               <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
-//                 <h3 className="font-bold text-gray-700 text-sm">Maintenance Fund Expenditure</h3>
-//                 <span className="text-xs text-gray-400">CommonArea work payments from society fund</span>
-//               </div>
-//               <table className="w-full text-sm">
-//                 <thead className="bg-gray-50 border-b border-gray-100">
-//                   <tr>{["Reference ID", "Date", "Purpose", "Amount", "Status", "Worker", "Actions"].map(h => (
-//                     <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500">{h}</th>
-//                   ))}</tr>
-//                 </thead>
-//                 <tbody>
-//                   {maintenance.length === 0 ? (
-//                     <tr><td colSpan={7} className="text-center py-12 text-gray-400 text-sm">
-//                       No maintenance payments yet. They auto-create when CommonArea complaints are completed by staff.
-//                     </td></tr>
-//                   ) : maintenance.map((p, i) => (
-//                     <tr key={p._id || i} className="border-b border-gray-50 hover:bg-gray-50">
-//                       <td className="px-4 py-3 text-blue-600 font-semibold text-xs">{p.refId}</td>
-//                       <td className="px-4 py-3 text-gray-500 text-xs">{fmtDate(p.createdAt)}</td>
-//                       <td className="px-4 py-3 text-gray-700 font-medium">{p.purpose || "—"}</td>
-//                       <td className="px-4 py-3">
-//                         <div className="text-sm">
-//                           <div className="font-bold text-gray-700">₹{p.amount?.toLocaleString()}</div>
-//                           {p.complaint?.estimatedCost && (
-//                             <div className="text-xs text-gray-500">Est: ₹{p.complaint.estimatedCost.toLocaleString()}</div>
-//                           )}
-//                         </div>
-//                       </td>
-//                       <td className="px-4 py-3"><Badge color={statusBadgeColor(p.status)}>{p.status}</Badge></td>
-//                       <td className="px-4 py-3 text-gray-600">{p.workerName || p.worker?.name || "—"}</td>
-//                       <td className="px-4 py-3">
-//                         <div className="flex gap-1">
-//                           <Btn color="gray" size="xs" onClick={() => setViewModal({ type: "man", data: p })}>View</Btn>
-//                           <Btn color="blue" size="xs" onClick={() => { setEditModal(p); setEditForm({ purpose: p.purpose, amount: p.amount, workerName: p.workerName || p.worker?.name || "", status: p.status }); }}>Edit</Btn>
-//                         </div>
-//                       </td>
-//                     </tr>
-//                   ))}
-//                 </tbody>
-//                 {maintenance.length > 0 && (
-//                   <tfoot className="border-t border-gray-100 bg-gray-50">
-//                     <tr>
-//                       <td colSpan={3} className="px-4 py-3 text-sm font-bold text-gray-600">Total Deducted</td>
-//                       <td className="px-4 py-3 text-lg font-black text-orange-600">₹{totalFund.toLocaleString()}</td>
-//                       <td colSpan={3} className="px-4 py-3 text-xs text-gray-400">{maintenance.length} entries</td>
-//                     </tr>
-//                   </tfoot>
-//                 )}
-//               </table>
-//             </div>
-//           )}
-
-//           {tab === "personal" && (
-//             <div className="bg-white rounded-2xl shadow-sm overflow-x-auto">
-//               <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
-//                 <h3 className="font-bold text-gray-700 text-sm">Resident Maintenance Fee</h3>
-//                 <span className="text-xs text-gray-400">
-//                   {personal.length === 0 ? "Click 'Generate Monthly Requests'" : `${personal.length} records · ${personal.filter(p => p.status === "Paid").length} paid`}
-//                 </span>
-//               </div>
-//               <table className="w-full text-sm">
-//                 <thead className="bg-gray-50 border-b border-gray-100">
-//                   <tr>{["Reference ID", "Flat No.", "Resident", "Amount", "Status", "Due Date", "Actions"].map(h => (
-//                     <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500">{h}</th>
-//                   ))}</tr>
-//                 </thead>
-//                 <tbody>
-//                   {personal.length === 0 ? (
-//                     <tr><td colSpan={7} className="text-center py-12 text-sm">
-//                       <p className="text-gray-400 mb-3">No payment records yet.</p>
-//                       <Btn color="teal" size="sm" onClick={handleGenerateMonthly} disabled={generating}>
-//                         {generating ? "Generating..." : "⟳ Generate Monthly Requests"}
-//                       </Btn>
-//                     </td></tr>
-//                   ) : personal.map((p, i) => (
-//                     <tr key={p._id || i} className="border-b border-gray-50 hover:bg-gray-50">
-//                       <td className="px-4 py-3 text-blue-600 font-semibold text-xs">{p.refId}</td>
-//                       <td className="px-4 py-3"><Badge color="blue">{p.flatNumber || p.resident?.flatNumber || "—"}</Badge></td>
-//                       <td className="px-4 py-3 text-gray-700">{p.resident?.name || "—"}</td>
-//                       <td className="px-4 py-3 font-bold text-gray-700">₹{p.amount?.toLocaleString()}</td>
-//                       <td className="px-4 py-3"><Badge color={statusBadgeColor(p.status)}>{p.status}</Badge></td>
-//                       <td className="px-4 py-3 text-xs text-gray-400">{fmtDate(p.dueDate)}</td>
-//                       <td className="px-4 py-3">
-//                         <div className="flex items-center gap-2">
-//                           <Btn color="gray" size="xs" onClick={() => setViewModal({ type: "per", data: p })}>View</Btn>
-//                           {p.status !== "Paid" && (
-//                             <>
-//                               <span className="px-2 py-1 text-[10px] font-semibold rounded-lg bg-yellow-50 text-yellow-600 border border-yellow-200 whitespace-nowrap">
-//                                 Awaiting resident
-//                               </span>
-//                               <Btn color="green" size="xs" disabled={markingPaid === p._id} onClick={() => setMarkModal(p)}>
-//                                 {markingPaid === p._id ? "..." : "Mark Paid"}
-//                               </Btn>
-//                             </>
-//                           )}
-//                         </div>
-//                       </td>
-//                     </tr>
-//                   ))}
-//                 </tbody>
-//                 {personal.length > 0 && (
-//                   <tfoot className="border-t border-gray-100 bg-gray-50">
-//                     <tr>
-//                       <td colSpan={3} className="px-4 py-3 text-sm font-bold text-gray-600">Total Collected</td>
-//                       <td className="px-4 py-3 text-lg font-black text-green-600">₹{totalCollected.toLocaleString()}</td>
-//                       <td colSpan={3} className="px-4 py-3 text-xs text-gray-400">{personal.length} entries</td>
-//                     </tr>
-//                   </tfoot>
-//                 )}
-//               </table>
-//             </div>
-//           )}
-//         </>
-//       )}
-
-//       {markModal && (
-//         <Modal title="Confirm Payment" onClose={() => setMarkModal(null)}>
-//           <div className="space-y-4">
-//             <div className="bg-green-50 rounded-xl p-4">
-//               <p className="text-xs text-green-500 font-semibold uppercase tracking-wide mb-1">Confirming Payment For</p>
-//               <p className="text-xl font-black text-green-700">{markModal.refId}</p>
-//             </div>
-//             <div className="grid grid-cols-2 gap-3 text-sm">
-//               {[
-//                 { label: "Resident", val: markModal.resident?.name || "—" },
-//                 { label: "Flat No.", val: markModal.flatNumber || "—" },
-//                 { label: "Amount", val: `₹${markModal.amount?.toLocaleString()}` },
-//                 { label: "Due Date", val: fmtDate(markModal.dueDate) },
-//               ].map(row => (
-//                 <div key={row.label} className="bg-gray-50 rounded-xl p-3">
-//                   <p className="text-xs text-gray-400 mb-1">{row.label}</p>
-//                   <p className="font-semibold text-gray-700">{row.val}</p>
-//                 </div>
-//               ))}
-//             </div>
-//             <p className="text-xs text-blue-600 bg-blue-50 px-3 py-2 rounded-lg">
-//               Admin confirming this payment as received (cash/offline). Will mark as Paid.
-//             </p>
-//             <div className="flex justify-end gap-2">
-//               <Btn color="gray" onClick={() => setMarkModal(null)}>Cancel</Btn>
-//               <Btn color="green" onClick={handleMarkPaid} disabled={!!markingPaid}>
-//                 {markingPaid ? "Processing..." : "Confirm Paid"}
-//               </Btn>
-//             </div>
-//           </div>
-//         </Modal>
-//       )}
-
-//       {viewModal?.type === "man" && (
-//         <Modal title="Maintenance Payment Receipt" onClose={() => setViewModal(null)}>
-//           <div className="space-y-4">
-//             <div className="bg-orange-50 rounded-xl p-4 flex items-center justify-between">
-//               <div>
-//                 <p className="text-xs text-orange-500 font-semibold uppercase tracking-wide">Reference ID</p>
-//                 <p className="text-xl font-black text-orange-700">{viewModal.data.refId}</p>
-//               </div>
-//               <Badge color={statusBadgeColor(viewModal.data.status)}>{viewModal.data.status}</Badge>
-//             </div>
-//             <div className="grid grid-cols-2 gap-3 text-sm">
-//               {[
-//                 { label: "Purpose", val: viewModal.data.purpose || "—" },
-//                 { label: "Amount", val: `₹${viewModal.data.amount?.toLocaleString()}` },
-//                 { label: "Worker", val: viewModal.data.workerName || "—" },
-//                 { label: "Department", val: viewModal.data.worker?.department || "—" },
-//                 { label: "Date", val: fmtDate(viewModal.data.createdAt) },
-//                 { label: "Paid On", val: fmtDate(viewModal.data.paidAt) },
-//               ].map(row => (
-//                 <div key={row.label} className="bg-gray-50 rounded-xl p-3">
-//                   <p className="text-xs text-gray-400 mb-1">{row.label}</p>
-//                   <p className="font-semibold text-gray-700">{row.val}</p>
-//                 </div>
-//               ))}
-//             </div>
-//             <div className="flex justify-end"><Btn color="gray" onClick={() => setViewModal(null)}>Close</Btn></div>
-//           </div>
-//         </Modal>
-//       )}
-
-//       {editModal && (
-//         <Modal title="Edit Maintenance Record" onClose={() => setEditModal(null)}>
-//           <div className="space-y-3">
-//             <div className="flex flex-col gap-1">
-//               <label className="text-xs font-semibold text-gray-600">Purpose</label>
-//               <input className="border border-gray-200 rounded-xl px-3 py-2 text-sm" value={editForm.purpose || ""} onChange={e => setEditForm(p => ({ ...p, purpose: e.target.value }))} />
-//             </div>
-//             <div className="flex flex-col gap-1">
-//               <label className="text-xs font-semibold text-gray-600">Amount (₹)</label>
-//               <input type="number" className="border border-gray-200 rounded-xl px-3 py-2 text-sm" value={editForm.amount || ""} onChange={e => setEditForm(p => ({ ...p, amount: e.target.value }))} />
-//             </div>
-//             <div className="flex flex-col gap-1">
-//               <label className="text-xs font-semibold text-gray-600">Worker Name</label>
-//               <input className="border border-gray-200 rounded-xl px-3 py-2 text-sm" value={editForm.workerName || ""} onChange={e => setEditForm(p => ({ ...p, workerName: e.target.value }))} />
-//             </div>
-//             <div className="flex flex-col gap-1">
-//               <label className="text-xs font-semibold text-gray-600">Status</label>
-//               <select className="border border-gray-200 rounded-xl px-3 py-2 text-sm" value={editForm.status || "Paid"} onChange={e => setEditForm(p => ({ ...p, status: e.target.value }))}>
-//                 <option value="Paid">Paid</option>
-//                 <option value="Pending">Pending</option>
-//               </select>
-//             </div>
-//             <div className="flex justify-end gap-2 pt-2">
-//               <Btn color="gray" onClick={() => setEditModal(null)}>Cancel</Btn>
-//               <Btn color="blue" onClick={handleEditSave} disabled={editSaving}>{editSaving ? "Saving..." : "Save Changes"}</Btn>
-//             </div>
-//           </div>
-//         </Modal>
-//       )}
-
-//       {viewModal?.type === "per" && (
-//         <Modal title="Resident Payment Details" onClose={() => setViewModal(null)}>
-//           <div className="space-y-4">
-//             <div className="bg-green-50 rounded-xl p-4 flex items-center justify-between">
-//               <div>
-//                 <p className="text-xs text-green-500 font-semibold uppercase tracking-wide">Reference ID</p>
-//                 <p className="text-xl font-black text-green-700">{viewModal.data.refId}</p>
-//               </div>
-//               <Badge color={statusBadgeColor(viewModal.data.status)}>{viewModal.data.status}</Badge>
 //             </div>
 //             <div className="grid grid-cols-2 gap-3 text-sm">
 //               {[
@@ -1702,7 +1442,7 @@
 //   );
 // }
 import { useState, useEffect, useCallback, useRef } from "react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { getAuthHeaders } from "../../utils/api";
 import { clearSessionId } from "../../utils/api";
 
@@ -1792,7 +1532,15 @@ const Sel = ({ label, children, ...props }) => (
   </div>
 );
 
-const statusColor = (s) => ({ Pending: "yellow", Assigned: "blue", EstimatePending: "orange", EstimateApproved: "teal", InProgress: "purple", Resolved: "green" }[s] || "gray");
+const statusColor = (s) => ({ 
+  Pending: "yellow", 
+  Assigned: "blue", 
+  EstimateSubmitted: "orange", 
+  EstimateApproved: "teal", 
+  InProgress: "purple", 
+  PaymentPending: "yellow",
+  Resolved: "green" 
+}[s] || "gray");
 const priorityColor = (p) => ({ Low: "green", Medium: "orange", High: "red", Emergency: "red" }[p] || "gray");
 
 function DashboardView({ onNavigate }) {
@@ -1800,6 +1548,7 @@ function DashboardView({ onNavigate }) {
   const [loading, setLoading] = useState(true);
   const [chartData, setChartData] = useState([]);
   const [viewEstimateModal, setViewEstimateModal] = useState(null);
+  const [viewWipModal, setViewWipModal] = useState(null);
 
   const fetchStats = useCallback(async () => {
     try {
@@ -1848,10 +1597,10 @@ function DashboardView({ onNavigate }) {
 
   const statCards = [
     { icon: "🏢", label: "Total Complaints", value: s.totalComplaints ?? 0, bg: "bg-blue-50", iconBg: "bg-blue-100" },
+    { icon: "🏠", label: "Total Residents", value: s.totalResidents ?? 0, bg: "bg-indigo-50", iconBg: "bg-indigo-100" },
+    { icon: "👷", label: "Total Staff", value: s.totalStaff ?? 0, bg: "bg-teal-50", iconBg: "bg-teal-100" },
     { icon: "🔧", label: "Active Work", value: s.inProgress ?? 0, bg: "bg-yellow-50", iconBg: "bg-yellow-100" },
-    { icon: "⏳", label: "Pending Approval", value: s.pendingApproval ?? 0, bg: "bg-purple-50", iconBg: "bg-purple-100", sub: "Unassigned complaints" },
     { icon: "✅", label: "Resolved", value: s.resolvedComplaints ?? 0, bg: "bg-green-50", iconBg: "bg-green-100" },
-    { icon: "💳", label: "Pending Estimates", value: s.pendingEstimates ?? 0, bg: "bg-red-50", iconBg: "bg-red-100", sub: "Awaiting admin approval" },
   ];
 
   return (
@@ -1904,23 +1653,30 @@ function DashboardView({ onNavigate }) {
           <div className="overflow-x-auto">
             <table className="w-full text-sm min-w-[700px]">
               <thead className="bg-gray-50 border-b border-gray-100">
-                <tr>{["Title", "Status", "Type", "Staff", "📞 Staff Phone", "Resident", "📞 Res. Phone"].map(h => (
+                <tr>{["Title", "Status", "Scheduled Visit", "Type", "Staff", "📞 Staff Phone", "Resident", "📞 Res. Phone"].map(h => (
                   <th key={h} className="text-left px-3 py-2 text-xs font-semibold text-gray-500 whitespace-nowrap">{h}</th>
                 ))}</tr>
               </thead>
               <tbody>
                 {wip.slice(0, 8).map(c => (
-                  <tr key={c._id} className="border-b border-gray-50 hover:bg-gray-50">
-                    <td className="px-3 py-2 font-semibold text-gray-700 max-w-[140px] truncate">{c.title}</td>
+                  <tr key={c._id} onClick={() => setViewWipModal(c)}
+                    className="border-b border-gray-50 hover:bg-blue-50 cursor-pointer transition-colors group">
+                    <td className="px-3 py-2 font-semibold text-gray-700 max-w-[140px] truncate group-hover:text-blue-600">{c.title}</td>
                     <td className="px-3 py-2"><Badge color={statusColor(c.status)}>{c.status}</Badge></td>
+                    <td className="px-3 py-2">
+                       <div className="flex flex-col">
+                         {c.scheduledAt && <span className="text-[10px] font-bold text-purple-600">{new Date(c.scheduledAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short" })}</span>}
+                         <span className="text-[9px] text-gray-400 font-medium uppercase">{c.scheduledSlot || (c.status === "Pending" ? "Pending Slot" : "No Slot")}</span>
+                       </div>
+                    </td>
                     <td className="px-3 py-2">
                       {c.workType ? <Badge color={c.workType === "Personal" ? "blue" : "teal"}>{c.workType === "CommonArea" ? "Common" : "Personal"}</Badge>
                         : <span className="text-gray-300 text-xs">—</span>}
                     </td>
-                    <td className="px-3 py-2 text-gray-600">{c.assignedStaff?.name || "—"}</td>
-                    <td className="px-3 py-2 text-xs text-blue-600 font-medium">{c.assignedStaff?.phone || "—"}</td>
-                    <td className="px-3 py-2 text-gray-600">{c.resident?.name || "—"}</td>
-                    <td className="px-3 py-2 text-xs text-blue-600 font-medium">{c.resident?.phone || "—"}</td>
+                    <td className="px-3 py-2 text-gray-600">{c.assignedStaff?.[0]?.name || "—"}</td>
+                    <td className="px-3 py-2 text-xs text-blue-600 font-medium">{c.assignedStaff?.[0]?.phone || "—"}</td>
+                    <td className="px-3 py-2 text-gray-600 font-medium">{c.residentName || c.resident?.name || "—"}</td>
+                    <td className="px-3 py-2 text-xs text-blue-600 font-bold">{c.residentPhone || c.resident?.phone || "—"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -1942,9 +1698,22 @@ function DashboardView({ onNavigate }) {
                   <p className="text-sm font-semibold text-gray-700 truncate flex-1">{c.title}</p>
                   <Badge color={statusColor(c.status)}>{c.status}</Badge>
                 </div>
-                <div className="flex gap-3 mt-1 text-xs text-gray-400">
-                  <span>👤 {c.resident?.name || "—"}</span>
-                  <span>🔧 {c.assignedStaff?.name || "Unassigned"}</span>
+                <div className="flex flex-col gap-1 mt-2 text-[10px] text-gray-500 font-medium">
+                  <div className="flex items-center gap-2">
+                    <span className="w-4">👤</span> 
+                    <span className="truncate font-bold text-gray-700">{c.residentName || c.resident?.name || "—"}</span>
+                    <span className="text-blue-600 font-bold ml-auto">{c.residentPhone || c.resident?.phone || ""}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-4">🔧</span> 
+                    <span className="truncate">{c.assignedStaff?.[0]?.name || "Unassigned"}</span>
+                    {c.assignedStaff?.[0]?.phone && <span className="text-teal-600 font-bold ml-auto">{c.assignedStaff[0].phone}</span>}
+                  </div>
+                  {c.scheduledSlot && (
+                    <div className="flex items-center gap-2 text-purple-600 font-bold bg-purple-50 px-2 py-0.5 rounded-lg mt-1 w-fit">
+                      <span>⏰</span> {c.scheduledSlot}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -1956,23 +1725,33 @@ function DashboardView({ onNavigate }) {
           <h2 className="text-blue-600 font-bold text-sm mb-1">Pending Estimates</h2>
           <p className="text-[10px] text-gray-400 mb-3">CommonArea work — approve before staff proceeds</p>
           <div className="space-y-3">
-            {estimates.slice(0, 3).map(c => (
+            {estimates.map(c => (
               <div key={c._id} className="border-b border-gray-100 pb-3 last:border-0 last:pb-0">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold text-gray-700 truncate flex-1">{c.title}</p>
+                  <div className="flex-1 truncate">
+                    <p className="text-sm font-semibold text-gray-700 truncate">{c.title}</p>
+                    <Badge color={c.workType === "Personal" ? "blue" : "teal"}>{c.workType}</Badge>
+                  </div>
                   <span className="text-sm font-bold text-gray-700 ml-2">₹{c.estimatedCost ?? "—"}</span>
                 </div>
                 <div className="flex items-center justify-between mt-2">
-                  <span className="text-xs text-gray-400">👤 {c.assignedStaff?.name || "—"}</span>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-gray-400 font-bold uppercase">Staff</span>
+                    <span className="text-xs text-blue-600 font-bold">{c.assignedStaff?.[0]?.name || "—"}</span>
+                  </div>
                   <div className="flex gap-1">
                     <Btn color="gray" size="xs" onClick={() => setViewEstimateModal(c)}>View</Btn>
-                    <Btn color="green" size="xs" onClick={() => handleEstimateAction(c._id, "Approved")}>Approve</Btn>
-                    <Btn color="red" size="xs" onClick={() => handleEstimateAction(c._id, "Rejected")}>Reject</Btn>
+                    {c.workType === "CommonArea" && (
+                        <>
+                            <Btn color="green" size="xs" onClick={() => handleEstimateAction(c._id, "Approved")}>Approve</Btn>
+                            <Btn color="red" size="xs" onClick={() => handleEstimateAction(c._id, "Rejected")}>Reject</Btn>
+                        </>
+                    )}
                   </div>
                 </div>
               </div>
             ))}
-            {estimates.length === 0 && <p className="text-xs text-gray-400 text-center py-4">No pending estimates</p>}
+            {estimates.length === 0 && <p className="text-xs text-gray-400 text-center py-4">No pending estimates requiring admin action</p>}
           </div>
         </div>
 
@@ -2010,37 +1789,169 @@ function DashboardView({ onNavigate }) {
             </BarChart>
           </ResponsiveContainer>
         </div>
-        <div className="bg-white rounded-2xl shadow-sm p-5">
-          <h2 className="text-gray-700 font-bold text-sm mb-1">Monthly Revenue (₹)</h2>
-          <p className="text-[10px] text-gray-400 mb-3">Maintenance fees collected from residents</p>
-          <ResponsiveContainer width="100%" height={150}>
-            <BarChart data={chartData} barSize={22}>
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
-              <YAxis hide />
-              <Tooltip contentStyle={{ borderRadius: 8, border: "none", fontSize: 11 }} formatter={v => [`₹${v.toLocaleString()}`, "Collected"]} />
-              <Bar dataKey="revenue" fill="#34d399" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+        <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col justify-between">
+          <div>
+            <div className="flex justify-between items-start mb-1">
+              <h2 className="text-gray-700 font-bold text-sm">🛡️ Maintenance Fund (Pooled)</h2>
+              <button onClick={() => onNavigate("Payments")} className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-lg font-bold hover:bg-blue-100 transition-colors">Details &rsaquo;</button>
+            </div>
+            <p className="text-[10px] text-gray-400 mb-4 font-medium italic">Pooled balance since Feb 2026</p>
+          </div>
+          
+          <div className="flex-1 flex flex-col justify-center">
+            <div className="flex items-baseline gap-2 mb-2">
+              <p className="text-3xl font-black text-blue-600">₹{stats?.fund?.balance?.toLocaleString() || 0}</p>
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">Available</p>
+            </div>
+            
+            <div className="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden border border-gray-100 mb-2">
+               <div className="h-full bg-blue-600 transition-all duration-1000" style={{ width: `${Math.min(100, (stats?.fund?.spent / stats?.fund?.limit) * 100)}%` }} />
+            </div>
+            
+            <div className="flex justify-between items-center text-[10px] font-bold">
+              <div className="flex flex-col">
+                <span className="text-gray-400 uppercase tracking-widest">Total Pooled</span>
+                <span className="text-gray-600">₹{stats?.fund?.limit?.toLocaleString() || 0}</span>
+              </div>
+              <div className="flex flex-col text-right">
+                <span className="text-gray-400 uppercase tracking-widest text-red-400">Total Spent</span>
+                <span className="text-red-500 font-black">₹{stats?.fund?.spent?.toLocaleString() || 0}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       {viewEstimateModal && (
-        <Modal title={`Estimate Details: ${viewEstimateModal.title}`} onClose={() => setViewEstimateModal(null)}>
+        <Modal title={`Estimate Approval: ${viewEstimateModal.title}`} onClose={() => setViewEstimateModal(null)}>
           <div className="space-y-4 text-sm text-gray-700">
-            <div className="bg-gray-50 rounded-xl p-3">
-              <p><span className="font-semibold">Resident:</span> {viewEstimateModal.resident?.name || "—"}</p>
-              <p><span className="font-semibold">Flat:</span> {viewEstimateModal.resident?.flatNumber || "—"}</p>
-              <p><span className="font-semibold">Description:</span> {viewEstimateModal.description}</p>
+            <div className="bg-gray-50 rounded-2xl p-4">
+              <div className="flex items-center justify-between mb-4">
+                 <div>
+                    <p className="text-[10px] text-gray-400 font-black uppercase">Requested By</p>
+                    <p className="font-bold text-gray-800">{viewEstimateModal.resident?.name || "—"} (Flat {viewEstimateModal.resident?.flatNumber || "—"})</p>
+                 </div>
+                 <Badge color={viewEstimateModal.workType === "Personal" ? "blue" : "teal"}>{viewEstimateModal.workType}</Badge>
+              </div>
+              <p className="text-xs text-gray-600 bg-white p-3 rounded-xl border border-gray-100">{viewEstimateModal.description}</p>
             </div>
-            <div className="bg-orange-50 text-orange-800 rounded-xl p-3 border border-orange-200">
-              <p><span className="font-bold">Staff Assigned:</span> {viewEstimateModal.assignedStaff?.name || "—"}</p>
-              <p><span className="font-bold">Estimated Cost:</span> ₹{viewEstimateModal.estimatedCost || 0}</p>
-              <p className="text-xs text-orange-600 mt-1">If approved, staff will proceed with work and funds will be deducted from the maintenance pool.</p>
+
+            <div className="bg-slate-900 rounded-[2rem] p-6 text-white shadow-xl shadow-blue-900/10">
+                <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Staff Estimate Breakdown</h4>
+                <div className="space-y-3 mb-6">
+                    <div className="flex justify-between items-center pb-2 border-b border-white/10">
+                        <span className="text-slate-400 font-medium">Labour Cost</span>
+                        <span className="font-black text-lg">₹{viewEstimateModal.labourEstimate || 0}</span>
+                    </div>
+                    {viewEstimateModal.inventoryEstimate?.length > 0 && (
+                        <div className="space-y-2">
+                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Materials</p>
+                             {viewEstimateModal.inventoryEstimate.map((item, idx) => (
+                                 <div key={idx} className="flex justify-between items-center text-xs">
+                                     <span className="text-slate-300">{item.name} <span className="text-[10px] text-slate-500">x{item.qty}</span></span>
+                                     <span className="font-bold text-slate-200">₹{(item.price || 0) * (item.qty || 0)}</span>
+                                 </div>
+                             ))}
+                        </div>
+                    )}
+                </div>
+                <div className="flex justify-between items-center pt-2 border-t-2 border-dashed border-white/20">
+                    <span className="font-black text-xs uppercase tracking-widest">Total Estimated</span>
+                    <span className="text-3xl font-black text-blue-400">₹{viewEstimateModal.estimatedCost || 0}</span>
+                </div>
             </div>
-            <div className="flex justify-end gap-2 pt-3">
-              <Btn color="gray" onClick={() => setViewEstimateModal(null)}>Close</Btn>
-              <Btn color="green" onClick={() => { handleEstimateAction(viewEstimateModal._id, "Approved"); setViewEstimateModal(null); }}>Approve</Btn>
-              <Btn color="red" onClick={() => { handleEstimateAction(viewEstimateModal._id, "Rejected"); setViewEstimateModal(null); }}>Reject</Btn>
+
+            {viewEstimateModal.workType === "Personal" ? (
+                <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100">
+                    <p className="text-xs text-blue-700 font-medium italic">🏠 This is a private repair. The resident must approve this estimate, not the admin. You are seeing this for monitoring purposes.</p>
+                </div>
+            ) : (
+                <div className="flex justify-end gap-3 pt-2">
+                  <Btn color="gray" className="!rounded-xl !px-6" onClick={() => setViewEstimateModal(null)}>Close</Btn>
+                  <Btn color="red" className="!rounded-xl !px-6" onClick={() => { handleEstimateAction(viewEstimateModal._id, "Rejected"); setViewEstimateModal(null); }}>Reject</Btn>
+                  <Btn color="green" className="!rounded-xl !px-8" onClick={() => { handleEstimateAction(viewEstimateModal._id, "Approved"); setViewEstimateModal(null); }}>Approve & Proceed</Btn>
+                </div>
+            )}
+          </div>
+        </Modal>
+      )}
+
+      {viewWipModal && (
+        <Modal title={`Complaint Details: ${viewWipModal.title}`} onClose={() => setViewWipModal(null)}>
+          <div className="space-y-4">
+            {viewWipModal.image_url && (
+              <div className="w-full h-48 rounded-2xl overflow-hidden bg-gray-100 mb-4">
+                <img src={`${API}${viewWipModal.image_url}`} alt="Evidence" className="w-full h-full object-cover" />
+              </div>
+            )}
+            {viewWipModal.scheduledAt && (
+              <div className="bg-purple-50 rounded-xl p-3 border border-purple-100 flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] text-purple-400 font-bold uppercase mb-0.5">Scheduled Visit</p>
+                  <p className="text-sm font-bold text-purple-700">
+                    {new Date(viewWipModal.scheduledAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short" })} · {viewWipModal.scheduledSlot}
+                  </p>
+                </div>
+                <span className="text-xl">⏰</span>
+              </div>
+            )}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-gray-50 rounded-xl p-3">
+                <p className="text-[10px] text-gray-400 font-bold uppercase mb-1">Status</p>
+                <Badge color={statusColor(viewWipModal.status)}>{viewWipModal.status}</Badge>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-3">
+                <p className="text-[10px] text-gray-400 font-bold uppercase mb-1">Priority</p>
+                <Badge color={priorityColor(viewWipModal.priority)}>{viewWipModal.priority}</Badge>
+              </div>
+            </div>
+            
+            <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
+              <h4 className="text-xs font-bold text-blue-700 uppercase mb-3">Resident Information</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-[10px] text-blue-400 font-semibold mb-0.5">Name</p>
+                  <p className="text-sm font-bold text-gray-800">{viewWipModal.residentName || viewWipModal.resident?.name || "—"}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-blue-400 font-semibold mb-0.5">Flat Number</p>
+                  <p className="text-sm font-bold text-gray-800">{viewWipModal.flatNumber || viewWipModal.resident?.flatNumber || "—"}</p>
+                </div>
+                <div className="col-span-2">
+                  <p className="text-[10px] text-blue-400 font-semibold mb-0.5">Contact</p>
+                  <p className="text-sm font-bold text-gray-800">{viewWipModal.residentPhone || viewWipModal.resident?.phone || "—"}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gray-50 rounded-xl p-4">
+              <h4 className="text-xs font-bold text-gray-400 uppercase mb-2">Complaint Description</h4>
+              <p className="text-sm text-gray-700 leading-relaxed">{viewWipModal.description}</p>
+            </div>
+
+            <div className="bg-teal-50 rounded-xl p-4 border border-teal-100">
+              <h4 className="text-xs font-bold text-teal-700 uppercase mb-3">Work & Staff</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-[10px] text-teal-400 font-semibold mb-0.5">Work Type</p>
+                  <Badge color={viewWipModal.workType === "CommonArea" ? "teal" : "blue"}>{viewWipModal.workType || "Unassigned"}</Badge>
+                </div>
+                <div>
+                  <p className="text-[10px] text-teal-400 font-semibold mb-0.5">Assigned Staff</p>
+                  <p className="text-sm font-bold text-gray-800">{viewWipModal.assignedStaff?.[0]?.name || "Unassigned"}</p>
+                </div>
+                {viewWipModal.assignedStaff?.[0]?.phone && (
+                  <div className="col-span-2">
+                    <p className="text-[10px] text-teal-400 font-semibold mb-0.5">Staff Contact</p>
+                    <p className="text-sm font-bold text-gray-800">{viewWipModal.assignedStaff?.[0]?.phone}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <Btn color="gray" onClick={() => setViewWipModal(null)}>Close</Btn>
+              <Btn color="blue" onClick={() => { setViewWipModal(null); onNavigate("Complaints"); }}>Management View</Btn>
             </div>
           </div>
         </Modal>
@@ -2059,10 +1970,13 @@ function ComplaintsView() {
   const [filterCategory, setFilterCategory] = useState("All");
   const [sortOrder, setSortOrder] = useState("newest");
   const [assignModal, setAssignModal] = useState(null);
-  const [assignForm, setAssignForm] = useState({ staffId: "", workType: "Personal" });
+  const [assignForm, setAssignForm] = useState({ staffIds: [], workType: "Personal", scheduledAt: "", scheduledSlot: "" });
   const [staffFilter, setStaffFilter] = useState({ dept: "All", avail: "All" });
   const [assigning, setAssigning] = useState(false);
+  const [busyStaffIds, setBusyStaffIds] = useState([]);
+  const [checkingAvailability, setCheckingAvailability] = useState(false);
   const [msg, setMsg] = useState("");
+  const [selectedDetail, setSelectedDetail] = useState(null);
 
   const fetchData = useCallback(async () => {
     try {
@@ -2075,12 +1989,29 @@ function ComplaintsView() {
 
   usePolling(fetchData, 15000);
 
+  useEffect(() => {
+    if (!assignModal || !assignForm.scheduledAt || !assignForm.scheduledSlot) return;
+    const checkAvailability = async () => {
+      setCheckingAvailability(true);
+      try {
+        const data = await apiFetch(`/admin/staff-availability?date=${assignForm.scheduledAt}&slot=${assignForm.scheduledSlot}`);
+        setBusyStaffIds(data.busyStaffIds || []);
+      } catch (err) { console.error("Availability check failed:", err); }
+      finally { setCheckingAvailability(false); }
+    };
+    const timer = setTimeout(checkAvailability, 500); // Debounce
+    return () => clearTimeout(timer);
+  }, [assignModal, assignForm.scheduledAt, assignForm.scheduledSlot]);
+
   const handleAssign = async () => {
-    if (!assignForm.staffId) return;
+    if (assignForm.staffIds.length < 1) {
+      alert("❌ Please select at least 1 staff member");
+      return;
+    }
     setAssigning(true);
     try {
       await apiFetch("/admin/assign-complaint", { method: "POST", body: JSON.stringify({ complaintId: assignModal._id, ...assignForm }) });
-      setMsg("✅ Assigned successfully!");
+      setMsg("✅ Assigned successfully to " + assignForm.staffIds.length + " technicians!");
       setAssignModal(null);
       fetchData();
     } catch (err) { setMsg("❌ " + err.message); }
@@ -2142,9 +2073,9 @@ function ComplaintsView() {
             </Sel>
           </div>
         </div>
-        <div className="flex items-center gap-2 flex-wrap border-t border-gray-50 pt-3">
+          <div className="flex items-center gap-2 flex-wrap border-t border-gray-50 pt-3">
           <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mr-2">Status:</span>
-          {["All", "Pending", "Assigned", "InProgress", "Resolved"].map(s => (
+          {["All", "Pending", "Assigned", "EstimateSubmitted", "EstimateApproved", "InProgress", "PaymentPending", "Resolved"].map(s => (
             <button key={s} onClick={() => setFilterStatus(s)}
               className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all ${filterStatus === s ? "bg-blue-600 text-white shadow-md" : "bg-gray-50 text-gray-500 hover:bg-gray-100"}`}>
               {s.toUpperCase()}
@@ -2158,7 +2089,7 @@ function ComplaintsView() {
         ) : (
           <table className="w-full text-sm min-w-[800px]">
             <thead className="bg-gray-50 border-b border-gray-100">
-              <tr>{["#", "Title", "Resident", "Flat", "Priority", "Status", "Work Type", "Staff", "Est. Cost", "Date", "Action"].map(h => (
+              <tr>{["#", "Title", "Visit Slot", "Resident", "📞 Phone", "Flat", "Priority", "Status", "Work Type", "Staff", "Est. Cost", "Date", "Action"].map(h => (
                 <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500 whitespace-nowrap">{h}</th>
               ))}</tr>
             </thead>
@@ -2166,22 +2097,39 @@ function ComplaintsView() {
               {filtered.map((c, i) => (
                 <tr key={c._id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
                   <td className="px-4 py-3 text-xs text-gray-400">{i + 1}</td>
-                  <td className="px-4 py-3 font-semibold text-gray-700 max-w-[140px] truncate">{c.title}</td>
-                  <td className="px-4 py-3 text-gray-600">{c.resident?.name || "—"}</td>
-                  <td className="px-4 py-3 text-gray-500 text-xs">{c.resident?.flatNumber || "—"}</td>
+                  <td className="px-4 py-3 text-gray-700 max-w-[140px] truncate font-semibold">{c.title}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex flex-col">
+                      {c.scheduledAt && <span className="text-[10px] font-black text-purple-600">{new Date(c.scheduledAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short" })}</span>}
+                      <span className="text-[9px] text-gray-400 leading-none font-bold uppercase">{c.scheduledSlot || "No Slot"}</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-gray-600 font-medium">{c.residentName || c.resident?.name || "—"}</td>
+                  <td className="px-4 py-3 text-xs text-blue-600 font-bold">{c.residentPhone || c.resident?.phone || "—"}</td>
+                  <td className="px-4 py-3 text-gray-500 text-xs font-bold font-mono">{c.flatNumber || c.resident?.flatNumber || "—"}</td>
                   <td className="px-4 py-3"><Badge color={priorityColor(c.priority)}>{c.priority}</Badge></td>
                   <td className="px-4 py-3"><Badge color={statusColor(c.status)}>{c.status}</Badge></td>
                   <td className="px-4 py-3">
                     {c.workType ? <Badge color={c.workType === "Personal" ? "blue" : "teal"}>{c.workType === "CommonArea" ? "Common" : "Personal"}</Badge>
                       : <span className="text-gray-300 text-xs">—</span>}
                   </td>
-                  <td className="px-4 py-3 text-gray-600">{c.assignedStaff?.name || <span className="text-gray-300">—</span>}</td>
+                  <td className="px-4 py-3 text-gray-600">
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-gray-700">{c.assignedStaff?.[0]?.name || <span className="text-gray-300">—</span>}</span>
+                      {c.assignedStaff?.[0]?.phone && <span className="text-[10px] text-blue-500 font-bold">📞 {c.assignedStaff[0].phone}</span>}
+                    </div>
+                  </td>
                   <td className="px-4 py-3 text-gray-600">{c.estimatedCost !== null && c.estimatedCost !== undefined ? `₹${c.estimatedCost}` : <span className="text-gray-300">—</span>}</td>
                   <td className="px-4 py-3 text-xs text-gray-400 whitespace-nowrap">{new Date(c.createdAt).toLocaleDateString()}</td>
                   <td className="px-4 py-3">
-                    {c.status === "Pending" && <Btn color="blue" size="xs" onClick={() => { setAssignModal(c); setAssignForm({ staffId: "", workType: "Personal" }); setStaffFilter({ dept: "All", avail: "All" }); }}>Assign</Btn>}
-                    {c.status === "InProgress" && <Btn color="green" size="xs" onClick={() => handleResolve(c._id)}>Resolve</Btn>}
-                    {!["Pending", "InProgress"].includes(c.status) && <span className="text-xs text-gray-300">—</span>}
+                    <div className="flex gap-1">
+                      <button onClick={() => setSelectedDetail(c)} 
+                        className="bg-gray-100 text-gray-600 px-2 py-1 rounded-lg text-[11px] font-bold hover:bg-gray-200 transition-colors">
+                        View
+                      </button>
+                      {c.status === "Pending" && <Btn color="blue" size="xs" onClick={() => { setAssignModal(c); setAssignForm({ staffIds: [], workType: "Personal", scheduledAt: new Date().toISOString().split("T")[0], scheduledSlot: c.scheduledSlot || "10 AM - 1 PM", staffIncentive: 0 }); setStaffFilter({ dept: "All", avail: "All" }); }}>Assign</Btn>}
+                      {c.status === "InProgress" && <Btn color="green" size="xs" onClick={() => handleResolve(c._id)}>Resolve</Btn>}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -2194,11 +2142,15 @@ function ComplaintsView() {
       {assignModal && (
         <Modal title={`Assign Staff — ${assignModal.title}`} onClose={() => setAssignModal(null)}>
           <div className="space-y-4">
-            <div className="bg-gray-50 rounded-xl p-3 text-sm space-y-1">
-              <p><span className="text-gray-500 font-medium">Resident:</span> {assignModal.resident?.name || "—"}</p>
-              <p><span className="text-gray-500 font-medium">Priority:</span> <Badge color={priorityColor(assignModal.priority)}>{assignModal.priority}</Badge></p>
-              <p className="text-gray-500 text-xs mt-1">{assignModal.description}</p>
+            <div className="bg-gray-50 rounded-xl p-3 text-sm flex justify-between items-start">
+               <div>
+                  <p className="font-bold text-gray-700">{assignModal.resident?.name || "—"}</p>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase">{assignModal.resident?.flatNumber || "No Flat"}</p>
+               </div>
+               <Badge color={priorityColor(assignModal.priority)}>{assignModal.priority}</Badge>
             </div>
+            <p className="text-gray-500 text-xs px-1">{assignModal.description}</p>
+            
             <div>
               <label className="text-xs font-bold text-gray-700 uppercase tracking-wide block mb-2">Work Type</label>
               <div className="grid grid-cols-2 gap-2">
@@ -2214,44 +2166,100 @@ function ComplaintsView() {
                 ))}
               </div>
             </div>
-            <div>
-              <label className="text-xs font-bold text-gray-700 uppercase tracking-wide block mb-2">Filter Staff</label>
-              <div className="flex gap-2">
-                <select value={staffFilter.dept} onChange={e => setStaffFilter(f => ({ ...f, dept: e.target.value }))}
-                  className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-xs bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                  {departments.map(d => <option key={d} value={d}>{d === "All" ? "All Departments" : d}</option>)}
-                </select>
-                <select value={staffFilter.avail} onChange={e => setStaffFilter(f => ({ ...f, avail: e.target.value }))}
-                  className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-xs bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                  <option value="All">All Status</option>
-                  <option value="Available">Available Only</option>
-                  <option value="Busy">Busy Only</option>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-bold text-gray-700 uppercase tracking-wide block mb-2">Visit Date</label>
+                <input type="date" value={assignForm.scheduledAt} onChange={e => setAssignForm(f => ({ ...f, scheduledAt: e.target.value }))}
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-xs bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300" />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-gray-700 uppercase tracking-wide block mb-2">Time Slot</label>
+                <select value={assignForm.scheduledSlot} onChange={e => setAssignForm(f => ({ ...f, scheduledSlot: e.target.value }))}
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-xs bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                  {["10 AM - 1 PM", "1 PM - 4 PM", "4 PM - 7 PM", "7 PM - 10 PM"].map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
             </div>
+
             <div>
-              <label className="text-xs font-bold text-gray-700 uppercase tracking-wide block mb-2">
-                Select Staff Member <span className="text-gray-400 font-normal">({filteredStaff.length} shown)</span>
-              </label>
+              <label className="text-xs font-bold text-gray-700 uppercase tracking-wide block mb-2">Select Staff Member</label>
               <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-                {filteredStaff.length === 0 && <p className="text-xs text-gray-400 text-center py-4">No staff match filters</p>}
-                {filteredStaff.map(s => (
-                  <button key={s._id} onClick={() => setAssignForm(f => ({ ...f, staffId: s._id }))}
-                    className={`w-full text-left border-2 rounded-xl px-4 py-2.5 transition-all ${assignForm.staffId === s._id ? "border-blue-500 bg-blue-50" : "border-gray-100 bg-white hover:border-gray-300"}`}>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-semibold text-gray-700">{s.name}</p>
-                        <p className="text-xs text-gray-400">{s.department}</p>
+                {staff.map(s => {
+                  const isSelected = assignForm.staffIds.includes(s._id);
+                  return (
+                    <button key={s._id} 
+                      onClick={() => {
+                        setAssignForm(f => {
+                          const ids = isSelected ? f.staffIds.filter(id => id !== s._id) : [...f.staffIds, s._id];
+                          return { ...f, staffIds: ids };
+                        });
+                      }}
+                      className={`w-full text-left border-2 rounded-xl px-4 py-2 transition-all ${isSelected ? "border-blue-500 bg-blue-50 text-blue-700" : "border-gray-100 bg-white text-gray-600 hover:border-gray-300"}`}>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-bold">{s.name}</p>
+                          <p className="text-[10px] uppercase font-black opacity-60">{s.department} · {s.isAvailable ? "Available" : "Busy"}</p>
+                        </div>
+                        {isSelected && <span className="text-xs font-black">SELECTED</span>}
                       </div>
-                      <Badge color={s.isAvailable ? "green" : "red"}>{s.isAvailable ? "Available" : "Busy"}</Badge>
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  );
+                })}
               </div>
             </div>
-            <div className="flex justify-end gap-2 pt-2">
-              <Btn color="gray" onClick={() => setAssignModal(null)}>Cancel</Btn>
-              <Btn color="blue" onClick={handleAssign} disabled={!assignForm.staffId || assigning}>{assigning ? "Assigning..." : "Confirm"}</Btn>
+
+            <div className="flex justify-between items-center pt-2 border-t mt-2">
+              <span className="text-[10px] font-black text-gray-400">{assignForm.staffIds.length} Selected</span>
+              <div className="flex gap-2">
+                <Btn color="gray" onClick={() => setAssignModal(null)}>Cancel</Btn>
+                <Btn color="blue" onClick={handleAssign} disabled={assignForm.staffIds.length < 1 || assigning}>
+                  {assigning ? "Assigning..." : "Assign Staff"}
+                </Btn>
+              </div>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {selectedDetail && (
+        <Modal title="Complaint Full Details" onClose={() => setSelectedDetail(null)}>
+          <div className="space-y-4">
+            {selectedDetail.image_url && (
+              <div className="w-full h-48 rounded-2xl overflow-hidden bg-gray-100 mb-2">
+                 <img src={`${API}${selectedDetail.image_url}`} alt="Evidence" className="w-full h-full object-cover" />
+              </div>
+            )}
+            <div className="grid grid-cols-2 gap-3">
+               <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4">
+                  <p className="text-[10px] text-blue-400 font-black uppercase mb-1">Resident Info</p>
+                  <p className="font-bold text-gray-800">{selectedDetail.resident?.name || "—"}</p>
+                  <p className="text-xs text-gray-500 font-bold">Flat: {selectedDetail.resident?.flatNumber || "—"}</p>
+                  <p className="text-xs text-gray-400 font-medium">{selectedDetail.resident?.phone || ""}</p>
+               </div>
+               <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4">
+                  <p className="text-[10px] text-gray-400 font-black uppercase mb-1">Assignment</p>
+                  <p className="font-bold text-gray-800">{selectedDetail.assignedStaff?.[0]?.name || "Unassigned"}</p>
+                  <p className="text-xs text-gray-500">{selectedDetail.assignedStaff?.[0]?.department || "—"}</p>
+                  <Badge color={statusColor(selectedDetail.status)} className="mt-1">{selectedDetail.status}</Badge>
+               </div>
+            </div>
+            <div className="bg-gray-50 rounded-2xl p-4">
+               <p className="text-[10px] text-gray-400 font-black uppercase mb-2">Problem Description</p>
+               <p className="text-sm text-gray-700 leading-relaxed font-medium">{selectedDetail.description || "No description provided."}</p>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+               <div className="bg-teal-50 border border-teal-100 rounded-2xl p-3">
+                  <p className="text-[10px] text-teal-500 font-black mb-1">ESTIMATED COST</p>
+                  <p className="text-lg font-black text-teal-700">₹{selectedDetail.estimatedCost || 0}</p>
+               </div>
+               <div className="bg-teal-50 border border-teal-100 rounded-2xl p-3">
+                  <p className="text-[10px] text-teal-500 font-black mb-1">ACTUAL COST</p>
+                  <p className="text-lg font-black text-teal-700">₹{selectedDetail.actualCost || 0}</p>
+               </div>
+            </div>
+            <div className="flex justify-end pt-2">
+               <Btn color="blue" onClick={() => setSelectedDetail(null)}>Close</Btn>
             </div>
           </div>
         </Modal>
@@ -2288,13 +2296,25 @@ function InventoryView() {
   const handleSave = async () => {
     setSaving(true); setMsg("");
     try {
-      if (modal === "add") {
-        await apiFetch("/inventory", { method: "POST", body: JSON.stringify(form) });
-      } else if (modal === "edit") {
-        await apiFetch(`/inventory/${form._id}`, { method: "PUT", body: JSON.stringify(form) });
-      } else if (modal === "restock") {
-        await apiFetch("/inventory/restock", { method: "POST", body: JSON.stringify({ itemId: form._id, addQty: form.addQty }) });
-      }
+        if (modal === "add") {
+          await apiFetch("/inventory", { method: "POST", body: JSON.stringify({ ...form, supplier: "Default Supplier" }) });
+        } else if (modal === "edit") {
+          await apiFetch(`/inventory/${form._id}`, { method: "PUT", body: JSON.stringify({ ...form, supplier: "Default Supplier" }) });
+        } else if (modal === "restock") {
+          const formData = new FormData();
+          formData.append("itemId", form._id);
+          formData.append("addQty", form.addQty);
+          formData.append("costPerUnit", form.costPerUnit);
+          if (form.billFile) formData.append("billImage", form.billFile);
+          
+          const res = await fetch(`${API}/inventory/restock`, {
+            method: "POST",
+            headers: getAuthHeaders(),
+            body: formData
+          });
+          const resData = await res.json();
+          if (!res.ok) throw new Error(resData.error || "Restock failed");
+        }
       setModal(null);
       fetchItems();
     } catch (err) { setMsg("❌ " + err.message); }
@@ -2442,7 +2462,6 @@ function InventoryView() {
                 <Input label="Quantity" type="number" placeholder="0" {...f("quantity")} />
                 <Input label="Min Threshold" type="number" placeholder="5" {...f("minQuantity")} />
                 <Input label="Unit Price (₹)" type="number" placeholder="0" {...f("unitPrice")} />
-                <Input label="Supplier Name" placeholder="e.g. Sharma Traders" {...f("supplier")} />
                 <Input label="Approved By" placeholder="Admin name" {...f("approvedBy")} />
                 <div className="flex flex-col gap-1">
                   <label className="text-xs font-semibold text-gray-600">Approved Date</label>
@@ -2503,26 +2522,45 @@ function InventoryView() {
       )}
 
       {modal === "restock" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4">
-            <div className="flex items-center justify-between px-6 py-4 border-b">
-              <h3 className="text-base font-bold text-gray-800">Restock: {form.name}</h3>
-              <button onClick={() => setModal(null)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+        <Modal title={`Restock: ${form.name}`} onClose={() => setModal(null)}>
+          <div className="space-y-4">
+            {msg && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg font-bold">{msg}</p>}
+            <div className="bg-slate-50 p-4 rounded-2xl flex justify-between items-center border border-slate-100">
+               <div>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase">Current Stock</p>
+                  <p className="text-lg font-bold text-gray-700">{form.quantity} {form.unit}</p>
+               </div>
+               <Badge color="blue">Default Supplier</Badge>
             </div>
-            <div className="px-6 py-5 space-y-3">
-              {msg && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{msg}</p>}
-              <p className="text-sm text-gray-500">Current stock: <strong>{form.quantity} {form.unit}</strong></p>
-              <Input label="Add Quantity" type="number" placeholder="e.g. 10"
+            
+            <div className="grid grid-cols-2 gap-3">
+              <Input label="Add Quantity *" type="number" placeholder="e.g. 10"
                 value={form.addQty || ""} onChange={(e) => setForm((p) => ({ ...p, addQty: e.target.value }))} />
-              <div className="flex justify-end gap-2 pt-2">
-                <button onClick={() => setModal(null)} className="px-4 py-2 rounded-xl text-sm bg-gray-100 text-gray-600 hover:bg-gray-200 font-semibold">Cancel</button>
-                <button onClick={handleSave} disabled={saving || !form.addQty} className="px-4 py-2 rounded-xl text-sm bg-teal-500 text-white hover:bg-teal-600 font-semibold disabled:opacity-40">
-                  {saving ? "Saving..." : `+ Add ${form.addQty || ""} ${form.unit}`}
-                </button>
-              </div>
+              <Input label="Cost Per Unit (₹) *" type="number" placeholder="e.g. 45"
+                value={form.costPerUnit || ""} onChange={(e) => setForm((p) => ({ ...p, costPerUnit: e.target.value }))} />
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-semibold text-gray-600">Upload Bill Image (Optional)</label>
+              <input type="file" accept="image/*" 
+                onChange={(e) => setForm((p) => ({ ...p, billFile: e.target.files[0] }))}
+                className="text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" />
+            </div>
+
+            <div className="bg-blue-50/50 p-3 rounded-xl border border-blue-50">
+               <p className="text-[10px] text-blue-500 font-bold leading-tight uppercase">
+                 ℹ️ This restocking will automatically create a <b>Society Expense</b> record for audit.
+               </p>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t">
+              <button onClick={() => setModal(null)} className="px-4 py-2 rounded-xl text-sm bg-gray-100 text-gray-600 hover:bg-gray-200 font-semibold">Cancel</button>
+              <button onClick={handleSave} disabled={saving || !form.addQty || !form.costPerUnit} className="px-4 py-2 rounded-xl text-sm bg-teal-500 text-white hover:bg-teal-600 font-bold disabled:opacity-40 shadow-lg shadow-teal-100">
+                {saving ? "Restocking..." : `Confirm Restock`}
+              </button>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   );
@@ -2582,10 +2620,13 @@ function UserManagementView() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3">
-        {[{ key: "staff", label: "👷 Staff" }, { key: "users", label: "🏠 Residents" }].map(t => (
+        {[{ key: "staff", label: "👷 Staff", count: staff.length }, { key: "users", label: "🏠 Residents", count: users.length }].map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
-            className={`px-5 py-2 rounded-xl text-sm font-semibold transition-colors shadow-sm ${tab === t.key ? "bg-blue-600 text-white" : "bg-white text-gray-600 hover:bg-gray-50"}`}>
-            {t.label}
+            className={`px-5 py-2 rounded-xl text-sm font-semibold transition-all shadow-sm flex items-center gap-2 ${tab === t.key ? "bg-blue-600 text-white" : "bg-white text-gray-600 hover:bg-gray-50"}`}>
+            <span>{t.label}</span>
+            <span className={`px-2 py-0.5 rounded-lg text-[10px] font-black ${tab === t.key ? "bg-white/20 text-white" : "bg-blue-50 text-blue-600"}`}>
+              {t.count}
+            </span>
           </button>
         ))}
         <div className="ml-auto">
@@ -2598,94 +2639,133 @@ function UserManagementView() {
       {msg && <div className={`px-4 py-2 rounded-xl text-sm font-medium ${msg.startsWith("✅") ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>{msg}</div>}
 
       {tab === "staff" && (
-        <div className="bg-white rounded-2xl shadow-sm overflow-x-auto">
-          <table className="w-full text-sm min-w-[700px]">
-            <thead className="bg-gray-50 border-b border-gray-100">
-              <tr>{["Name", "Email", "Dept", "Phone", "Aadhaar", "Available", "Actions"].map(h => (
-                <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500">{h}</th>
-              ))}</tr>
-            </thead>
-            <tbody>
-              {loading ? <tr><td colSpan={7} className="text-center py-10"><div className="animate-spin w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full mx-auto" /></td></tr>
-                : staff.map(s => (
-                  <tr key={s._id} className="border-b border-gray-50 hover:bg-gray-50">
-                    <td className="px-4 py-3 font-semibold text-gray-700">{s.name}</td>
-                    <td className="px-4 py-3 text-gray-500 text-xs">{s.authId?.email}</td>
-                    <td className="px-4 py-3"><Badge color="blue">{s.department}</Badge></td>
-                    <td className="px-4 py-3 text-gray-600">{s.phone}</td>
-                    <td className="px-4 py-3 text-gray-500 text-xs">{s.aadhaar}</td>
-                    <td className="px-4 py-3"><Badge color={s.isAvailable ? "green" : "red"}>{s.isAvailable ? "Available" : "Busy"}</Badge></td>
-                    <td className="px-4 py-3">
-                      <div className="flex gap-1">
-                        <Btn color="gray" size="xs" onClick={() => openModal("editStaff", { ...s, email: s.authId?.email })}>Edit</Btn>
-                        <Btn color="red" size="xs" onClick={() => handleDelete("staff", s._id)}>Delete</Btn>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              {!loading && staff.length === 0 && <tr><td colSpan={7} className="text-center py-12 text-gray-400">No staff found</td></tr>}
-            </tbody>
-          </table>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {loading ? (
+            <div className="col-span-full py-20 flex justify-center"><div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full" /></div>
+          ) : staff.map((s, idx) => (
+            <div key={s._id} className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all group relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-1.5 h-full bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-xl font-bold text-blue-600 shadow-inner">
+                    {s.name.charAt(0)}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-gray-800 text-base">{s.name}</h4>
+                    <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">{s.department}</p>
+                  </div>
+                </div>
+                <Badge color="blue" className="!px-2 !py-0.5 text-[10px]">{idx + 1}</Badge>
+              </div>
+              
+              <div className="space-y-2 mb-4">
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <span className="text-gray-300">📧</span>
+                  <span className="truncate">{s.authId?.email || "No Email"}</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-gray-300">📞</span>
+                  <span className="font-black text-blue-600 tracking-tight">{s.phone}</span>
+                </div>
+                <div className="flex items-center gap-2 text-[11px] text-gray-400">
+                  <span className="text-gray-300">🆔</span>
+                  <span>Aadhaar: {s.aadhaar || "—"}</span>
+                </div>
+              </div>
+
+              <div className="flex gap-2 pt-3 border-t border-gray-50">
+                <button onClick={() => openModal("editStaff", { ...s, email: s.authId?.email })}
+                  className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-600 py-1.5 rounded-lg text-xs font-bold transition-colors">
+                  Edit Profile
+                </button>
+                <button onClick={() => handleDelete("staff", s._id)}
+                  className="px-3 bg-red-50 hover:bg-red-100 text-red-500 py-1.5 rounded-lg text-xs font-bold transition-colors">
+                  🗑️
+                </button>
+              </div>
+            </div>
+          ))}
+          {!loading && staff.length === 0 && <div className="col-span-full text-center py-20 text-gray-400">No staff found. Click "Add Staff" to begin.</div>}
         </div>
       )}
 
       {tab === "users" && (
-        <div className="bg-white rounded-2xl shadow-sm overflow-x-auto">
-          <table className="w-full text-sm min-w-[700px]">
-            <thead className="bg-gray-50 border-b border-gray-100">
-              <tr>{["Name", "Email", "Flat No.", "Age", "Phone", "Aadhaar", "Joined", "Actions"].map(h => (
-                <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500">{h}</th>
-              ))}</tr>
-            </thead>
-            <tbody>
-              {loading ? <tr><td colSpan={8} className="text-center py-10"><div className="animate-spin w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full mx-auto" /></td></tr>
-                : users.map(u => (
-                  <tr key={u._id} className="border-b border-gray-50 hover:bg-gray-50">
-                    <td className="px-4 py-3 font-semibold text-gray-700">{u.name}</td>
-                    <td className="px-4 py-3 text-gray-500 text-xs">{u.authId?.email}</td>
-                    <td className="px-4 py-3"><Badge color="blue">{u.flatNumber || "—"}</Badge></td>
-                    <td className="px-4 py-3 text-gray-600">{u.age}</td>
-                    <td className="px-4 py-3 text-gray-600">{u.phone}</td>
-                    <td className="px-4 py-3 text-gray-500 text-xs">{u.aadhaar}</td>
-                    <td className="px-4 py-3 text-xs text-gray-400">{new Date(u.createdAt).toLocaleDateString()}</td>
-                    <td className="px-4 py-3">
-                      <div className="flex gap-1">
-                        <Btn color="gray" size="xs" onClick={() => openModal("editUser", { ...u, email: u.authId?.email })}>Edit</Btn>
-                        <Btn color="red" size="xs" onClick={() => handleDelete("users", u._id)}>Delete</Btn>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              {!loading && users.length === 0 && <tr><td colSpan={8} className="text-center py-12 text-gray-400">No residents found</td></tr>}
-            </tbody>
-          </table>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {loading ? (
+            <div className="col-span-full py-20 flex justify-center"><div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full" /></div>
+          ) : users.map((u, idx) => (
+            <div key={u._id} className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all group relative overflow-hidden">
+               <div className="absolute top-0 left-0 w-1.5 h-full bg-teal-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+               <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-teal-50 rounded-xl flex items-center justify-center text-xl font-bold text-teal-600 shadow-inner">
+                    {u.name.charAt(0)}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-gray-800 text-base">{u.name}</h4>
+                    <div className="flex items-center gap-2">
+                       <span className="text-[10px] text-teal-600 font-black px-1.5 py-0.5 bg-teal-50 rounded-md">FLAT {u.flatNumber || "—"}</span>
+                       <span className="text-[10px] text-gray-400 font-medium">Age: {u.age}</span>
+                    </div>
+                  </div>
+                </div>
+                <Badge color="gray" className="!px-2 !py-0.5 text-[10px]">{idx + 1}</Badge>
+              </div>
+
+              <div className="space-y-2 mb-4">
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <span className="text-gray-300">📧</span>
+                  <span className="truncate">{u.authId?.email || "No Email"}</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-gray-300">📞</span>
+                  <span className="font-black text-blue-600 tracking-tight">{u.phone}</span>
+                </div>
+                <div className="flex items-center justify-between text-[11px] text-gray-400">
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-300">🆔</span>
+                    <span>{u.aadhaar || "—"}</span>
+                  </div>
+                  <span>Joined: {new Date(u.createdAt).toLocaleDateString("en-IN", { month: "short", year: "numeric" })}</span>
+                </div>
+              </div>
+
+              <div className="flex gap-2 pt-3 border-t border-gray-50">
+                <button onClick={() => openModal("editUser", { ...u, email: u.authId?.email })}
+                  className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-600 py-1.5 rounded-lg text-xs font-bold transition-colors">
+                  Edit Details
+                </button>
+                <button onClick={() => handleDelete("users", u._id)}
+                  className="px-3 bg-red-50 hover:bg-red-100 text-red-500 py-1.5 rounded-lg text-xs font-bold transition-colors">
+                  🗑️
+                </button>
+              </div>
+            </div>
+          ))}
+          {!loading && users.length === 0 && <div className="col-span-full text-center py-20 text-gray-400">No residents found. Click "Add Resident" to begin.</div>}
         </div>
       )}
 
       {(modal === "createStaff" || modal === "editStaff") && (
         <Modal title={modal === "createStaff" ? "Add New Staff" : "Edit Staff"} onClose={() => setModal(null)}>
           <div className="space-y-3">
-            {msg && <p className={`text-sm px-3 py-2 rounded-lg ${msg.startsWith("✅") ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>{msg}</p>}
+            <Input label="Full Name *" placeholder="e.g. Rahul Sharma" {...f("name")} />
+            <Input label="Email Address *" placeholder="rahul@fixmate.com" {...f("email")} />
+            <Input label="Phone Number *" placeholder="+91 XXXX-XXXXXX" {...f("phone")} />
+            <Input label="Aadhaar ID" placeholder="XXXX-XXXX-XXXX" {...f("aadhaar")} />
             <div className="grid grid-cols-2 gap-3">
-              <Input label="Full Name" placeholder="Ramesh Kumar"        {...f("name")} />
-              <Input label="Email" type="email" placeholder="staff@example.com" {...f("email")} />
-              <Input label="Phone" placeholder="9876543210"          {...f("phone")} />
-              <Input label="Aadhaar" placeholder="1234 5678 9012"      {...f("aadhaar")} />
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-semibold text-gray-600">Department</label>
+                <select className="border border-gray-200 rounded-xl px-3 py-2 text-sm bg-gray-50 outline-none focus:ring-2 focus:ring-blue-300" {...f("department")}>
+                  {["Plumbing", "Electrical", "Cleaning", "Carpentry", "Security", "Other"].map(d => <option key={d} value={d}>{d}</option>)}
+                </select>
+              </div>
+              <Input label="Base Salary (₹)" type="number" placeholder="8000" {...f("baseSalary")} />
             </div>
-            <Sel label="Department" {...f("department")}>
-              <option value="">— Select —</option>
-              {["Plumbing", "Electrical", "Carpentry", "Cleaning", "Security"].map(d => <option key={d} value={d}>{d}</option>)}
-            </Sel>
-            {modal === "editStaff" && (
-              <Sel label="Availability" value={form.isAvailable ? "true" : "false"} onChange={e => setForm(p => ({ ...p, isAvailable: e.target.value === "true" }))}>
-                <option value="true">Available</option>
-                <option value="false">Busy</option>
-              </Sel>
-            )}
-            {modal === "createStaff" && <p className="text-xs text-blue-600 bg-blue-50 px-3 py-2 rounded-lg">📧 Auto-generated temp password will be emailed to the staff member.</p>}
+            {msg && <p className="text-xs font-bold text-red-500">{msg}</p>}
             <div className="flex justify-end gap-2 pt-2">
               <Btn color="gray" onClick={() => setModal(null)}>Cancel</Btn>
-              <Btn color="blue" onClick={handleSave} disabled={saving}>{saving ? "Saving..." : "Save"}</Btn>
+              <Btn color="blue" onClick={handleSave} disabled={saving}>{saving ? "Saving..." : "Save Staff Member"}</Btn>
             </div>
           </div>
         </Modal>
@@ -2694,19 +2774,18 @@ function UserManagementView() {
       {(modal === "createUser" || modal === "editUser") && (
         <Modal title={modal === "createUser" ? "Add New Resident" : "Edit Resident"} onClose={() => setModal(null)}>
           <div className="space-y-3">
-            {msg && <p className={`text-sm px-3 py-2 rounded-lg ${msg.startsWith("✅") ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>{msg}</p>}
+            <Input label="Full Name *" placeholder="e.g. Sameer Khanna" {...f("name")} />
+            <Input label="Email Address *" placeholder="sameer@fixmate.com" {...f("email")} />
+            <Input label="Phone Number *" placeholder="+91 XXXX-XXXXXX" {...f("phone")} />
+            <Input label="Aadhaar ID" placeholder="XXXX-XXXX-XXXX" {...f("aadhaar")} />
             <div className="grid grid-cols-2 gap-3">
-              <Input label="Full Name" placeholder="Ashish Sharma"         {...f("name")} />
-              <Input label="Email" type="email" placeholder="res@example.com" {...f("email")} />
-              <Input label="Age" type="number" placeholder="30"       {...f("age")} />
-              <Input label="Phone" placeholder="9876543210"             {...f("phone")} />
-              <Input label="Flat No." placeholder="101 / A-202"            {...f("flatNumber")} />
-              <Input label="Aadhaar" placeholder="1234 5678 9012"         {...f("aadhaar")} />
+              <Input label="Flat Number *" placeholder="B-102" {...f("flatNumber")} />
+              <Input label="Age" type="number" placeholder="30" {...f("age")} />
             </div>
-            {modal === "createUser" && <p className="text-xs text-blue-600 bg-blue-50 px-3 py-2 rounded-lg">📧 Auto-generated temp password will be emailed to the resident.</p>}
+            {msg && <p className="text-xs font-bold text-red-500">{msg}</p>}
             <div className="flex justify-end gap-2 pt-2">
               <Btn color="gray" onClick={() => setModal(null)}>Cancel</Btn>
-              <Btn color="blue" onClick={handleSave} disabled={saving}>{saving ? "Saving..." : "Save"}</Btn>
+              <Btn color="blue" onClick={handleSave} disabled={saving}>{saving ? "Saving..." : "Save Resident"}</Btn>
             </div>
           </div>
         </Modal>
@@ -2716,417 +2795,321 @@ function UserManagementView() {
 }
 
 function PaymentsView() {
-  const [tab, setTab] = useState("maintenance");
-  const [maintenance, setMaintenance] = useState([]);
-  const [personal, setPersonal] = useState([]);
+  const [tab, setTab] = useState("expenses");
+  const [data, setData] = useState({ staff: [], expenses: [], salaries: [], personalPayments: [], stats: { totalIncome: 0, totalSpent: 0, balance: 0 } });
   const [loading, setLoading] = useState(true);
-  const [generating, setGenerating] = useState(false);
-  const [genMsg, setGenMsg] = useState("");
-  const [monthlyAmount, setMonthlyAmount] = useState(5000);
-  const [viewModal, setViewModal] = useState(null);
-  const [markModal, setMarkModal] = useState(null);
-  const [markingPaid, setMarkingPaid] = useState(null);
-  const [editModal, setEditModal] = useState(null);
-  const [editForm, setEditForm] = useState({});
-  const [editSaving, setEditSaving] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState("");
-  const [selectedYear, setSelectedYear] = useState("");
+  const [processing, setProcessing] = useState(false);
+  const [msg, setMsg] = useState("");
+  const [salaryModal, setSalaryModal] = useState(null);
+  const [salaryForm, setSalaryForm] = useState({ amount: "", month: new Date().getMonth() + 1, year: new Date().getFullYear(), description: "" });
+  
+  const [addExpenseModal, setAddExpenseModal] = useState(false);
+  const [expenseForm, setExpenseForm] = useState({ title: "", category: "CommonRepair", amount: "", date: "" });
+  const [billFile, setBillFile] = useState(null);
 
-  const fmtDate = d => d ? new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : "—";
-  const statusBadgeColor = s => ({ Paid: "green", Pending: "yellow", Overdue: "red" }[s] || "gray");
-
-  const fetchPayments = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     try {
-      const queryParams = new URLSearchParams();
-      if (selectedMonth) queryParams.append('month', selectedMonth);
-      if (selectedYear) queryParams.append('year', selectedYear);
-      
-      const url = queryParams.toString() ? `/payments/list?${queryParams.toString()}` : "/payments/list";
-      console.log('Fetching URL:', url);
-      const data = await apiFetch(url);
-      console.log('API Response:', data);
-      console.log('Personal payments count:', data.personal?.length || 0);
-      console.log('April 2026 payments:', data.personal?.filter(p => p.month === 4 && p.year === 2026) || []);
-      setMaintenance(data.maintenance || []);
-      setPersonal(data.personal || []);
-    } catch (err) { console.error("Payments fetch:", err); }
+      const d = await apiFetch("/admin/finances-data");
+      setData(d);
+    } catch (err) { console.error(err); }
     finally { setLoading(false); }
-  }, [selectedMonth, selectedYear]);
+  }, []);
 
-  usePolling(fetchPayments, 15000);
+  useEffect(() => { fetchData(); }, [fetchData]);
+  usePolling(fetchData, 15000);
 
-  const handleGenerateMonthly = async () => {
-    setGenerating(true); setGenMsg("");
+  const handlePayout = async (financeId) => {
+    if (!window.confirm("Confirm payment from Maintenance Fund?")) return;
+    setProcessing(true); setMsg("");
     try {
-      const res = await apiFetch("/payments/generate-monthly", { method: "POST", body: JSON.stringify({ amount: Number(monthlyAmount) }) });
-      setGenMsg(`✅ Done — ${res.created} new records created, ${res.skipped} already existed for ${res.month}/${res.year}`);
-      fetchPayments();
-    } catch (err) { setGenMsg("❌ " + err.message); }
-    finally { setGenerating(false); }
+      await apiFetch("/admin/payout-expense", { method: "POST", body: JSON.stringify({ financeId }) });
+      setMsg("✅ Payout successful. Fund balance updated.");
+      fetchData();
+    } catch (err) { setMsg("❌ " + err.message); }
+    finally { setProcessing(false); }
   };
 
-  const handleMarkPaid = async () => {
-    if (!markModal) return;
-    setMarkingPaid(markModal._id);
+  const handleRecordSalary = async () => {
+    if (!salaryForm.amount || !salaryModal) return;
+    setProcessing(true); setMsg("");
     try {
-      await apiFetch("/payments/mark-paid", { method: "POST", body: JSON.stringify({ paymentId: markModal._id }) });
-      setMarkModal(null);
-      fetchPayments();
-    } catch (err) { alert("❌ " + err.message); }
-    finally { setMarkingPaid(null); }
-  };
-
-  const handleEditSave = async () => {
-    setEditSaving(true);
-    try {
-      await apiFetch(`/payments/${editModal._id}`, {
-        method: "PUT",
-        body: JSON.stringify(editForm),
+      await apiFetch("/admin/record-salary", { 
+        method: "POST", 
+        body: JSON.stringify({ staffId: salaryModal._id, ...salaryForm }) 
       });
-      setEditModal(null);
-      fetchPayments();
-    } catch (err) { alert("❌ " + err.message); }
-    finally { setEditSaving(false); }
+      setMsg("✅ Salary recorded for " + salaryModal.name);
+      setSalaryModal(null);
+      fetchData();
+    } catch (err) { setMsg("❌ " + err.message); }
+    finally { setProcessing(false); }
   };
 
-  const totalFund = maintenance.filter(p => p.status === "Paid").reduce((s, p) => s + p.amount, 0);
-  const totalCollectedRaw = personal.filter(p => p.status === "Paid").reduce((s, p) => s + p.amount, 0);
-  const totalCollected = totalCollectedRaw - totalFund;
-  const totalOverdue = personal.filter(p => p.status === "Overdue").reduce((s, p) => s + p.amount, 0);
-  const totalPending = personal.filter(p => p.status === "Pending").length;
+  const handleAddExpense = async () => {
+    if (!expenseForm.title || !expenseForm.amount) return setMsg("❌ Title and amount are required");
+    setProcessing(true); setMsg("");
+    try {
+      const fd = new FormData();
+      fd.append("title", expenseForm.title);
+      fd.append("category", expenseForm.category);
+      fd.append("amount", expenseForm.amount);
+      if (expenseForm.date) fd.append("date", expenseForm.date);
+      if (billFile) fd.append("billImage", billFile);
+
+      const API = "http://localhost:3000";
+      const authHeaderMap = getAuthHeaders();
+      const res = await fetch(`${API}/admin/add-expense`, {
+        method: "POST",
+        headers: {
+          ...authHeaderMap,
+        },
+        body: fd
+      });
+      const returnedData = await res.json();
+      if (!res.ok) throw new Error(returnedData.error || "Failed to add expense");
+
+      setMsg("✅ Record added successfully.");
+      setAddExpenseModal(false);
+      setExpenseForm({ title: "", category: "CommonRepair", amount: "", date: "" });
+      setBillFile(null);
+      fetchData();
+    } catch (err) { setMsg("❌ " + err.message); }
+    finally { setProcessing(false); }
+  };
+
+  const fExt = (field) => ({
+    value: expenseForm[field] || "",
+    onChange: (e) => setExpenseForm(prev => ({ ...prev, [field]: e.target.value }))
+  });
+
+  if (loading) return <div className="flex items-center justify-center h-64"><div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full" /></div>;
+
+  const fmtDate = d => d ? new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short" }) : "—";
+  const { stats, expenses, salaries, personalPayments, staff } = data;
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-3 flex-wrap">
+    <div className="space-y-6">
+      {/* Finance Stats Bar */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {[
-          { key: "maintenance", label: "🏛️ Maintenance Fund" },
-          { key: "personal", label: "🏠 Resident Fees" },
-        ].map(t => (
-          <button key={t.key} onClick={() => setTab(t.key)}
-            className={`px-5 py-2 rounded-xl text-sm font-semibold transition-colors ${tab === t.key ? "bg-blue-600 text-white" : "bg-white text-gray-600 shadow-sm hover:bg-gray-50"}`}>
-            {t.label}
-          </button>
-        ))}
-        <div className="ml-auto flex items-center gap-2">
-          {/* Month/Year Filters */}
-          <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl shadow-sm border border-gray-100">
-            <span className="text-xs text-gray-500 font-semibold">Filter:</span>
-            <select 
-              value={selectedMonth} 
-              onChange={e => setSelectedMonth(e.target.value)}
-              className="text-xs bg-transparent outline-none font-medium text-gray-700 border-r border-gray-200 pr-2"
-            >
-              <option value="">All Months</option>
-              <option value="1">Jan</option>
-              <option value="2">Feb</option>
-              <option value="3">Mar</option>
-              <option value="4">Apr</option>
-              <option value="5">May</option>
-              <option value="6">Jun</option>
-              <option value="7">Jul</option>
-              <option value="8">Aug</option>
-              <option value="9">Sep</option>
-              <option value="10">Oct</option>
-              <option value="11">Nov</option>
-              <option value="12">Dec</option>
-            </select>
-            <select 
-              value={selectedYear} 
-              onChange={e => setSelectedYear(e.target.value)}
-              className="text-xs bg-transparent outline-none font-medium text-gray-700"
-            >
-              <option value="">All Years</option>
-              <option value="2023">2023</option>
-              <option value="2024">2024</option>
-              <option value="2025">2025</option>
-              <option value="2026">2026</option>
-            </select>
-            {(selectedMonth || selectedYear) && (
-              <button 
-                onClick={() => { setSelectedMonth(""); setSelectedYear(""); }}
-                className="text-xs text-blue-600 hover:text-blue-800 font-medium"
-              >
-                Clear
-              </button>
-            )}
+          { label: "Fund Balance", val: `₹${stats.balance.toLocaleString()}`, color: "blue" },
+          { label: "Total Income", val: `₹${stats.totalIncome.toLocaleString()}`, color: "green" },
+          { label: "Total Spent", val: `₹${stats.totalSpent.toLocaleString()}`, color: "red" },
+          { label: "Pending Payouts", val: `₹${expenses.filter(e => e.status === "Pending").reduce((s, e) => s + e.amount, 0).toLocaleString()}`, color: "orange" },
+        ].map(s => (
+          <div key={s.label} className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{s.label}</p>
+            <p className={`text-2xl font-black text-${s.color}-600`}>{s.val}</p>
           </div>
-          {tab === "personal" && (
-            <div className="flex items-center gap-1 bg-white px-2 py-1 rounded-xl shadow-sm border border-gray-100">
-              <span className="text-xs text-gray-500 font-semibold pl-2">₹</span>
-              <input type="number" value={monthlyAmount} onChange={e => setMonthlyAmount(e.target.value)} className="w-16 bg-transparent text-sm outline-none font-bold text-gray-700 placeholder-gray-300" placeholder="5000" />
-              <Btn color="teal" size="sm" onClick={handleGenerateMonthly} disabled={generating}>
-                {generating ? "Generating..." : "⟳ Generate"}
-              </Btn>
-            </div>
-          )}
-          <Btn color="gray" size="sm" onClick={fetchPayments}>↻ Refresh</Btn>
-        </div>
+        ))}
       </div>
 
-      {genMsg && (
-        <div className={`px-4 py-2 rounded-xl text-sm font-medium flex items-center justify-between ${genMsg.startsWith("✅") ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
-          {genMsg}<button className="text-xs underline ml-4" onClick={() => setGenMsg("")}>dismiss</button>
+      {/* Tabs */}
+      <div className="flex items-center bg-white p-2 rounded-2xl shadow-sm border border-gray-100 w-fit">
+        {["expenses", "salaries", "personal"].map(t => (
+          <button key={t} onClick={() => setTab(t)}
+            className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all
+            ${tab === t ? "bg-blue-600 text-white shadow-lg shadow-blue-200" : "text-gray-400 hover:text-gray-600"}`}>
+            {t === "personal" ? "Resident Payments" : t}
+          </button>
+        ))}
+      </div>
+
+      {msg && <div className={`px-5 py-3 rounded-2xl text-sm font-bold border ${msg.startsWith("✅") ? "bg-green-50 border-green-100 text-green-700" : "bg-red-50 border-red-100 text-red-700"}`}>{msg}</div>}
+
+      {/* SECTION: EXPENSES */}
+      {tab === "expenses" && (
+        <div className="bg-white rounded-[2.5rem] shadow-sm overflow-hidden border border-gray-50 flex flex-col">
+          <div className="p-8 border-b border-gray-50 flex justify-between items-center">
+            <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest">Common Work & Inventory Payouts</h3>
+            <div className="flex items-center gap-3">
+              <Badge color="blue">{expenses.length} Records</Badge>
+              <Btn color="blue" size="xs" onClick={() => setAddExpenseModal(true)}>+ Add Bill</Btn>
+            </div>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50/50">
+                <tr className="text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                  <th className="px-8 py-4">Date</th>
+                  <th className="px-8 py-4">Description</th>
+                  <th className="px-8 py-4 text-center">Amount</th>
+                  <th className="px-8 py-4 text-center">Status</th>
+                  <th className="px-8 py-4 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {expenses.map(e => (
+                  <tr key={e._id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-8 py-5 text-[11px] font-bold text-gray-500">{fmtDate(e.date)}</td>
+                    <td className="px-8 py-5">
+                      <p className="font-black text-gray-800 text-xs uppercase">{e.description}</p>
+                      <p className="text-[10px] text-gray-400 font-bold uppercase">{e.transactionCategory}</p>
+                    </td>
+                    <td className="px-8 py-5 text-center font-black text-gray-800">₹{e.amount.toLocaleString()}</td>
+                    <td className="px-8 py-5 text-center">
+                      <Badge color={e.status === "Paid" ? "green" : "yellow"}>{e.status}</Badge>
+                    </td>
+                    <td className="px-8 py-5 text-right">
+                      {e.status === "Pending" ? (
+                        <Btn color="blue" size="xs" onClick={() => handlePayout(e._id)} disabled={processing}>PAY</Btn>
+                      ) : <span className="text-[10px] font-black text-gray-300 uppercase">Released</span>}
+                    </td>
+                  </tr>
+                ))}
+                {expenses.length === 0 && <tr><td colSpan={5} className="py-20 text-center text-gray-300 font-black uppercase text-[10px]">No Expenses Logged</td></tr>}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
-      {loading ? (
-        <div className="flex items-center justify-center h-40"><div className="animate-spin w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full" /></div>
-      ) : (
-        <>
-          {tab === "maintenance" && (
-            <div className="bg-white rounded-2xl shadow-sm overflow-x-auto">
-              <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
-                <h3 className="font-bold text-gray-700 text-sm">Maintenance Fund Expenditure</h3>
-                <span className="text-xs text-gray-400">CommonArea work payments from society fund</span>
-              </div>
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b border-gray-100">
-                  <tr>{["Reference ID", "Date", "Purpose", "Amount", "Status", "Worker", "Actions"].map(h => (
-                    <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500">{h}</th>
-                  ))}</tr>
-                </thead>
-                <tbody>
-                  {maintenance.length === 0 ? (
-                    <tr><td colSpan={7} className="text-center py-12 text-gray-400 text-sm">
-                      No maintenance payments yet. They auto-create when CommonArea complaints are completed by staff.
-                    </td></tr>
-                  ) : maintenance.map((p, i) => (
-                    <tr key={p._id || i} className="border-b border-gray-50 hover:bg-gray-50">
-                      <td className="px-4 py-3 text-blue-600 font-semibold text-xs">{p.refId}</td>
-                      <td className="px-4 py-3 text-gray-500 text-xs">{fmtDate(p.createdAt)}</td>
-                      <td className="px-4 py-3 text-gray-700 font-medium">{p.purpose || "—"}</td>
-                      <td className="px-4 py-3">
-                        <div className="text-sm">
-                          <div className="font-bold text-gray-700">₹{p.amount?.toLocaleString()}</div>
-                          {p.complaint?.estimatedCost && (
-                            <div className="text-xs text-gray-500">Est: ₹{p.complaint.estimatedCost.toLocaleString()}</div>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3"><Badge color={statusBadgeColor(p.status)}>{p.status}</Badge></td>
-                      <td className="px-4 py-3 text-gray-600">{p.workerName || p.worker?.name || "—"}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex gap-1">
-                          <Btn color="gray" size="xs" onClick={() => setViewModal({ type: "man", data: p })}>View</Btn>
-                          <Btn color="blue" size="xs" onClick={() => { setEditModal(p); setEditForm({ purpose: p.purpose, amount: p.amount, workerName: p.workerName || p.worker?.name || "", status: p.status }); }}>Edit</Btn>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-                {maintenance.length > 0 && (
-                  <tfoot className="border-t border-gray-100 bg-gray-50">
-                    <tr>
-                      <td colSpan={3} className="px-4 py-3 text-sm font-bold text-gray-600">Total Deducted</td>
-                      <td className="px-4 py-3 text-lg font-black text-orange-600">₹{totalFund.toLocaleString()}</td>
-                      <td colSpan={3} className="px-4 py-3 text-xs text-gray-400">{maintenance.length} entries</td>
-                    </tr>
-                  </tfoot>
-                )}
-              </table>
-            </div>
-          )}
-
-          {tab === "personal" && (
-            <div className="bg-white rounded-2xl shadow-sm overflow-x-auto">
-              <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <h3 className="font-bold text-gray-700 text-sm">Resident Maintenance Fee</h3>
-                  {(selectedMonth || selectedYear) && (
-                    <div className="flex items-center gap-2 px-2 py-1 bg-blue-50 rounded-lg border border-blue-200">
-                      <span className="text-xs font-semibold text-blue-600">
-                        Filtered: 
-                        {selectedMonth && ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][parseInt(selectedMonth) - 1]}
-                        {selectedMonth && selectedYear && ", "}
-                        {selectedYear}
-                      </span>
+      {/* SECTION: SALARIES */}
+      {tab === "salaries" && (
+        <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-50 p-8">
+          <div className="flex justify-between items-center mb-8">
+            <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest">Employee Payroll</h3>
+            <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full">{staff.length} Roles</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {staff.map(s => {
+              const alreadyPaid = salaries.some(f => String(f.handledBy?._id || f.handledBy) === String(s._id));
+              return (
+                <div key={s._id} className="border border-gray-100 rounded-[2rem] p-6 hover:shadow-lg transition-all bg-gradient-to-br from-white to-slate-50/50">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <p className="font-black text-gray-800 uppercase tracking-tight">{s.name}</p>
+                      <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{s.department}</p>
                     </div>
-                  )}
+                    <Badge color={alreadyPaid ? "green" : "gray"}>{alreadyPaid ? "PAID" : "AWAITING"}</Badge>
+                  </div>
+                  <div className="flex justify-between items-center mb-6">
+                    <span className="text-[10px] uppercase font-black text-gray-400">Monthly Compensation</span>
+                    <span className="text-xl font-black text-gray-700">₹{s.baseSalary || 8000}</span>
+                  </div>
+                  <Btn color={alreadyPaid ? "gray" : "blue"} className="w-full !rounded-2xl py-3" onClick={() => setSalaryModal(s)} disabled={alreadyPaid}>
+                    {alreadyPaid ? "Salary Recorded" : "Record Payment"}
+                  </Btn>
                 </div>
-                <span className="text-xs text-gray-400">
-                  {personal.length === 0 ? "Click 'Generate Monthly Requests'" : `${personal.length} records · ${personal.filter(p => p.status === "Paid").length} paid`}
-                </span>
-              </div>
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b border-gray-100">
-                  <tr>{["Reference ID", "Flat No.", "Resident", "Amount", "Status", "Due Date", "Actions"].map(h => (
-                    <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500">{h}</th>
-                  ))}</tr>
-                </thead>
-                <tbody>
-                  {personal.length === 0 ? (
-                    <tr><td colSpan={7} className="text-center py-12 text-sm">
-                      <p className="text-gray-400 mb-3">No payment records yet.</p>
-                      <Btn color="teal" size="sm" onClick={handleGenerateMonthly} disabled={generating}>
-                        {generating ? "Generating..." : "⟳ Generate Monthly Requests"}
-                      </Btn>
-                    </td></tr>
-                  ) : personal.map((p, i) => (
-                    <tr key={p._id || i} className="border-b border-gray-50 hover:bg-gray-50">
-                      <td className="px-4 py-3 text-blue-600 font-semibold text-xs">{p.refId}</td>
-                      <td className="px-4 py-3"><Badge color="blue">{p.flatNumber || p.resident?.flatNumber || "—"}</Badge></td>
-                      <td className="px-4 py-3 text-gray-700">{p.resident?.name || "—"}</td>
-                      <td className="px-4 py-3 font-bold text-gray-700">₹{p.amount?.toLocaleString()}</td>
-                      <td className="px-4 py-3"><Badge color={statusBadgeColor(p.status)}>{p.status}</Badge></td>
-                      <td className="px-4 py-3 text-xs text-gray-400">{fmtDate(p.dueDate)}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <Btn color="gray" size="xs" onClick={() => setViewModal({ type: "per", data: p })}>View</Btn>
-                          {p.status !== "Paid" && (
-                            <>
-                              <span className="px-2 py-1 text-[10px] font-semibold rounded-lg bg-yellow-50 text-yellow-600 border border-yellow-200 whitespace-nowrap">
-                                Awaiting resident
-                              </span>
-                              <Btn color="green" size="xs" disabled={markingPaid === p._id} onClick={() => setMarkModal(p)}>
-                                {markingPaid === p._id ? "..." : "Mark Paid"}
-                              </Btn>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-                {personal.length > 0 && (
-                  <tfoot className="border-t border-gray-100 bg-gray-50">
-                    <tr>
-                      <td colSpan={3} className="px-4 py-3 text-sm font-bold text-gray-600">Total Collected</td>
-                      <td className="px-4 py-3 text-lg font-black text-green-600">₹{totalCollected.toLocaleString()}</td>
-                      <td colSpan={3} className="px-4 py-3 text-xs text-gray-400">{personal.length} entries</td>
-                    </tr>
-                  </tfoot>
-                )}
-              </table>
-            </div>
-          )}
-        </>
+              );
+            })}
+          </div>
+        </div>
       )}
 
-      {markModal && (
-        <Modal title="Confirm Payment" onClose={() => setMarkModal(null)}>
+      {/* SECTION: RESIDENT PAYMENTS */}
+      {tab === "personal" && (
+        <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-50 flex flex-col">
+          <div className="p-8 border-b border-gray-50">
+            <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest">Resident Personal Work Log</h3>
+            <p className="text-[10px] text-gray-400 font-bold mt-1 uppercase">Tracking direct payments (Resident to Staff)</p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50/20 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                <tr>
+                  <th className="px-8 py-4 text-left">Repair Task</th>
+                  <th className="px-8 py-4 text-left">Resident & Staff</th>
+                  <th className="px-8 py-4 text-center">User Log</th>
+                  <th className="px-8 py-4 text-center">Staff Log</th>
+                  <th className="px-8 py-4 text-right">Verification Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50 text-[11px]">
+                {personalPayments.map(p => (
+                  <tr key={p._id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-8 py-5">
+                      <p className="font-black text-gray-800 uppercase tracking-tight">{p.title}</p>
+                      <p className="text-[9px] text-gray-400 font-bold border border-gray-100 inline-block px-1 rounded mt-1">#{p._id.slice(-6)}</p>
+                    </td>
+                    <td className="px-8 py-5">
+                      <p className="font-bold text-gray-600">R: {p.resident?.name} ({p.resident?.flatNumber})</p>
+                      <p className="font-bold text-blue-500">S: {p.assignedStaff?.[0]?.name || "—"}</p>
+                    </td>
+                    <td className="px-8 py-5 text-center font-black text-gray-700">₹{p.userPaymentAmount ?? "—"}</td>
+                    <td className="px-8 py-5 text-center font-black text-gray-700">₹{p.staffPaymentAmount ?? "—"}</td>
+                    <td className="px-8 py-5 text-right font-black">
+                      <Badge color={p.paymentMatchStatus === "Match" ? "green" : (p.userPaymentAmount ? "red" : "gray")}>
+                         {p.paymentMatchStatus}
+                      </Badge>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Salary Record Modal */}
+      {salaryModal && (
+        <Modal title={`Record Salary: ${salaryModal.name}`} onClose={() => setSalaryModal(null)}>
           <div className="space-y-4">
-            <div className="bg-green-50 rounded-xl p-4">
-              <p className="text-xs text-green-500 font-semibold uppercase tracking-wide mb-1">Confirming Payment For</p>
-              <p className="text-xl font-black text-green-700">{markModal.refId}</p>
+            <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100">
+               <p className="text-[10px] text-blue-400 font-black uppercase mb-1">Standard Pay Rate</p>
+               <p className="text-xl font-black text-blue-700">₹{salaryModal.baseSalary || 8000}</p>
             </div>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              {[
-                { label: "Resident", val: markModal.resident?.name || "—" },
-                { label: "Flat No.", val: markModal.flatNumber || "—" },
-                { label: "Amount", val: `₹${markModal.amount?.toLocaleString()}` },
-                { label: "Due Date", val: fmtDate(markModal.dueDate) },
-              ].map(row => (
-                <div key={row.label} className="bg-gray-50 rounded-xl p-3">
-                  <p className="text-xs text-gray-400 mb-1">{row.label}</p>
-                  <p className="font-semibold text-gray-700">{row.val}</p>
-                </div>
-              ))}
+            
+            <div className="grid grid-cols-2 gap-3">
+               <div>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">Month</label>
+                  <select className="col-span-1 w-full border border-gray-100 bg-slate-50 rounded-xl px-3 py-2 text-xs font-bold"
+                    value={salaryForm.month} onChange={e => setSalaryForm({...salaryForm, month: e.target.value})}>
+                    {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
+                  </select>
+               </div>
+               <div>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">Year</label>
+                  <select className="col-span-1 w-full border border-gray-100 bg-slate-50 rounded-xl px-3 py-2 text-xs font-bold"
+                    value={salaryForm.year} onChange={e => setSalaryForm({...salaryForm, year: e.target.value})}>
+                    <option value="2026">2026</option>
+                  </select>
+               </div>
             </div>
-            <p className="text-xs text-blue-600 bg-blue-50 px-3 py-2 rounded-lg">
-              Admin confirming this payment as received (cash/offline). Will mark as Paid.
-            </p>
-            <div className="flex justify-end gap-2">
-              <Btn color="gray" onClick={() => setMarkModal(null)}>Cancel</Btn>
-              <Btn color="green" onClick={handleMarkPaid} disabled={!!markingPaid}>
-                {markingPaid ? "Processing..." : "Confirm Paid"}
-              </Btn>
+
+            <div>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">Actual Amount Paid (₹)</label>
+              <input type="number" className="w-full border border-gray-100 bg-slate-50 rounded-xl px-4 py-2 text-sm font-black text-gray-700"
+                placeholder={salaryModal.baseSalary || 8000} value={salaryForm.amount} onChange={e => setSalaryForm({...salaryForm, amount: e.target.value})} />
+            </div>
+
+            <div className="flex gap-2 pt-2">
+               <Btn color="gray" className="flex-1" onClick={() => setSalaryModal(null)}>Cancel</Btn>
+               <Btn color="blue" className="flex-1" onClick={handleRecordSalary} disabled={processing || !salaryForm.amount}>
+                 {processing ? "Processing..." : "Confirm Payout"}
+               </Btn>
             </div>
           </div>
         </Modal>
       )}
 
-      {viewModal?.type === "man" && (
-        <Modal title="Maintenance Payment Receipt" onClose={() => setViewModal(null)}>
+      {addExpenseModal && (
+        <Modal title="Manually Log Expense Bill" onClose={() => setAddExpenseModal(false)}>
           <div className="space-y-4">
-            <div className="bg-orange-50 rounded-xl p-4 flex items-center justify-between">
-              <div>
-                <p className="text-xs text-orange-500 font-semibold uppercase tracking-wide">Reference ID</p>
-                <p className="text-xl font-black text-orange-700">{viewModal.data.refId}</p>
+            <Input label="Description / Title *" placeholder="Paint Supplies" {...fExt("title")} />
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">Category</label>
+                <select className="border border-gray-100 bg-slate-50 rounded-xl px-3 py-2 text-xs font-bold" {...fExt("category")}>
+                  <option value="CommonRepair">Common Repair</option>
+                  <option value="Inventory">Inventory Supply</option>
+                  <option value="Other">Other Expenses</option>
+                </select>
               </div>
-              <Badge color={statusBadgeColor(viewModal.data.status)}>{viewModal.data.status}</Badge>
-            </div>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              {[
-                { label: "Purpose", val: viewModal.data.purpose || "—" },
-                { label: "Amount", val: `₹${viewModal.data.amount?.toLocaleString()}` },
-                { label: "Worker", val: viewModal.data.workerName || "—" },
-                { label: "Department", val: viewModal.data.worker?.department || "—" },
-                { label: "Date", val: fmtDate(viewModal.data.createdAt) },
-                { label: "Paid On", val: fmtDate(viewModal.data.paidAt) },
-              ].map(row => (
-                <div key={row.label} className="bg-gray-50 rounded-xl p-3">
-                  <p className="text-xs text-gray-400 mb-1">{row.label}</p>
-                  <p className="font-semibold text-gray-700">{row.val}</p>
-                </div>
-              ))}
-            </div>
-            <div className="flex justify-end"><Btn color="gray" onClick={() => setViewModal(null)}>Close</Btn></div>
-          </div>
-        </Modal>
-      )}
-
-      {editModal && (
-        <Modal title="Edit Maintenance Record" onClose={() => setEditModal(null)}>
-          <div className="space-y-3">
-            <div className="flex flex-col gap-1">
-              <label className="text-xs font-semibold text-gray-600">Purpose</label>
-              <input className="border border-gray-200 rounded-xl px-3 py-2 text-sm" value={editForm.purpose || ""} onChange={e => setEditForm(p => ({ ...p, purpose: e.target.value }))} />
+              <Input label="Total Amount (₹) *" type="number" placeholder="1500" {...fExt("amount")} />
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-semibold text-gray-600">Amount (₹)</label>
-              <input type="number" className="border border-gray-200 rounded-xl px-3 py-2 text-sm" value={editForm.amount || ""} onChange={e => setEditForm(p => ({ ...p, amount: e.target.value }))} />
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">Date of Purchase</label>
+              <input type="date" className="border border-gray-100 rounded-xl px-3 py-2 text-sm bg-slate-50 uppercase font-black text-gray-700" {...fExt("date")} />
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-semibold text-gray-600">Worker Name</label>
-              <input className="border border-gray-200 rounded-xl px-3 py-2 text-sm" value={editForm.workerName || ""} onChange={e => setEditForm(p => ({ ...p, workerName: e.target.value }))} />
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">Upload Bill Receipt (Optional)</label>
+              <input type="file" accept="image/*" onChange={(e) => setBillFile(e.target.files[0])} className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
             </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-xs font-semibold text-gray-600">Status</label>
-              <select className="border border-gray-200 rounded-xl px-3 py-2 text-sm" value={editForm.status || "Paid"} onChange={e => setEditForm(p => ({ ...p, status: e.target.value }))}>
-                <option value="Paid">Paid</option>
-                <option value="Pending">Pending</option>
-              </select>
-            </div>
+            {msg && <p className="text-xs font-bold text-red-500">{msg}</p>}
             <div className="flex justify-end gap-2 pt-2">
-              <Btn color="gray" onClick={() => setEditModal(null)}>Cancel</Btn>
-              <Btn color="blue" onClick={handleEditSave} disabled={editSaving}>{editSaving ? "Saving..." : "Save Changes"}</Btn>
+              <Btn color="gray" onClick={() => setAddExpenseModal(false)}>Cancel</Btn>
+              <Btn color="blue" onClick={handleAddExpense} disabled={processing}>{processing ? "Saving..." : "Log Expense"}</Btn>
             </div>
-          </div>
-        </Modal>
-      )}
-
-      {viewModal?.type === "per" && (
-        <Modal title="Resident Payment Details" onClose={() => setViewModal(null)}>
-          <div className="space-y-4">
-            <div className="bg-green-50 rounded-xl p-4 flex items-center justify-between">
-              <div>
-                <p className="text-xs text-green-500 font-semibold uppercase tracking-wide">Reference ID</p>
-                <p className="text-xl font-black text-green-700">{viewModal.data.refId}</p>
-              </div>
-              <Badge color={statusBadgeColor(viewModal.data.status)}>{viewModal.data.status}</Badge>
-            </div>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              {[
-                { label: "Resident", val: viewModal.data.resident?.name || "—" },
-                { label: "Flat No.", val: viewModal.data.flatNumber || "—" },
-                { label: "Phone", val: viewModal.data.resident?.phone || "—" },
-                { label: "Amount", val: `₹${viewModal.data.amount?.toLocaleString()}` },
-                { label: "Due Date", val: fmtDate(viewModal.data.dueDate) },
-                { label: "Paid On", val: fmtDate(viewModal.data.paidAt) },
-              ].map(row => (
-                <div key={row.label} className="bg-gray-50 rounded-xl p-3">
-                  <p className="text-xs text-gray-400 mb-1">{row.label}</p>
-                  <p className="font-semibold text-gray-700">{row.val}</p>
-                </div>
-              ))}
-            </div>
-            {viewModal.data.razorpayPaymentId && (
-              <div className="bg-blue-50 rounded-xl p-3">
-                <p className="text-xs text-blue-400 mb-1">Razorpay Payment ID</p>
-                <p className="font-mono text-blue-700 text-xs break-all">{viewModal.data.razorpayPaymentId}</p>
-              </div>
-            )}
-            <div className="flex justify-end"><Btn color="gray" onClick={() => setViewModal(null)}>Close</Btn></div>
           </div>
         </Modal>
       )}
@@ -3134,120 +3117,169 @@ function PaymentsView() {
   );
 }
 
-function ReportsView() {
-  const [data, setData] = useState(null);
+function ScheduleCalendar({ schedule = [] }) {
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDayTasks, setSelectedDayTasks] = useState(null);
+
+  const daysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
+  const firstDayOfMonth = (month, year) => new Date(year, month, 1).getDay();
+
+  const month = currentDate.getMonth();
+  const year = currentDate.getFullYear();
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+  const prevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
+  const nextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
+
+  const days = [];
+  const totalDays = daysInMonth(month, year);
+  const startDay = firstDayOfMonth(month, year);
+
+  // Padding for start of month
+  for (let i = 0; i < startDay; i++) days.push(null);
+  for (let i = 1; i <= totalDays; i++) days.push(i);
+
+  const getTasksForDay = (day) => {
+    if (!day) return [];
+    const dStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    return schedule.filter(s => s.scheduledAt && s.scheduledAt.startsWith(dStr));
+  };
+
+  return (
+    <div className="bg-white rounded-2xl shadow-sm p-5 h-full flex flex-col">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="font-bold text-gray-700 text-sm">📅 Staff Schedule</h2>
+        <div className="flex gap-2">
+          <button onClick={prevMonth} className="p-1 hover:bg-gray-100 rounded-lg text-gray-400">&lsaquo;</button>
+          <span className="text-xs font-bold text-gray-600 min-w-[100px] text-center">{monthNames[month]} {year}</span>
+          <button onClick={nextMonth} className="p-1 hover:bg-gray-100 rounded-lg text-gray-400">&rsaquo;</button>
+        </div>
+      </div>
+
+      <div className="flex-1 grid grid-cols-7 gap-1 text-center mb-4 text-xs">
+        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(d => (
+          <div key={d} className="text-[10px] font-bold text-gray-400 uppercase py-1">{d}</div>
+        ))}
+        {days.map((day, idx) => {
+          const tasks = getTasksForDay(day);
+          const isToday = day === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear();
+          return (
+            <div key={idx} 
+              onClick={() => day && tasks.length > 0 && setSelectedDayTasks({ day, tasks })}
+              className={`aspect-square flex flex-col items-center justify-center rounded-lg text-xs relative transition-all
+                ${day ? "hover:bg-gray-50 cursor-default" : ""}
+                ${isToday ? "ring-2 ring-blue-600 ring-inset" : ""}
+                ${tasks.length > 0 ? "bg-blue-600 text-white shadow-md cursor-pointer hover:bg-blue-700 font-black z-10" : "text-gray-500"}
+              `}>
+              {day}
+              {tasks.length > 0 && <span className="absolute bottom-1 w-1 h-1 bg-blue-500 rounded-full" />}
+            </div>
+          );
+        })}
+      </div>
+
+      {selectedDayTasks ? (
+        <div className="mt-2 bg-blue-50 border border-blue-100 rounded-xl p-3">
+          <div className="flex justify-between items-center mb-2">
+            <p className="text-[10px] font-bold text-blue-400 uppercase tracking-wide">Tasks for {selectedDayTasks.day} {monthNames[month]}</p>
+            <button onClick={() => setSelectedDayTasks(null)} className="text-blue-400 hover:text-blue-600 font-bold">&times;</button>
+          </div>
+          <div className="space-y-2 max-h-32 overflow-y-auto pr-1">
+            {selectedDayTasks.tasks.map(t => (
+              <div key={t._id} className="bg-white/60 p-2 rounded-lg text-[11px]">
+                <p className="font-bold text-gray-700 truncate">{t.title}</p>
+                <div className="flex justify-between items-center mt-1">
+                  <span className="text-blue-600 font-medium">{t.assignedStaff?.[0]?.name || "Unassigned"}</span>
+                  <span className="text-gray-400">{t.scheduledSlot}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="mt-auto pt-4 border-t border-gray-50 flex items-center gap-2 text-[10px] text-gray-400">
+          <div className="w-2 h-2 bg-blue-100 rounded-full" />
+          <span>Days with assigned tasks are highlighted</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function BillsRecordsView() {
+  const [bills, setBills] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchReports = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     try {
-      const d = await apiFetch("/admin/reports-data");
-      setData(d);
+      const d = await apiFetch("/admin/finances-data");
+      setBills(d.groupedBills || []);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   }, []);
 
-  usePolling(fetchReports, 30000);
+  useEffect(() => { fetchData(); }, [fetchData]);
+  usePolling(fetchData, 15000);
 
-  if (loading) return (
-    <div className="flex items-center justify-center h-64">
-      <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full" />
-    </div>
-  );
+  if (loading) return <div className="flex items-center justify-center h-64"><div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full" /></div>;
 
-  const c = data?.complaints || {};
-  const s = data?.staff || {};
-  const cats = data?.categoryBreakdown || [];
-  const invCats = data?.inventoryCategories || [];
-  const totalIncome = data?.fund?.totalIncome || 0;
-  const totalExpense = data?.fund?.totalExpense || 0;
+  const monthNames = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white rounded-2xl shadow-sm p-5">
-          <h2 className="font-bold text-gray-700 text-sm mb-4">📊 Work Summary</h2>
-          <div className="grid grid-cols-3 gap-3 mb-4">
-            <div className="bg-green-50 rounded-xl p-3 text-center">
-              <p className="text-2xl font-black text-green-600">{c.resolved || 0}</p>
-              <p className="text-[10px] text-gray-500 font-medium mt-1">Resolved</p>
-            </div>
-            <div className="bg-yellow-50 rounded-xl p-3 text-center">
-              <p className="text-2xl font-black text-yellow-600">{c.inProgress || 0}</p>
-              <p className="text-[10px] text-gray-500 font-medium mt-1">Active Work</p>
-            </div>
-            <div className="bg-red-50 rounded-xl p-3 text-center">
-              <p className="text-2xl font-black text-red-500">{c.pending || 0}</p>
-              <p className="text-[10px] text-gray-500 font-medium mt-1">Pending</p>
-            </div>
-          </div>
-          <div className="border-t border-gray-100 pt-3 space-y-2 text-xs text-gray-500">
-            <div className="flex justify-between"><span>Total Complaints</span><span className="font-bold text-gray-700">{c.total || 0}</span></div>
-            <div className="flex justify-between"><span>Staff Available</span><span className="font-bold text-green-600">{s.available || 0}</span></div>
-            <div className="flex justify-between"><span>Staff Busy</span><span className="font-bold text-red-500">{s.busy || 0}</span></div>
-            <div className="flex justify-between"><span>Total Staff</span><span className="font-bold text-gray-700">{s.total || 0}</span></div>
-          </div>
+    <div className="space-y-6">
+      <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex justify-between items-center">
+        <div>
+           <h2 className="text-lg font-black text-gray-800 tracking-tight">📁 Monthly Bills & Records</h2>
+           <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Full audit log of society expenditures</p>
         </div>
-
-        <div className="bg-white rounded-2xl shadow-sm p-5">
-          <h2 className="font-bold text-gray-700 text-sm mb-4">🏛️ Maintenance Fund Log</h2>
-          <div className="space-y-2">
-            <div className="bg-green-50 rounded-xl px-4 py-3 flex justify-between items-center">
-              <span className="text-sm text-gray-600 font-medium">Total Income</span>
-              <span className="text-lg font-black text-green-600">₹{totalIncome.toLocaleString()}</span>
-            </div>
-            <div className="bg-red-50 rounded-xl px-4 py-3 flex justify-between items-center">
-              <span className="text-sm text-gray-600 font-medium">Total Expenses</span>
-              <span className="text-lg font-black text-red-500">-₹{totalExpense.toLocaleString()}</span>
-            </div>
-            <div className="bg-blue-600 rounded-xl px-4 py-3 flex justify-between items-center">
-              <span className="text-sm text-white font-bold">Net Balance</span>
-              <span className="text-lg font-black text-white">₹{(totalIncome - totalExpense).toLocaleString()}</span>
-            </div>
-          </div>
-        </div>
+        <Btn color="gray" size="xs" onClick={fetchData}>Refresh Records</Btn>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white rounded-2xl shadow-sm p-5">
-          <h2 className="font-bold text-gray-700 text-sm mb-4">📋 Complaints by Department</h2>
-          {cats.length > 0 ? (
-            <div className="space-y-3">
-              {cats.map(cat => {
-                const pct = c.total ? Math.round((cat.count / c.total) * 100) : 0;
-                return (
-                  <div key={cat._id}>
-                    <div className="flex justify-between text-xs mb-1">
-                      <span className="font-medium text-gray-700">{cat._id}</span>
-                      <span className="text-gray-400">{cat.count} ({pct}%)</span>
-                    </div>
-                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-blue-500 rounded-full" style={{ width: `${pct}%` }} />
-                    </div>
-                  </div>
-                );
-              })}
+      <div className="space-y-8">
+        {bills.map(group => (
+          <div key={`${group.month}-${group.year}`} className="bg-white rounded-[2rem] shadow-sm overflow-hidden border border-gray-100">
+            <div className="bg-slate-50 px-8 py-5 border-b border-gray-100 flex justify-between items-center">
+              <h3 className="font-black text-blue-700 uppercase tracking-widest text-sm">
+                {monthNames[group.month]} {group.year}
+              </h3>
+              <Badge color="blue">{group.items.length} Records</Badge>
             </div>
-          ) : (
-            <p className="text-xs text-gray-400 text-center py-8">No data yet</p>
-          )}
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-sm p-5">
-          <h2 className="font-bold text-gray-700 text-sm mb-4">📦 Inventory by Category</h2>
-          {invCats.length > 0 ? (
-            <div className="grid grid-cols-2 gap-2">
-              {invCats.map(cat => (
-                <div key={cat._id} className="bg-gray-50 rounded-xl p-3 border border-gray-100">
-                  <p className="text-xs font-bold text-gray-700 truncate">{cat._id}</p>
-                  <p className="text-lg font-black text-blue-600 mt-1">{cat.totalItems}</p>
-                  <p className="text-[10px] text-gray-400">{cat.totalQty} units total</p>
-                </div>
-              ))}
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50/50">
+                  <tr className="text-left">
+                    <th className="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Item / Work</th>
+                    <th className="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Amount</th>
+                    <th className="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Status</th>
+                    <th className="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Bill Image</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {group.items.map(item => (
+                    <tr key={item._id} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="px-8 py-5">
+                        <p className="font-black text-gray-800 text-xs uppercase">{item.description}</p>
+                        <p className="text-[10px] text-gray-400 font-bold uppercase">{item.transactionCategory}</p>
+                      </td>
+                      <td className="px-8 py-5 text-center font-black text-gray-800">₹{item.amount.toLocaleString()}</td>
+                      <td className="px-8 py-5 text-center">
+                        <Badge color={item.status === "Paid" ? "green" : "yellow"}>{item.status}</Badge>
+                      </td>
+                      <td className="px-8 py-5 text-right">
+                        {item.billImage ? (
+                          <a href={`${API}${item.billImage}`} target="_blank" rel="noreferrer" className="text-blue-500 font-bold text-[10px] uppercase hover:underline">View Bill</a>
+                        ) : (
+                          <span className="text-gray-300 text-[10px] font-black uppercase">No Image</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          ) : (
-            <p className="text-xs text-gray-400 text-center py-8">No inventory data</p>
-          )}
-        </div>
+          </div>
+        ))}
+        {bills.length === 0 && <div className="text-center py-20 bg-white rounded-3xl text-gray-300 font-black uppercase text-xs">No records found</div>}
       </div>
     </div>
   );
@@ -3331,9 +3363,9 @@ export default function AdminDashboard() {
     { label: "Dashboard", icon: "📊" },
     { label: "Complaints", icon: "📋" },
     { label: "User Management", icon: "👥" },
-    { label: "Payments", icon: "💳" },
+    { label: "Payments", icon: "💰" },
     { label: "Inventory", icon: "📦" },
-    { label: "Reports", icon: "📈" },
+    { label: "Bills / Records", icon: "📁" },
     { label: "Settings", icon: "⚙️" },
     { label: "Logout", icon: "🚪" },
   ];
@@ -3351,7 +3383,7 @@ export default function AdminDashboard() {
       case "User Management": return <UserManagementView />;
       case "Payments": return <PaymentsView />;
       case "Inventory": return <InventoryView />;
-      case "Reports": return <ReportsView />;
+      case "Bills / Records": return <BillsRecordsView />;
       case "Settings": return <SettingsView />;
       default: return null;
     }
@@ -3366,9 +3398,7 @@ export default function AdminDashboard() {
     <div className="flex h-screen bg-slate-100 font-sans overflow-hidden">
       <aside className="w-56 bg-white flex flex-col shadow-md z-10 flex-shrink-0">
         <div className="flex items-center gap-3 px-5 py-3 border-b border-gray-100">
-          <div className="w-20 h-16 bg-gradient-to-br from-white to-gray-50 rounded-xl flex items-center justify-center shadow-md border border-gray-200 transition-all hover:shadow-lg hover:border-gray-300">
-            <img src="/logo.png" alt="FixMate" className="w-14 h-12 object-contain opacity-100 hover:opacity-100 transition-opacity" />
-          </div>
+          <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white text-lg">🔧</div>
           <span className="text-blue-700 font-bold text-lg tracking-tight">FixMate</span>
         </div>
         <nav className="flex-1 py-4 px-2 flex flex-col gap-0.5 overflow-y-auto">

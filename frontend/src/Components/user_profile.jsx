@@ -166,7 +166,6 @@ function Profile() {
             {profile.role === "staff" && (
               <>
                 <InfoRow label="Department" value={profile.department} />
-                <InfoRow label="Availability" value={profile.isAvailable ? "✅ Available" : "🔴 Busy"} />
                 <InfoRow label="Rating" value={`${"⭐".repeat(profile.rating)} (${profile.rating}/5)`} />
               </>
             )}

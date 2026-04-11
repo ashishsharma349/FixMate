@@ -4,6 +4,7 @@ const Staff = require("../model/staff");
 const Complain = require("../model/Complain");
 const Inventory = require("../model/Inventory");
 const Payment = require("../model/Payment");
+const Finance = require("../model/finance");
 const { sendTempPasswordMail } = require("../utils/mailer");
 
 // ── Helper: generate a random secure temp password ───────────────────────────
@@ -30,18 +31,20 @@ function generateTempPassword() {
 // ── DASHBOARD STATS ───────────────────────────────────────────────────────────
 exports.getDashboardStats = async (req, res) => {
   try {
-    const [totalComplaints, inProgress, pendingApproval, pendingEstimates, resolvedComplaints] = await Promise.all([
+    const [totalComplaints, inProgress, pendingApproval, pendingEstimates, resolvedComplaints, totalResidents, totalStaff] = await Promise.all([
       Complain.countDocuments(),
-      Complain.countDocuments({ status: { $in: ["Assigned", "EstimatePending", "EstimateApproved", "InProgress"] } }),
+      Complain.countDocuments({ status: { $in: ["Assigned", "EstimateSubmitted", "EstimateApproved", "InProgress", "PaymentPending"] } }),
       Complain.countDocuments({ status: "Pending", assignedStaff: null }), // unassigned only
-      Complain.countDocuments({ estimateStatus: "Pending" }),              // CommonArea estimates waiting
+      Complain.countDocuments({ estimateStatus: "Pending", workType: "CommonArea" }), // CommonArea estimates waiting for admin
       Complain.countDocuments({ status: "Resolved" }),                     // Finished tickets
+      User.countDocuments(),
+      Staff.countDocuments(),
     ]);
 
     const recentComplaints = await Complain.find()
       .sort({ createdAt: -1 })
       .limit(5)
-      .populate("resident", "name phone email flatNumber")
+      .populate("resident", "name phone email flatNumber photo")
       .populate("assignedStaff", "name phone department");
 
     const pendingEstimatesList = await Complain.find({ estimateStatus: "Pending" })
@@ -50,18 +53,46 @@ exports.getDashboardStats = async (req, res) => {
 
     // WIP = complaints that are assigned and being worked on (not Pending, not Resolved)
     const wipComplaints = await Complain.find({
-      status: { $in: ["Assigned", "EstimatePending", "EstimateApproved", "InProgress"] }
+      status: { $in: ["Assigned", "EstimateSubmitted", "EstimateApproved", "InProgress", "PaymentPending"] }
     })
       .sort({ createdAt: -1 })
-      .populate("resident", "name phone email flatNumber")
+      .populate("resident", "name phone email flatNumber photo")
       .populate("assignedStaff", "name phone department");
 
     const lowStockItems = await Inventory.find({
       $expr: { $lte: ["$quantity", "$minQuantity"] }
     }).select("name quantity minQuantity unit category");
 
+    // Maintenance Fund Cumulative Logic (Matching getReportsData)
+    const GENESIS_MONTH = 2; // February
+    const GENESIS_YEAR = 2026;
+    const now = new Date();
+    const currentMonth = now.getMonth() + 1;
+    const currentYear = now.getFullYear();
+    
+    const monthsDiff = (currentYear - GENESIS_YEAR) * 12 + (currentMonth - GENESIS_MONTH) + 1;
+    const cumulativeLimit = Math.max(0, monthsDiff) * (totalResidents * 3500);
+
+    const fundExpenses = await Finance.aggregate([
+      { 
+        $match: { 
+          transactionType: 'Expense', 
+          transactionCategory: { $in: ['Salary', 'CommonRepair', 'Inventory', 'Incentive'] },
+          status: 'Paid', // Only count realized expenses
+          date: { $gte: new Date(GENESIS_YEAR, GENESIS_MONTH - 1, 1) }
+        } 
+      },
+      { $group: { _id: null, total: { $sum: '$amount' } } }
+    ]);
+    const totalFundSpent = fundExpenses[0]?.total || 0;
+
     res.json({
-      stats: { totalComplaints, inProgress, pendingApproval, pendingEstimates, resolvedComplaints },
+      stats: { totalComplaints, inProgress, pendingApproval, pendingEstimates, resolvedComplaints, totalResidents, totalStaff },
+      fund: {
+        limit: cumulativeLimit,
+        spent: totalFundSpent,
+        balance: cumulativeLimit - totalFundSpent
+      },
       recentComplaints,
       pendingEstimatesList,
       wipComplaints,
@@ -103,7 +134,7 @@ exports.getAllComplaints = async (req, res) => {
     const complaints = await Complain.find()
       .sort({ createdAt: -1 })
       .populate("resident", "name phone flatNumber")
-      .populate("assignedStaff", "name department");
+      .populate("assignedStaff", "name department phone");
     res.json({ complaints });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -113,22 +144,34 @@ exports.getAllComplaints = async (req, res) => {
 // ── ASSIGN STAFF TO COMPLAINT ──────────────────────────────────────────────────
 exports.assignComplaint = async (req, res) => {
   try {
-    const { complaintId, staffId, workType } = req.body;
-    if (!complaintId || !staffId || !workType)
-      return res.status(400).json({ error: "complaintId, staffId and workType are required" });
+    const { complaintId, staffIds, workType, scheduledAt, scheduledSlot, staffIncentive } = req.body;
+    if (!complaintId || !staffIds || !Array.isArray(staffIds) || staffIds.length < 1 || !workType)
+      return res.status(400).json({ error: "complaintId, staffIds (array with at least 1) and workType are required" });
+    
+
+
     if (!["Personal", "CommonArea"].includes(workType))
       return res.status(400).json({ error: "workType must be Personal or CommonArea" });
 
-    const staff = await Staff.findById(staffId);
-    if (!staff) return res.status(404).json({ error: "Staff not found" });
+    const staffMembers = await Staff.find({ _id: { $in: staffIds } });
+    if (staffMembers.length !== staffIds.length) 
+      return res.status(404).json({ error: "One or more staff not found" });
 
     await Complain.findByIdAndUpdate(complaintId, {
-      $set: { assignedStaff: staffId, status: "Assigned", workType },
+      $set: { 
+        assignedStaff: staffIds, 
+        status: "Assigned", 
+        workType, 
+        scheduledAt, 
+        scheduledSlot,
+        staffIncentive: Number(staffIncentive) || 0 
+      },
     });
-    // Mark staff as busy
-    await Staff.findByIdAndUpdate(staffId, { $set: { isAvailable: false } });
+    
+    // Mark all assigned staff as busy
+    await Staff.updateMany({ _id: { $in: staffIds } }, { $set: { isAvailable: false } });
 
-    res.json({ message: "Complaint assigned", workType });
+    res.json({ message: "Complaint assigned to " + staffIds.length + " staff members", workType });
   } catch (err) {
     console.error("[assignComplaint]:", err);
     res.status(500).json({ error: "Server error" });
@@ -168,9 +211,39 @@ exports.resolveComplaint = async (req, res) => {
   }
 };
 
+// ── GET STAFF AVAILABILITY FOR TIMEFRAME ─────────────────────────────────────
+exports.getStaffAvailability = async (req, res) => {
+  try {
+    const { date, slot } = req.query;
+    if (!date || !slot) return res.status(400).json({ error: "date and slot are required" });
+
+    // Find all complaints assigned to staff on this date and slot that are not resolved
+    const busyComplaints = await Complain.find({
+      scheduledAt: {
+        $gte: new Date(date + "T00:00:00.000Z"),
+        $lte: new Date(date + "T23:59:59.999Z")
+      },
+      scheduledSlot: slot,
+      status: { $ne: "Resolved" }
+    }).select("assignedStaff");
+
+    const busyStaffIds = busyComplaints
+      .map(c => c.assignedStaff?.toString())
+      .filter(Boolean);
+
+    res.json({ busyStaffIds: [...new Set(busyStaffIds)] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 // ── REPORTS DATA ───────────────────────────────────────────────────────────────
 exports.getReportsData = async (req, res) => {
   try {
+    const { month, year } = req.query;
+    const filterMonth = month ? parseInt(month) : null;
+    const filterYear = year ? parseInt(year) : null;
+
     const [
       totalComplaints,
       resolvedComplaints,
@@ -178,6 +251,7 @@ exports.getReportsData = async (req, res) => {
       inProgressComplaints,
       totalStaff,
       availableStaff,
+      totalResidents,
     ] = await Promise.all([
       Complain.countDocuments(),
       Complain.countDocuments({ status: "Resolved" }),
@@ -185,6 +259,7 @@ exports.getReportsData = async (req, res) => {
       Complain.countDocuments({ status: { $in: ["Assigned", "EstimatePending", "EstimateApproved", "InProgress"] } }),
       Staff.countDocuments(),
       Staff.countDocuments({ isAvailable: true }),
+      User.countDocuments(),
     ]);
 
     const categoryBreakdown = await Complain.aggregate([
@@ -194,32 +269,132 @@ exports.getReportsData = async (req, res) => {
       { $sort: { count: -1 } },
     ]);
 
-    // FIXED: Income = actual resident payments collected via Razorpay / cash
-    const incomeData = await Payment.aggregate([
-      { $match: { type: "personal", status: "Paid" } },
-      { $group: { _id: null, totalIncome: { $sum: "$amount" } } },
-    ]);
+    const scheduleData = await Complain.find({ scheduledAt: { $ne: null } })
+      .select("title scheduledAt scheduledSlot assignedStaff resident")
+      .populate("assignedStaff", "name department")
+      .populate("resident", "name flatNumber");
 
-    // Expense = fund paid to staff for CommonArea work
-    const expenseData = await Payment.aggregate([
-      { $match: { type: "maintenance", status: "Paid" } },
-      { $group: { _id: null, totalExpense: { $sum: "$amount" } } },
+    // Income/Expense filtering conditions
+    let paymentMatchIncome = { type: "personal", status: "Paid" };
+    let paymentMatchExpense = { type: "maintenance", status: "Paid" };
+    
+    if (filterMonth) {
+        paymentMatchIncome.month = filterMonth;
+        paymentMatchExpense.month = filterMonth;
+    }
+    if (filterYear) {
+        paymentMatchIncome.year = filterYear;
+        paymentMatchExpense.year = filterYear;
+    }
+
+    const [incomeData, expenseData] = await Promise.all([
+      Payment.aggregate([
+        { $match: paymentMatchIncome },
+        { $group: { _id: null, totalIncome: { $sum: "$amount" } } },
+      ]),
+      Payment.aggregate([
+        { $match: paymentMatchExpense },
+        { $group: { _id: null, totalExpense: { $sum: "$amount" } } },
+      ])
     ]);
 
     const totalIncome = incomeData[0]?.totalIncome || 0;
     const totalExpense = expenseData[0]?.totalExpense || 0;
+
+    // ── Maintenance Fund Cumulative Pooled Logic ──
+    const GENESIS_MONTH = 2; // February
+    const GENESIS_YEAR = 2026;
+    
+    const MONTHLY_LIMIT = totalResidents * 3500;
+    let cumulativeLimit = MONTHLY_LIMIT;
+    let financeMatch = { 
+        transactionType: 'Expense', 
+        transactionCategory: { $in: ['Salary', 'CommonRepair', 'Inventory', 'Incentive'] },
+        date: { $gte: new Date(GENESIS_YEAR, GENESIS_MONTH - 1, 1) }
+    };
+
+    if (filterMonth && filterYear) {
+        // Calculate months since Genesis (Feb 2026) to calculate cumulative budget
+        let monthsDiff = (filterYear - GENESIS_YEAR) * 12 + (filterMonth - GENESIS_MONTH) + 1;
+        
+        // Before February 2026, everything is 0 as per user request
+        if (filterYear < GENESIS_YEAR || (filterYear === GENESIS_YEAR && filterMonth < GENESIS_MONTH)) {
+            monthsDiff = 0;
+            cumulativeLimit = 0;
+        } else {
+            cumulativeLimit = monthsDiff * MONTHLY_LIMIT;
+        }
+
+        // Total spent from beginning of time until the end of the selected month
+        const endDate = new Date(filterYear, filterMonth, 0, 23, 59, 59);
+        financeMatch.date.$lte = endDate;
+    }
+
+    const fundExpenses = await Finance.aggregate([
+      { $match: { ...financeMatch, status: 'Paid' } },
+      { $group: { _id: null, total: { $sum: '$amount' } } }
+    ]);
+    const totalFundSpent = fundExpenses[0]?.total || 0;
+    
+    // Period-specific spending (just for this month) for detail stats
+    let periodMatch = { ...financeMatch, status: 'Paid' };
+    if (filterMonth && filterYear) {
+        periodMatch.date = { 
+            $gte: new Date(filterYear, filterMonth - 1, 1),
+            $lte: new Date(filterYear, filterMonth, 0, 23, 59, 59)
+        };
+    }
+    const periodExpenses = await Finance.aggregate([
+        { $match: periodMatch },
+        { $group: { _id: null, total: { $sum: '$amount' } } }
+    ]);
+    const monthlySpent = periodExpenses[0]?.total || 0;
+
+    // Direct Staff Earnings (Personal Work)
+    let earningsMatch = { transactionCategory: { $in: ['DirectPayment', 'Salary', 'CommonRepair', 'Incentive'] } };
+    if (filterMonth && filterYear) {
+        const startDate = new Date(filterYear, filterMonth - 1, 1);
+        const endDate = new Date(filterYear, filterMonth, 0, 23, 59, 59);
+        earningsMatch.date = { $gte: startDate, $lte: endDate };
+    }
+
+    const staffEarnings = await Finance.aggregate([
+      { $match: earningsMatch },
+      { $group: { 
+        _id: "$handledBy", 
+        salary: { $sum: { $cond: [{ $eq: ["$transactionCategory", "Salary"] }, "$amount", 0] } },
+        direct: { $sum: { $cond: [{ $in: ["$transactionCategory", ["DirectPayment", "Incentive"]] }, "$amount", 0] } },
+        repairs: { $sum: { $cond: [{ $eq: ["$transactionCategory", "CommonRepair"] }, "$amount", 0] } }
+      }}
+    ]);
 
     const inventoryCategories = await Inventory.aggregate([
       { $group: { _id: "$category", totalItems: { $sum: 1 }, totalQty: { $sum: "$quantity" } } },
       { $sort: { totalItems: -1 } },
     ]);
 
+    const expenseDistribution = await Finance.aggregate([
+      { $match: { ...financeMatch, status: 'Paid' } },
+      { $group: { _id: "$transactionCategory", total: { $sum: "$amount" } } }
+    ]);
+
     res.json({
       complaints: { total: totalComplaints, resolved: resolvedComplaints, pending: pendingComplaints, inProgress: inProgressComplaints },
       staff: { total: totalStaff, available: availableStaff, busy: totalStaff - availableStaff },
       categoryBreakdown,
-      fund: { totalIncome, totalExpense },
-      inventoryCategories,
+      expenseDistribution, // Categorized sums for charts
+      scheduleData,
+      fund: { 
+        limit: cumulativeLimit, 
+        spent: totalFundSpent, 
+        balance: cumulativeLimit - totalFundSpent,
+        monthlySpent: monthlySpent,
+        monthlyLimit: MONTHLY_LIMIT,
+        totalIncome, 
+        totalExpense 
+      },
+      directLogs: staffEarnings,
+      inventoryStats: inventoryCategories,
     });
   } catch (err) {
     console.error("[getReportsData]:", err);
@@ -379,5 +554,155 @@ exports.updateAdminProfile = async (req, res) => {
   } catch (err) {
     console.error("[updateAdminProfile]:", err);
     res.status(500).json({ error: err.message });
+  }
+};
+
+// ── RECORD OFFLINE SALARY ────────────────────────────────────────────────────
+exports.recordSalaryPayment = async (req, res) => {
+  try {
+    const { staffId, amount, month, year, description } = req.body;
+    if (!staffId || !amount || !month || !year) 
+      return res.status(400).json({ error: "staffId, amount, month and year required" });
+
+    const staff = await Staff.findById(staffId);
+    if (!staff) return res.status(404).json({ error: "Staff not found" });
+
+    // Create Finance Expense
+    await Finance.create({
+      transactionType: "Expense",
+      transactionCategory: "Salary",
+      amount: Number(amount),
+      month: Number(month),
+      year: Number(year),
+      status: "Paid", 
+      description: description || `Salary payment to ${staff.name} for ${month}/${year}`,
+      handledBy: staffId
+    });
+
+    res.json({ message: "Salary payment recorded successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// ── NEW: PAY PENDING EXPENSE (Common Repair Payout) ───────────────────────────
+exports.payoutExpense = async (req, res) => {
+  try {
+    const { financeId } = req.body;
+    if (!financeId) return res.status(400).json({ error: "financeId required" });
+
+    const finance = await Finance.findById(financeId);
+    if (!finance) return res.status(404).json({ error: "Finance record not found" });
+    if (finance.status === "Paid") return res.status(400).json({ error: "Already paid" });
+
+    finance.status = "Paid";
+    finance.date = new Date(); // Update to actual payment date
+    await finance.save();
+
+    res.json({ message: "Payment processed successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// ── NEW: MANUALLY ADD EXPENSE (Bills/Records) ────────────────────────────────
+exports.addExpense = async (req, res) => {
+  try {
+    const { title, category, amount, status, date } = req.body;
+    if (!title || !amount) {
+      return res.status(400).json({ error: "Title and amount are required" });
+    }
+
+    const billImage = req.file ? `/uploads/${req.file.filename}` : null;
+
+    const expenseDate = date ? new Date(date) : new Date();
+
+    const expense = await Finance.create({
+      transactionType: "Expense",
+      transactionCategory: category || "Other",
+      amount: Number(amount),
+      description: title,
+      status: status || "Paid",
+      month: expenseDate.getMonth() + 1,
+      year: expenseDate.getFullYear(),
+      date: expenseDate,
+      billImage
+    });
+
+    res.status(201).json({ message: "Expense record added successfully", expense });
+  } catch (err) {
+    console.error("[addExpense Error]:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// ── NEW: GET COMPREHENSIVE FINANCES DATA ─────────────────────────────────────
+exports.getFinancesData = async (req, res) => {
+  try {
+    const { month, year } = req.query;
+    const filterMonth = parseInt(month);
+    const filterYear = parseInt(year);
+
+    const [staff, allFinances, complaints] = await Promise.all([
+      Staff.find().populate("authId", "email"),
+      Finance.find(filterMonth && filterYear ? { month: filterMonth, year: filterYear } : {})
+        .sort({ date: -1 })
+        .populate("handledBy", "name department"),
+      Complain.find({
+        workType: "Personal",
+        status: { $in: ["PaymentPending", "Resolved"] }
+      }).populate("resident", "name flatNumber").populate("assignedStaff", "name")
+    ]);
+
+    // Grouping for UI sections
+    const expenses = allFinances.filter(f => f.transactionCategory !== "Salary");
+    const salaries = allFinances.filter(f => f.transactionCategory === "Salary");
+    
+    // Personal payments status matching
+    const personalPayments = complaints.map(c => {
+      const match = c.userPaymentAmount === c.staffPaymentAmount && c.userPaymentAmount !== null;
+      return {
+        ...c.toObject(),
+        paymentMatchStatus: match ? "Match" : "Mismatch"
+      };
+    });
+
+    // Monthly grouping for Bills/Records section
+    const groupedBills = allFinances.reduce((acc, f) => {
+      const key = `${f.month}-${f.year}`;
+      if (!acc[key]) acc[key] = { month: f.month, year: f.year, items: [] };
+      acc[key].items.push(f);
+      return acc;
+    }, {});
+
+    // Maintenance Fund Stats
+    const totalIncome = await Payment.aggregate([
+      { $match: { type: "maintenance", status: "Paid" } },
+      { $group: { _id: null, total: { $sum: "$amount" } } }
+    ]);
+    
+    const totalSpent = allFinances
+      .filter(f => f.status === "Paid" && f.transactionType === "Expense")
+      .reduce((sum, f) => sum + f.amount, 0);
+
+    const residentsCount = await User.countDocuments();
+    const fundLimit = residentsCount * 3500; // Simplified limit logic for project
+
+    res.json({
+      staff,
+      expenses,
+      salaries,
+      personalPayments,
+      groupedBills: Object.values(groupedBills).sort((a,b) => b.year - a.year || b.month - a.month),
+      stats: {
+        totalIncome: totalIncome[0]?.total || 0,
+        totalSpent,
+        balance: (totalIncome[0]?.total || 0) - totalSpent,
+        fundLimit
+      }
+    });
+  } catch (err) {
+    console.error("[getFinancesData]:", err);
+    res.status(500).json({ error: "Server error" });
   }
 };

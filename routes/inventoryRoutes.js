@@ -1,5 +1,6 @@
 const express = require("express");
 const inventoryControllers = require("../controller/inventory");
+const upload = require("../config/multerconfig");
 
 const inventoryRoute = express.Router();
 inventoryRoute.use(express.json());
@@ -21,7 +22,7 @@ inventoryRoute.get("/",                 inventoryControllers.getAll);
 inventoryRoute.post("/",                inventoryControllers.addItem);
 inventoryRoute.put("/:itemId",          inventoryControllers.updateItem);
 inventoryRoute.delete("/:itemId",       inventoryControllers.deleteItem);
-inventoryRoute.post("/restock",         inventoryControllers.restock);
+inventoryRoute.post("/restock",         upload.single("billImage"), inventoryControllers.restock);
 inventoryRoute.get("/low-stock",        inventoryControllers.getLowStock);
 
 module.exports = inventoryRoute;

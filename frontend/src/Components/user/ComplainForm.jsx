@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { getAuthHeaders } from '../../utils/api';
 
@@ -9,35 +9,52 @@ const ComplaintForm = () => {
   const [formData, setFormData] = useState({
 
     title: '',
-
     category: 'Plumbing',
-
     priority: 'Medium',
-
     description: '',
-
-    photo: null
-
+    photo: null,
+    flatNumber: '',
+    residentName: '',
+    residentPhone: '',
+    scheduledSlot: 'Morning (9 AM - 12 PM)'
   });
+  const [loadingProfile, setLoadingProfile] = useState(true);
 
   const [submitting, setSubmitting] = useState(false);
 
 
 
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/profile", {
+          headers: getAuthHeaders(),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setFormData(prev => ({
+            ...prev,
+            flatNumber: data.flatNumber || '',
+            residentName: data.name || '',
+            residentPhone: data.phone || '',
+          }));
+        }
+      } catch (err) {
+        console.error("Profile fetch error:", err);
+      } finally {
+        setLoadingProfile(false);
+      }
+    };
+    fetchProfile();
+  }, []);
+
   const handleChange = (e) => {
-
     const { name, value } = e.target;
-
     setFormData({ ...formData, [name]: value });
-
   };
 
-
-
   const handleFileChange = (e) => {
-
     setFormData({ ...formData, photo: e.target.files[0] });
-
   };
 
 
@@ -63,14 +80,14 @@ const ComplaintForm = () => {
     const data = new FormData();
 
     data.append("title", formData.title);
-
     data.append("category", formData.category);
-
     data.append("priority", formData.priority);
-
     data.append("description", formData.description);
-
     data.append("photo", formData.photo);
+    data.append("flatNumber", formData.flatNumber);
+    data.append("residentName", formData.residentName);
+    data.append("residentPhone", formData.residentPhone);
+    data.append("scheduledSlot", formData.scheduledSlot);
 
 
 
@@ -119,31 +136,23 @@ const ComplaintForm = () => {
       <div className="relative w-full h-screen sm:h-auto sm:max-w-[480px] bg-white sm:rounded-[40px] shadow-2xl overflow-hidden flex flex-col">
 
         <div className="flex-[0.2] min-h-[100px] flex items-center px-8 relative bg-white">
-
           <div className="z-10 flex items-center gap-3">
-
             <div className="relative group">
-
               <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-transparent rounded-xl opacity-0 group-hover:opacity-20 transition-opacity"></div>
-
               <div className="w-16 h-16 bg-white/90 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-md overflow-hidden border border-gray-200 group-hover:shadow-lg group-hover:border-gray-300 transition-all p-1">
-
                 <img src="/logo.png" alt="FixMate" className="w-10 h-10 object-contain opacity-90 group-hover:opacity-100 transition-opacity" />
-
               </div>
-
             </div>
-
             <div>
-
               <h1 className="text-xl font-extrabold text-[#1a365d]">File Complaint</h1>
-
               <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">FixMate Portal</p>
-
             </div>
-
           </div>
-
+          {loadingProfile && (
+            <div className="absolute right-8 top-1/2 -translate-y-1/2">
+              <div className="animate-spin w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full" />
+            </div>
+          )}
         </div>
 
 
@@ -165,47 +174,47 @@ const ComplaintForm = () => {
 
 
             <div className="grid grid-cols-2 gap-3">
-
               <div>
-
                 <label className="text-sky-400 text-[10px] font-black uppercase ml-1 mb-1 block">Category</label>
-
                 <select className={inputBase} name="category" value={formData.category} onChange={handleChange}>
-
                   <option value="Plumbing">Plumbing</option>
-
                   <option value="Electrical">Electrical</option>
-
                   <option value="Carpentry">Carpentry</option>
-
                   <option value="Cleaning">Cleaning</option>
-
                   <option value="Security">Security</option>
-
                   <option value="General">General</option>
-
                 </select>
-
               </div>
-
               <div>
-
                 <label className="text-sky-400 text-[10px] font-black uppercase ml-1 mb-1 block">Priority</label>
-
                 <select className={inputBase} name="priority" value={formData.priority} onChange={handleChange}>
-
                   <option value="Low">Low</option>
-
                   <option value="Medium">Medium</option>
-
                   <option value="High">High</option>
-
                   <option value="Emergency">Emergency</option>
-
                 </select>
-
               </div>
+            </div>
 
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-sky-400 text-[10px] font-black uppercase ml-1 mb-1 block">Flat Number</label>
+                <input className={`${inputBase} opacity-70 cursor-not-allowed`} name="flatNumber" value={formData.flatNumber} readOnly />
+              </div>
+              <div>
+                <label className="text-sky-400 text-[10px] font-black uppercase ml-1 mb-1 block">Mobile Number</label>
+                <input className={`${inputBase} opacity-70 cursor-not-allowed`} name="residentPhone" value={formData.residentPhone} readOnly />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-sky-400 text-[10px] font-black uppercase ml-1 mb-1 block">Preferred Time Slot</label>
+              <select className={inputBase} name="scheduledSlot" value={formData.scheduledSlot} onChange={handleChange}>
+                <option value="Morning (9 AM - 12 PM)">Morning (9 AM - 12 PM)</option>
+                <option value="Afternoon (12 PM - 3 PM)">Afternoon (12 PM - 3 PM)</option>
+                <option value="Evening (3 PM - 6 PM)">Evening (3 PM - 6 PM)</option>
+                <option value="Night (6 PM - 9 PM)">Night (6 PM - 9 PM)</option>
+              </select>
             </div>
 
 

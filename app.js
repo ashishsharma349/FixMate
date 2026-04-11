@@ -154,7 +154,7 @@ const limiter = rateLimit({
 
 // Apply rate limiting to all requests
 
-app.use(limiter);
+// app.use(limiter);
 
 
 
@@ -178,11 +178,11 @@ const authLimiter = rateLimit({
 
 // Apply stricter rate limiting to auth routes
 
-app.use("/api/auth", authLimiter);
+// app.use("/api/auth", authLimiter);
 
-app.use("/login", authLimiter);
+// app.use("/login", authLimiter);
 
-app.use("/register", authLimiter);
+// app.use("/register", authLimiter);
 
 
 

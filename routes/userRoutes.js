@@ -51,4 +51,10 @@ userRoute.post("/complete-task",
 // ── NEW: Resident revokes assigned staff for Personal work ───────────────────
 userRoute.patch("/revoke-complaint", isLoggedIn, userControllers.revokeStaff);
 
+// ── NEW: Resident accepts personal estimate ─────────────────────────
+userRoute.post("/accept-estimate", isLoggedIn, userControllers.acceptEstimate);
+
+// ── NEW: Payment verification (both parties) ─────────────────────────
+userRoute.post("/record-payment", isLoggedIn, userControllers.recordPaymentVerification);
+
 module.exports = userRoute;

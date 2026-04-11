@@ -73,7 +73,13 @@ router.get("/list", adminOnly, async (req, res) => {
     const [maintenance, personal] = await Promise.all([
       Payment.find(maintenanceMatch)
         .populate("worker", "name department")
-        .populate("complaint", "title estimatedCost actualCost")
+        .populate({
+          path: "complaint",
+          populate: [
+            { path: "resident", select: "name flatNumber phone" },
+            { path: "assignedStaff", select: "name phone" }
+          ]
+        })
         .sort({ createdAt: -1 }),
       Payment.find(personalMatch)
         .populate("resident", "name flatNumber phone")

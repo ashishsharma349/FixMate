@@ -109,32 +109,35 @@ const Home = () => {
       </header>
 
       <main className="max-w-6xl mx-auto px-6 -mt-16 relative z-20 pb-32">
-        <div className="grid md:grid-cols-2 gap-10">
-          {/* Resident Card */}
-          <div className="bg-white/90 backdrop-blur-lg p-10 rounded-[48px] shadow-2xl border-t-8 border-blue-500 hover:-translate-y-3 transition-all duration-500">
-            <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mb-8 text-3xl shadow-inner">🏠</div>
-            <h3 className="text-3xl font-black mb-6 tracking-tight">For Residents</h3>
-            <ul className="space-y-5">
-              {['Register complaints with images', 'Real-time status tracking', 'Community announcements', 'Service feedback'].map((item, i) => (
-                <li key={i} className="flex items-center gap-4 text-slate-600 font-bold">
-                  <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-[10px]">✓</span> {item}
-                </li>
-              ))}
-            </ul>
-          </div>
+        <div className={`grid ${(!isLoggedIn || role === "admin") ? "md:grid-cols-2" : "grid-cols-1 max-w-2xl mx-auto"} gap-10`}>
+          {(!isLoggedIn || role === "user" || role === "admin") && (
+            <div className="bg-white/90 backdrop-blur-lg p-10 rounded-[48px] shadow-2xl border-t-8 border-blue-500 hover:-translate-y-3 transition-all duration-500">
+              <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mb-8 text-3xl shadow-inner">🏠</div>
+              <h3 className="text-3xl font-black mb-6 tracking-tight">For Residents</h3>
+              <ul className="space-y-5">
+                {['Register complaints with images', 'Real-time status tracking', 'Community announcements', 'Service feedback'].map((item, i) => (
+                  <li key={i} className="flex items-center gap-4 text-slate-600 font-bold">
+                    <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-[10px]">✓</span> {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-          {/* Management Card */}
-          <div className="bg-[#1a365d] p-10 rounded-[48px] shadow-2xl text-white hover:-translate-y-3 transition-all duration-500">
-            <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mb-8 text-3xl shadow-inner">📊</div>
-            <h3 className="text-3xl font-black mb-6 tracking-tight">For Management</h3>
-            <ul className="space-y-5">
-              {['Staff task assignment', 'Inventory management', 'Resolution reporting', 'Emergency broadcast'].map((item, i) => (
-                <li key={i} className="flex items-center gap-4 text-slate-200 font-bold">
-                  <span className="flex-shrink-0 w-6 h-6 bg-blue-400 text-white rounded-full flex items-center justify-center text-[10px]">✓</span> {item}
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Management Card — Only show to Admin or logged-out users (as a feature tease) */}
+          {(!isLoggedIn || role === "admin") && (
+            <div className="bg-[#1a365d] p-10 rounded-[48px] shadow-2xl text-white hover:-translate-y-3 transition-all duration-500">
+              <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mb-8 text-3xl shadow-inner">📊</div>
+              <h3 className="text-3xl font-black mb-6 tracking-tight">For Management</h3>
+              <ul className="space-y-5">
+                {['Staff task assignment', 'Inventory management', 'Resolution reporting', 'Emergency broadcast'].map((item, i) => (
+                  <li key={i} className="flex items-center gap-4 text-slate-200 font-bold">
+                    <span className="flex-shrink-0 w-6 h-6 bg-blue-400 text-white rounded-full flex items-center justify-center text-[10px]">✓</span> {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
 
         {/* Tech Section */}

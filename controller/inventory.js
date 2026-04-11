@@ -1,13 +1,13 @@
 const Inventory = require("../model/Inventory");
+const Finance = require("../model/finance");
 
-// ── GET ALL inventory items (with optional search) ───────────────────────────
+// ── GET ALL inventory items ───────────────────────────────────────────────────
 exports.getAll = async (req, res) => {
   try {
-    const { search, category } = req.query;
+    const { search } = req.query;
     const filter = {};
-    if (search) filter.name = { $regex: search, $options: "i" }; // case-insensitive search
-    if (category && category !== "All") filter.category = category;
-    const items = await Inventory.find(filter).sort({ category: 1, name: 1 });
+    if (search) filter.name = { $regex: search, $options: "i" };
+    const items = await Inventory.find(filter).sort({ name: 1 });
     res.json({ items });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -17,25 +17,44 @@ exports.getAll = async (req, res) => {
 // ── ADD new inventory item ───────────────────────────────────────────────────
 exports.addItem = async (req, res) => {
   try {
-    const { name, category, unit, quantity, minimum, minQuantity, description, unitPrice, supplier, approvedBy, approvedDate } = req.body;
-    if (!name) return res.status(400).json({ error: "Name is required" });
+    const { name, category, unit, quantity, minQuantity, description, unitPrice, approvedBy, approvedDate } = req.body;
+    if (!name || !unitPrice) return res.status(400).json({ error: "Name and cost per unit required" });
+    
     const existing = await Inventory.findOne({ name });
     if (existing) return res.status(409).json({ error: "Item already exists" });
-    const item = await Inventory.create({ name, category, unit, quantity, minQuantity: minQuantity || minimum || 5, description, unitPrice, supplier, approvedBy, approvedDate });
+
+    const item = await Inventory.create({ 
+      name, 
+      category: category || "General", 
+      unit: unit || "pcs", 
+      quantity: Number(quantity) || 0, 
+      minQuantity: Number(minQuantity) || 5, 
+      description, 
+      unitPrice: Number(unitPrice), 
+      supplier: "Default Supplier",
+      approvedBy: approvedBy || (req.session && req.session.user ? req.session.user.email : "Admin"),
+      approvedDate: approvedDate ? new Date(approvedDate) : new Date()
+    });
     res.status(201).json({ message: "Item added", item });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-// ── UPDATE inventory item (name, qty, minimum etc) ───────────────────────────
+// ... updateItem and deleteItem stay mostly same but use Default Supplier
 exports.updateItem = async (req, res) => {
   try {
     const { itemId } = req.params;
-    const { name, category, unit, quantity, minimum, minQuantity, description, unitPrice, supplier, approvedBy, approvedDate } = req.body;
+    const { name, category, unit, quantity, minQuantity, description, unitPrice, approvedBy, approvedDate } = req.body;
+    
+    // Construct exactly what to update
+    const updatePayload = { name, category, unit, quantity, minQuantity, description, unitPrice, supplier: "Default Supplier", updatedAt: new Date() };
+    if (approvedBy) updatePayload.approvedBy = approvedBy;
+    if (approvedDate) updatePayload.approvedDate = new Date(approvedDate);
+    
     const item = await Inventory.findByIdAndUpdate(
       itemId,
-      { $set: { name, category, unit, quantity, minQuantity: minQuantity || minimum, description, unitPrice, supplier, approvedBy, approvedDate, updatedAt: new Date() } },
+      { $set: updatePayload },
       { new: true }
     );
     if (!item) return res.status(404).json({ error: "Item not found" });
@@ -45,7 +64,6 @@ exports.updateItem = async (req, res) => {
   }
 };
 
-// ── DELETE inventory item ────────────────────────────────────────────────────
 exports.deleteItem = async (req, res) => {
   try {
     const { itemId } = req.params;
@@ -56,20 +74,46 @@ exports.deleteItem = async (req, res) => {
   }
 };
 
-// ── RESTOCK: manually add quantity to an item ────────────────────────────────
+// ── RESTOCK: with bill and expense creation ──────────────────────────────────
 exports.restock = async (req, res) => {
   try {
-    const { itemId, addQty } = req.body;
-    if (!itemId || !addQty || addQty <= 0)
-      return res.status(400).json({ error: "itemId and positive addQty required" });
-    const item = await Inventory.findByIdAndUpdate(
-      itemId,
-      { $inc: { quantity: Number(addQty) }, $set: { updatedAt: new Date() } },
-      { new: true }
-    );
+    const { itemId, addQty, costPerUnit, month, year } = req.body;
+    const billImage = req.file ? `/uploads/${req.file.filename}` : null;
+
+    if (!itemId || !addQty || !costPerUnit)
+      return res.status(400).json({ error: "itemId, quantity and cost are required" });
+
+    const item = await Inventory.findById(itemId);
     if (!item) return res.status(404).json({ error: "Item not found" });
-    res.json({ message: `Restocked +${addQty}`, item });
+
+    const totalCost = Number(addQty) * Number(costPerUnit);
+
+    // 1. Increase inventory quantity and update price
+    item.quantity += Number(addQty);
+    item.unitPrice = Number(costPerUnit);
+    item.updatedAt = new Date();
+    item.approvedBy = req.session && req.session.user ? req.session.user.email : "Admin";
+    item.approvedDate = new Date();
+    await item.save();
+
+    // 2. Create Expense (Pending)
+    await Finance.create({
+      transactionType: "Expense",
+      transactionCategory: "Inventory",
+      amount: totalCost,
+      status: "Pending", // Admin pays later
+      description: `Restock: ${addQty} ${item.unit} of ${item.name}`,
+      month: Number(month) || new Date().getMonth() + 1,
+      year: Number(year) || new Date().getFullYear(),
+      billImage,
+      quantity: Number(addQty),
+      costPerUnit: Number(costPerUnit),
+      handledBy: req.session.user.profileId // Logged by admin
+    });
+
+    res.json({ message: "Item restocked and expense created", item });
   } catch (err) {
+    console.error("[inventory.restock]:", err);
     res.status(500).json({ error: err.message });
   }
 };

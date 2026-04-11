@@ -16,12 +16,16 @@ exports.handlePost_fileUpload = async (req, res) => {
       return res.status(400).json({ error: "Photo is required" });
     }
     const complain = {
-      image_url:   `/uploads/${req.file.filename}`,
-      title:       req.body.title,
-      category:    req.body.category || "General",
-      priority:    req.body.priority,
-      description: req.body.description,
-      resident:    req.session.user.profileId || req.session.user.id,
+      image_url:     `/uploads/${req.file.filename}`,
+      title:         req.body.title,
+      category:      req.body.category || "General",
+      priority:      req.body.priority,
+      description:   req.body.description,
+      flatNumber:    req.body.flatNumber,
+      residentName:  req.body.residentName,
+      residentPhone: req.body.residentPhone,
+      scheduledSlot: req.body.scheduledSlot,
+      resident:      req.session.user.profileId || req.session.user.id,
     };
     await Complain.create(complain);
     res.status(201).json({ message: "Complaint filed successfully" });
@@ -114,35 +118,44 @@ exports.handleProfilePhotoUpload = async (req, res) => {
 };
 
 // ── STAFF SUBMITS ESTIMATE ─────────────────────────────────────────────────────
-// Personal = auto-approve (no admin step needed)
-// CommonArea = goes to admin for approval
+// Personal = labour only, goes to resident for acceptance
+// CommonArea = labour + inventory, goes to admin for approval
 exports.submitEstimate = async (req, res) => {
   try {
     const sessionUser = req.session.user;
     if (!sessionUser || sessionUser.role !== "staff")
       return res.status(401).json({ error: "Unauthorized" });
-    const { complaintId, estimatedCost } = req.body;
-    if (!complaintId || !estimatedCost)
-      return res.status(400).json({ error: "complaintId and estimatedCost required" });
+
+    const { complaintId, labourEstimate, inventoryEstimate } = req.body;
+    if (!complaintId || (!labourEstimate && labourEstimate !== 0))
+      return res.status(400).json({ error: "complaintId and labourEstimate required" });
+
     const complaint = await Complain.findById(complaintId);
     if (!complaint) return res.status(404).json({ error: "Complaint not found" });
-    if (String(complaint.assignedStaff) !== String(sessionUser.profileId))
+    if (!complaint.assignedStaff.includes(sessionUser.profileId))
       return res.status(403).json({ error: "Not your complaint" });
 
     const isPersonal = complaint.workType === "Personal";
+    const invEst = isPersonal ? [] : (inventoryEstimate || []);
+    
+    // Calculate total estimated cost
+    const totalInvCost = invEst.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const totalEst = Number(labourEstimate) + totalInvCost;
 
     await Complain.findByIdAndUpdate(complaintId, {
       $set: {
-        estimatedCost:  Number(estimatedCost),
-        estimateStatus: isPersonal ? "Approved" : "Pending",
-        status:         isPersonal ? "EstimateApproved" : "EstimatePending",
+        labourEstimate:    Number(labourEstimate),
+        inventoryEstimate: invEst,
+        estimatedCost:     totalEst,
+        estimateStatus:    "Pending",
+        status:            "EstimateSubmitted",
       },
     });
 
     res.status(200).json({
       message: isPersonal
-        ? "Estimate recorded and auto-approved. Proceed with work."
-        : "Estimate sent to admin for approval.",
+        ? "Estimate sent to resident for acceptance."
+        : "Estimate (Labour + Inventory) sent to admin for approval.",
     });
   } catch (err) {
     console.error("[submitEstimate]:", err);
@@ -150,78 +163,182 @@ exports.submitEstimate = async (req, res) => {
   }
 };
 
+// ── RESIDENT ACCEPTS ESTIMATE (Personal Work Only) ─────────────────────────────
+exports.acceptEstimate = async (req, res) => {
+    try {
+        const sessionUser = req.session.user;
+        if (!sessionUser || sessionUser.role !== "user")
+          return res.status(401).json({ error: "Unauthorized" });
+    
+        const { complaintId } = req.body;
+        const complaint = await Complain.findById(complaintId);
+        
+        if (!complaint) return res.status(404).json({ error: "Complaint not found" });
+        if (String(complaint.resident) !== String(sessionUser.profileId || sessionUser.id))
+            return res.status(403).json({ error: "Unauthorized access" });
+        
+        if (complaint.workType !== "Personal")
+            return res.status(400).json({ error: "Only personal work estimates can be accepted by residents" });
+        
+        if (complaint.status !== "EstimateSubmitted")
+            return res.status(400).json({ error: "Invalid complaint status for acceptance" });
+        
+        complaint.status = "InProgress";
+        complaint.estimateStatus = "Approved";
+        await complaint.save();
+    
+        res.json({ message: "Estimate accepted. Staff can now start work." });
+    } catch (err) {
+        console.error("[acceptEstimate]:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+}
+
 // ── STAFF SUBMITS COMPLETION PROOF ────────────────────────────────────────────
-// Personal work: actualCost = estimatedCost (already confirmed)
-// CommonArea: actualCost can differ (materials etc.)
+// Personal work → PaymentPending
+// CommonArea → Mark Completed, Admin verifies and releases fund
 exports.completeTask = async (req, res) => {
   try {
     const sessionUser = req.session.user;
     if (!sessionUser || sessionUser.role !== "staff")
       return res.status(401).json({ error: "Unauthorized" });
 
-    const { complaintId, worklog, actualCost, materialsUsed } = req.body;
+    const { complaintId, worklog, actualLabourCost, actualInventoryUsed } = req.body;
     if (!complaintId || !req.file)
       return res.status(400).json({ error: "complaintId and proof image required" });
 
     const complaint = await Complain.findById(complaintId);
     if (!complaint) return res.status(404).json({ error: "Complaint not found" });
-    if (String(complaint.assignedStaff) !== String(sessionUser.profileId))
+    if (!complaint.assignedStaff.includes(sessionUser.profileId))
       return res.status(403).json({ error: "Not your complaint" });
 
-    let materials = [];
-    try { materials = JSON.parse(materialsUsed || "[]"); } catch (_) {}
+    let inventory = [];
+    try { inventory = JSON.parse(actualInventoryUsed || "[]"); } catch (_) {}
 
-    // Personal: use estimatedCost as finalCost
-    // CommonArea: use submitted actualCost, fallback to estimatedCost if not provided
-    const finalCost = complaint.workType === "Personal"
-      ? complaint.estimatedCost
-      : (Number(actualCost) || complaint.estimatedCost || 0);
+    const isPersonal = complaint.workType === "Personal";
+    
+    const finalLabour = Number(actualLabourCost) || complaint.labourEstimate || 0;
+    const finalInvCost = inventory.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const finalTotal = finalLabour + finalInvCost;
 
-    await Complain.findByIdAndUpdate(complaintId, {
-      $set: {
+    const updateData = {
         proofImage:    `/uploads/${req.file.filename}`,
         worklog:       worklog || "",
-        actualCost:    finalCost,
-        materialsUsed: materials,
-        status:        "InProgress",
-      },
-    });
+        actualLabourCost: finalLabour,
+        actualInventoryUsed: isPersonal ? [] : inventory,
+        actualCost:    finalTotal,
+        status:        isPersonal ? "PaymentPending" : "Resolved",
+    };
 
-    // Only deduct society inventory for CommonArea work
-    if (complaint.workType === "CommonArea" && materials.length > 0) {
-      await deductMaterials(materials);
-    }
+    await Complain.findByIdAndUpdate(complaintId, { $set: updateData });
 
-    // Auto-create maintenance payment for CommonArea work
-    if (complaint.workType === "CommonArea") {
-      try {
-        const Payment = require("../model/Payment");
-        const Staff = require("../model/staff");
-        const staff = await Staff.findById(sessionUser.profileId);
-        const count = await Payment.countDocuments({ type: "maintenance" });
-        const refId = `MAN-${String(count + 1).padStart(5, "0")}`;
-        await Payment.create({
-          type:       "maintenance",
-          complaint:  complaint._id,
-          worker:     sessionUser.profileId,
-          workerName: staff?.name || "Staff",
-          purpose:    complaint.title,
-          amount:     finalCost,
-          status:     "Paid",
-          paidAt:     new Date(),
-          refId,
+    // Release all assigned staff
+    const Staff = require("../model/staff");
+    await Staff.updateMany({ _id: { $in: complaint.assignedStaff } }, { $set: { isAvailable: true } });
+
+    // For CommonArea: Create a PENDING expense in Finance (Pending Payout flow)
+    if (!isPersonal) {
+        if (inventory.length > 0) {
+            await deductMaterials(inventory.map(i => ({ name: i.name, qty: i.qty })));
+        }
+        
+        const Finance = require("../model/finance");
+        const now = new Date();
+        // Create a Pending expense entry for the society fund
+        await Finance.create({
+            transactionType: "Expense",
+            transactionCategory: "CommonRepair",
+            amount: finalTotal,
+            status: "Pending", // Admin must click PAY to mark as Paid
+            description: `Common Area repair completed: ${complaint.title}`,
+            relatedComplaint: complaint._id,
+            month: now.getMonth() + 1,
+            year: now.getFullYear(),
+            handledBy: sessionUser.profileId
         });
-      } catch (payErr) {
-        console.error("[completeTask] maintenance payment creation failed:", payErr.message);
-        // Don't fail the whole request — proof is already saved
-      }
     }
 
-    res.status(200).json({ message: "Completion submitted successfully" });
+    res.status(200).json({ 
+        message: isPersonal 
+            ? "Work completed. Awaiting payment verification from both parties." 
+            : "Work completed successfully and recorded." 
+    });
   } catch (err) {
     console.error("[completeTask]:", err);
     res.status(500).json({ error: "Internal server error" });
   }
+};
+
+// ── RECORD PAYMENT VERIFICATION (Personal Work Only) ───────────────────────────
+exports.recordPaymentVerification = async (req, res) => {
+    try {
+        const sessionUser = req.session.user;
+        const { complaintId, amount } = req.body;
+        
+        if (!complaintId || !amount)
+            return res.status(400).json({ error: "complaintId and amount required" });
+        
+        const complaint = await Complain.findById(complaintId);
+        if (!complaint) return res.status(404).json({ error: "Complaint not found" });
+        if (complaint.workType !== "Personal")
+            return res.status(400).json({ error: "Only personal work requires payment verification" });
+
+        if (sessionUser.role === "user") {
+            complaint.userPaymentAmount = Number(amount);
+        } else if (sessionUser.role === "staff") {
+            complaint.staffPaymentAmount = Number(amount);
+        } else {
+            return res.status(403).json({ error: "Only staff or resident can record payment" });
+        }
+
+        // Auto-resolve if both match, reset if mismatch
+        if (complaint.userPaymentAmount !== null && complaint.staffPaymentAmount !== null) {
+            if (complaint.userPaymentAmount === complaint.staffPaymentAmount) {
+                complaint.status = "Resolved";
+                complaint.isPaymentVerified = true;
+                
+                // Final staff earning log for transparency
+                const Finance = require("../model/finance");
+                await Finance.create({
+                    transactionType: "Income", // Tracked for transparency
+                    transactionCategory: "DirectPayment",
+                    amount: complaint.userPaymentAmount,
+                    status: "Paid",
+                    description: `Verified personal repair payment: ${complaint.title}`,
+                    relatedComplaint: complaint._id,
+                    handledBy: complaint.assignedStaff?.[0] || null
+                });
+                
+                // Release staff
+                const Staff = require("../model/staff");
+                await Staff.updateMany({ _id: { $in: complaint.assignedStaff } }, { isAvailable: true });
+            } else {
+                // MISMATCH — reset both amounts so they can re-enter
+                const mismatchInfo = {
+                    staffEntered: complaint.staffPaymentAmount,
+                    residentEntered: complaint.userPaymentAmount
+                };
+                complaint.paymentMismatchCount = (complaint.paymentMismatchCount || 0) + 1;
+                complaint.lastMismatchStaffAmount = mismatchInfo.staffEntered;
+                complaint.lastMismatchUserAmount = mismatchInfo.residentEntered;
+                complaint.userPaymentAmount = null;
+                complaint.staffPaymentAmount = null;
+
+                await complaint.save();
+                return res.json({ 
+                    message: `Payment mismatch! Staff entered ₹${mismatchInfo.staffEntered}, Resident entered ₹${mismatchInfo.residentEntered}. Both must re-enter the correct amount.`,
+                    mismatch: true,
+                    mismatchInfo 
+                });
+            }
+        }
+
+        await complaint.save();
+        res.json({ message: "Payment recorded successfully", isVerified: complaint.isPaymentVerified });
+    } catch (err) {
+        console.error("[recordPaymentVerification]:", err);
+        res.status(500).json({ error: "Server error" });
+    }
 };
 
 // ── RESIDENT REVOKES ASSIGNED STAFF ───────────────────────────────────────────

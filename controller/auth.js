@@ -1,3 +1,4 @@
+const bcrypt = require("bcrypt");
 const path = require('path');
 const rootDir = require('../utils/pathUtil');
 const Auth = require("../model/Auth");
@@ -33,9 +34,13 @@ exports.handlePost_login = async (req, res) => {
     const authUser = await Auth.findOne({ email }).select("+password");
     if (!authUser) return res.status(401).json({ error: "Email not found" });
 
-    // Plain text comparison for demo
-    if (password !== authUser.password)
+    // SUPPORT BOTH BCRYPT HASHES AND PLAIN TEXT (For demo flexibility)
+    const isMatch = await bcrypt.compare(password, authUser.password);
+    const isPlainMatch = password === authUser.password;
+
+    if (!isMatch && !isPlainMatch) {
       return res.status(401).json({ error: "Invalid password" });
+    }
 
     let profile;
     if (authUser.role === "user") profile = await User.findOne({ authId: authUser._id });

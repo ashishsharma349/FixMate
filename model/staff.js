@@ -63,8 +63,8 @@ const StaffSchema = new Schema({
   department: {
     type: String,
     required: true,
-    enum: ['Plumbing', 'Electrical', 'Carpentry', 'Cleaning', 'Security'],
-    default: 'Cleaning'
+    enum: ['Plumbing', 'Electrical', 'Carpentry', 'Cleaning', 'Security', 'technician', 'watchman', 'gardener'],
+    default: 'Plumbing'
   },
   // Added your new requirements
   aadhaar: { 
@@ -80,6 +80,10 @@ const StaffSchema = new Schema({
     type: Boolean,
     default: true,
     index: true
+  },
+  baseSalary: {
+    type: Number,
+    default: 8000
   },
   rating: {
     type: Number,

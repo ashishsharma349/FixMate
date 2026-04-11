@@ -96,10 +96,11 @@ function ComplainCard({ data, onRevoke }) {
         <h2 className="text-xl font-extrabold text-[#1a365d] mb-2 truncate">{data.title}</h2>
 
         {/* Assigned staff info */}
-        {data.assignedStaff && (
+        {data.assignedStaff && data.assignedStaff.length > 0 && (
           <p className="text-xs text-gray-500 mb-3">
-            🔧 Assigned to: <span className="font-semibold">{data.assignedStaff.name}</span>
-            {data.assignedStaff.department && ` · ${data.assignedStaff.department}`}
+            🔧 Assigned to: {data.assignedStaff.map(s => s.name).join(", ")}
+            {data.assignedStaff[0].phone && <span className="ml-2 bg-blue-50 text-blue-600 px-2 py-0.5 rounded-md font-bold">📞 {data.assignedStaff[0].phone}</span>}
+            {data.assignedStaff[0].department && ` · ${data.assignedStaff[0].department}`}
           </p>
         )}
 
@@ -117,6 +118,29 @@ function ComplainCard({ data, onRevoke }) {
             )}
           </p>
         )}
+
+        {/* Contact and Scheduling info */}
+        <div className="grid grid-cols-2 gap-2 mb-4 bg-slate-50 p-3 rounded-2xl border border-slate-100">
+          <div>
+            <span className="text-[9px] text-slate-400 font-black uppercase block tracking-tighter">Flat</span>
+            <span className="text-xs font-bold text-slate-700">{data.flatNumber || "—"}</span>
+          </div>
+          <div>
+            <span className="text-[9px] text-slate-400 font-black uppercase block tracking-tighter">Phone</span>
+            <span className="text-xs font-bold text-slate-700">{data.residentPhone || "—"}</span>
+          </div>
+          <div className="col-span-2 border-t border-slate-100 pt-1.5 mt-1.5">
+            <span className="text-[9px] text-slate-400 font-black uppercase block tracking-tighter">
+              {data.status === "Pending" ? "Requested Slot" : "Scheduled Time"}
+            </span>
+            <div className="flex flex-col gap-0.5 mt-1">
+              {data.scheduledAt && (
+                <span className="text-xs font-bold text-slate-700">📅 {new Date(data.scheduledAt).toLocaleDateString()}</span>
+              )}
+              <span className="text-xs font-bold text-blue-600">🕒 {data.scheduledSlot || "Not specified"}</span>
+            </div>
+          </div>
+        </div>
 
         {/* Date + Actions */}
         <div className="flex items-center justify-between border-t border-gray-50 pt-4 gap-2 flex-wrap">
