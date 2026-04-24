@@ -1,0 +1,455 @@
+const express = require("express");
+const router = express.Router();
+require("dotenv").config();
+const Razorpay = require("razorpay");
+const crypto = require("crypto");
+const Payment = require("../model/Payment");
+const User = require("../model/User");
+
+router.use(express.json());
+router.use(express.urlencoded({ extended: true }));
+
+const adminOnly = (req, res, next) => {
+  if (!req.session.user || req.session.user.role !== "admin")
+    return res.status(403).json({ error: "Forbidden: Admin only" });
+  next();
+};
+
+const loggedIn = (req, res, next) => {
+  if (!req.session.user)
+    return res.status(401).json({ error: "Not logged in" });
+  next();
+};
+
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
+
+const generateRefId = async (type) => {
+  const prefix = type === "personal" ? "PER" : "MAN";
+  
+  // Find the most recent record of this type by refId sorting
+  const lastRecord = await Payment.findOne({ type, refId: { $regex: new RegExp(`^${prefix}-`) } })
+    .sort({ refId: -1 })
+    .exec();
+
+  let nextNum = 1;
+  if (lastRecord && lastRecord.refId) {
+    const lastNum = parseInt(lastRecord.refId.split("-")[1]);
+    if (!isNaN(lastNum)) {
+      nextNum = lastNum + 1;
+    }
+  }
+
+  return `${prefix}-${String(nextNum).padStart(5, "0")}`;
+};
+
+// GET /payments/list (admin)
+router.get("/list", adminOnly, async (req, res) => {
+  try {
+    const { month, year } = req.query;
+    
+    // Build match conditions for personal payments (maintenance fees)
+    let personalMatch = { type: "personal" };
+    if (month && month !== "") {
+      personalMatch.month = parseInt(month);
+    }
+    if (year && year !== "") {
+      personalMatch.year = parseInt(year);
+    }
+    
+    // Build match conditions for maintenance payments
+    let maintenanceMatch = { type: "maintenance" };
+    if ((month && month !== "") || (year && year !== "")) {
+      const currentYear = new Date().getFullYear();
+      
+      let filterYear = (year && year !== "") ? parseInt(year) : currentYear;
+      let filterMonth = (month && month !== "") ? parseInt(month) : null;
+
+      let startDate;
+      let endDate;
+      if (filterMonth !== null) {
+        startDate = new Date(filterYear, filterMonth - 1, 1);
+        endDate = new Date(filterYear, filterMonth, 0, 23, 59, 59);
+      } else {
+        startDate = new Date(filterYear, 0, 1);
+        endDate = new Date(filterYear, 11, 31, 23, 59, 59);
+      }
+
+      maintenanceMatch.createdAt = {
+        $gte: startDate,
+        $lte: endDate,
+      };
+    }
+    
+    const [maintenance, personal] = await Promise.all([
+      Payment.find(maintenanceMatch)
+        .populate("worker", "name department")
+        .populate({
+          path: "complaint",
+          populate: [
+            { path: "resident", select: "name flatNumber phone" },
+            { path: "assignedStaff", select: "name phone" }
+          ]
+        })
+        .sort({ createdAt: -1 }),
+      Payment.find(personalMatch)
+        .populate("resident", "name flatNumber phone")
+        .sort({ createdAt: -1 }),
+    ]);
+    res.json({ maintenance, personal, filters: { month: month ? parseInt(month) : null, year: year ? parseInt(year) : null } });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /payments/my-payments (resident)
+router.get("/my-payments", loggedIn, async (req, res) => {
+  try {
+    const user = await User.findOne({
+      authId: req.session.user.id || req.session.user._id,
+    });
+    if (!user) return res.status(404).json({ error: "User profile not found" });
+
+    const payments = await Payment.find({ type: "personal", resident: user._id })
+      .sort({ createdAt: -1 });
+
+    res.json({ payments, user });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /payments/monthly-revenue — resident payments collected, grouped by month (dashboard chart)
+// Query params: ?month=2&year=2024 (optional filters)
+router.get("/monthly-revenue", adminOnly, async (req, res) => {
+  try {
+    const { month, year } = req.query;
+    
+    // Build match condition - Only filter if month/year provided, otherwise group all
+    let matchCondition = { type: "personal", status: "Paid" };
+    
+    // Add month/year filters if provided
+    if (month && year) {
+      matchCondition.month = parseInt(month);
+      matchCondition.year = parseInt(year);
+    }
+    
+    const data = await Payment.aggregate([
+      { $match: matchCondition },
+      {
+        $group: {
+          _id: { month: "$month", year: "$year" },
+          revenue: { $sum: "$amount" },
+          count: { $sum: 1 }
+        },
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } },
+      { $limit: 12 },
+    ]);
+    
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const chartData = data.map((d) => ({
+      month: `${months[d._id.month - 1]} ${String(d._id.year).slice(-2)}`,
+      monthNum: d._id.month,
+      year: d._id.year,
+      revenue: d.revenue,
+      count: d.count,
+    }));
+    
+    res.json({ chartData, filters: { month: month ? parseInt(month) : null, year: year ? parseInt(year) : null } });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /payments/generate-monthly (admin)
+router.post("/generate-monthly", adminOnly, async (req, res) => {
+  try {
+    const now = new Date();
+    const month = now.getMonth() + 1;
+    const year = now.getFullYear();
+    const amount = req.body.amount || 5000;
+
+    const residents = await User.find({});
+    let created = 0, skipped = 0;
+
+    for (const resident of residents) {
+      const exists = await Payment.findOne({
+        type: "personal",
+        resident: resident._id,
+        month,
+        year,
+      });
+      if (exists) { skipped++; continue; }
+
+      const refId = await generateRefId("personal");
+      await Payment.create({
+        type: "personal",
+        resident: resident._id,
+        flatNumber: resident.flatNumber || "—",
+        amount,
+        dueDate: new Date(year, month, 5),
+        status: "Pending",
+        month,
+        year,
+        refId,
+      });
+      created++;
+    }
+
+    res.json({ success: true, created, skipped, month, year });
+  } catch (err) {
+    console.error("[generate-monthly]:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /payments/create-order (resident)
+router.post("/create-order", loggedIn, async (req, res) => {
+  try {
+    const { paymentId } = req.body;
+    if (!paymentId) return res.status(400).json({ error: "paymentId required" });
+
+    const payment = await Payment.findById(paymentId).populate("resident", "name flatNumber");
+    if (!payment) return res.status(404).json({ error: "Payment record not found" });
+    if (payment.status === "Paid") return res.status(400).json({ error: "Already paid" });
+
+    // Reuse existing order if already created
+    if (payment.razorpayOrderId) {
+      return res.json({
+        orderId: payment.razorpayOrderId,
+        amount: payment.amount * 100,
+        currency: "INR",
+        keyId: process.env.RAZORPAY_KEY_ID,
+        residentName: payment.resident?.name || "",
+        flatNumber: payment.flatNumber,
+      });
+    }
+
+    const order = await razorpay.orders.create({
+      amount: Math.round(Number(payment.amount) * 100),
+      currency: "INR",
+      receipt: `fixmate_${payment._id}`.substring(0, 40),
+      notes: {
+        flatNumber: String(payment.flatNumber || "N/A"),
+        residentName: String(payment.resident?.name || "N/A"),
+        paymentId: String(payment._id),
+      },
+    });
+
+    payment.razorpayOrderId = order.id;
+    await payment.save();
+
+    res.json({
+      orderId: order.id,
+      amount: order.amount,
+      currency: order.currency,
+      keyId: process.env.RAZORPAY_KEY_ID,
+      residentName: payment.resident?.name || "",
+      flatNumber: payment.flatNumber,
+    });
+  } catch (err) {
+    console.error("Razorpay Create Order Error:", err);
+    // Handle specific errors
+    if (err.name === 'TypeError') {
+      return res.status(400).json({ error: "Invalid payment amount" });
+    }
+    res.status(500).json({ error: "Payment creation failed. Please try again." });
+  }
+});
+
+// POST /payments/verify (any logged-in)
+router.post("/verify", loggedIn, async (req, res) => {
+  try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+    // Validate required fields
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return res.status(400).json({ error: "Missing required payment verification fields" });
+    }
+
+    const expected = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+      .digest("hex");
+
+    if (expected !== razorpay_signature)
+      return res.status(400).json({ error: "Invalid payment signature" });
+
+    const payment = await Payment.findOneAndUpdate(
+      { razorpayOrderId: razorpay_order_id },
+      {
+        status: "Paid",
+        razorpayPaymentId: razorpay_payment_id,
+        razorpaySignature: razorpay_signature,
+        paidAt: new Date(),
+      },
+      { new: true }
+    ).populate("resident", "name flatNumber authId");
+
+    if (!payment) return res.status(404).json({ error: "Payment not found" });
+
+    // Send email receipt for personal payments
+    if (payment.type === "personal" && payment.resident) {
+      try {
+        const Auth = require("../model/Auth");
+        // Handle both cases: resident might have authId directly or need to look it up
+        let auth;
+        if (payment.resident.authId) {
+          auth = await Auth.findById(payment.resident.authId);
+        } else {
+          // Fallback: find auth record by user reference
+          auth = await Auth.findOne({ _id: payment.resident._id });
+        }
+        
+        if (auth && auth.email) {
+          const mailer = require("../utils/mailer");
+          await mailer.sendPaymentReceipt(auth.email, {
+            residentName: payment.resident.name,
+            flatNumber: payment.resident.flatNumber,
+            amount: payment.amount,
+            refId: payment.refId,
+            paidAt: payment.paidAt,
+            razorpayPaymentId: razorpay_payment_id
+          });
+          console.log(`[Payment Receipt] Email sent to ${auth.email} for payment ${payment.refId}`);
+        } else {
+          console.log("[Payment Receipt] No email found for resident:", payment.resident._id);
+        }
+      } catch (emailErr) {
+        console.error("[Payment Receipt Email Error]:", emailErr.message);
+        // Don't fail the payment verification if email fails
+      }
+    }
+
+    res.json({ success: true, payment });
+  } catch (err) {
+    console.error("[Payment Verification Error]:", err);
+    
+    // Handle specific errors
+    if (err.name === 'CastError') {
+      return res.status(400).json({ error: "Invalid payment ID format" });
+    }
+    
+    if (err.message.includes('HMAC')) {
+      return res.status(400).json({ error: "Payment verification failed" });
+    }
+    
+    res.status(500).json({ error: "Payment verification failed. Please try again." });
+  }
+});
+
+// POST /payments/maintenance (admin)
+router.post("/maintenance", adminOnly, async (req, res) => {
+  try {
+    const { complaintId, workerId, workerName, purpose, amount } = req.body;
+    if (!amount || !purpose) return res.status(400).json({ error: "amount and purpose required" });
+
+    const refId = await generateRefId("maintenance");
+    const payment = await Payment.create({
+      type: "maintenance",
+      complaint: complaintId || null,
+      worker: workerId || null,
+      workerName,
+      purpose,
+      amount,
+      status: "Paid",
+      paidAt: new Date(),
+      refId,
+    });
+
+    res.json({ success: true, payment });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /payments/mark-paid — admin confirms payment as paid
+router.post("/mark-paid", adminOnly, async (req, res) => {
+  try {
+    const { paymentId } = req.body;
+    if (!paymentId) return res.status(400).json({ error: "paymentId required" });
+    const payment = await Payment.findByIdAndUpdate(
+      paymentId,
+      { status: "Paid", paidAt: new Date(), razorpayPaymentId: "ADMIN_CONFIRMED" },
+      { new: true }
+    ).populate("resident", "name flatNumber authId");
+
+    if (!payment) return res.status(404).json({ error: "Payment not found" });
+
+    // Send email receipt for personal payments (offline)
+    if (payment.type === "personal" && payment.resident) {
+      try {
+        const Auth = require("../model/Auth");
+        let auth;
+        if (payment.resident.authId) {
+          auth = await Auth.findById(payment.resident.authId);
+        } else {
+          auth = await Auth.findOne({ _id: payment.resident._id });
+        }
+        
+        if (auth && auth.email) {
+          const mailer = require("../utils/mailer");
+          await mailer.sendPaymentReceipt(auth.email, {
+            residentName: payment.resident.name,
+            flatNumber: payment.resident.flatNumber,
+            amount: payment.amount,
+            refId: payment.refId,
+            paidAt: payment.paidAt,
+            razorpayPaymentId: "ADMIN_CONFIRMED"
+          });
+          console.log(`[Offline Payment Receipt] Email sent to ${auth.email} for payment ${payment.refId}`);
+        }
+      } catch (emailErr) {
+        console.error("[Offline Payment Receipt Email Error]:", emailErr.message);
+      }
+    }
+
+    res.json({ success: true, payment });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PUT /payments/:id — admin edits a maintenance payment
+router.put("/:id", adminOnly, async (req, res) => {
+  try {
+    const { purpose, amount, workerName, status, paidAt } = req.body;
+    const update = {};
+    if (purpose !== undefined) update.purpose = purpose;
+    if (amount !== undefined) update.amount = Number(amount);
+    if (workerName !== undefined) update.workerName = workerName;
+    if (status !== undefined) update.status = status;
+    if (paidAt !== undefined) update.paidAt = paidAt ? new Date(paidAt) : null;
+
+    const payment = await Payment.findByIdAndUpdate(req.params.id, { $set: update }, { new: true });
+    if (!payment) return res.status(404).json({ error: "Payment not found" });
+
+    // Sync amount to linked complaint's actualCost if this is a maintenance payment with a complaint
+    if (payment.type === "maintenance" && payment.complaint && amount !== undefined) {
+      const Complain = require("../model/Complain");
+      await Complain.findByIdAndUpdate(payment.complaint, { 
+        $set: { actualCost: Number(amount) } 
+      });
+    }
+
+    res.json({ success: true, payment });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// DELETE /payments/:id — admin deletes a maintenance payment
+router.delete("/:id", adminOnly, async (req, res) => {
+  try {
+    const payment = await Payment.findByIdAndDelete(req.params.id);
+    if (!payment) return res.status(404).json({ error: "Payment not found" });
+    res.json({ success: true, message: "Payment deleted" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+module.exports = router;
