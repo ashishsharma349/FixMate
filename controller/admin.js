@@ -41,6 +41,7 @@ exports.getDashboardStats = async (req, res) => {
       Staff.countDocuments(),
     ]);
 
+<<<<<<< HEAD
     // Efficiency Score Calculation
     const [personalTotal, personalResolved, publicTotal, publicResolved] = await Promise.all([
       Complain.countDocuments({ workType: "Personal" }),
@@ -52,6 +53,8 @@ exports.getDashboardStats = async (req, res) => {
     const personalEfficiency = personalTotal > 0 ? Math.round((personalResolved / personalTotal) * 100) : 0;
     const publicEfficiency = publicTotal > 0 ? Math.round((publicResolved / publicTotal) * 100) : 0;
 
+=======
+>>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
     const recentComplaints = await Complain.find()
       .sort({ createdAt: -1 })
       .limit(5)
@@ -74,6 +77,7 @@ exports.getDashboardStats = async (req, res) => {
       $expr: { $lte: ["$quantity", "$minQuantity"] }
     }).select("name quantity minQuantity unit category");
 
+<<<<<<< HEAD
     // ── FINANCIAL AGGREGATION (CURRENT MONTH ONLY) ─────────────────────────────────
     const now = new Date();
     const currentMonth = now.getMonth() + 1;
@@ -132,19 +136,73 @@ exports.getDashboardStats = async (req, res) => {
         limit: totalIncome, // Combined cumulative income
         spent: totalSpent, // Combined cumulative expenses
         balance: totalIncome - totalSpent,
+=======
+    // Maintenance Fund Cumulative Logic (Matching getReportsData)
+    const GENESIS_MONTH = 2; // February
+    const GENESIS_YEAR = 2026;
+    const now = new Date();
+    const currentMonth = now.getMonth() + 1;
+    const currentYear = now.getFullYear();
+    
+    const monthsDiff = (currentYear - GENESIS_YEAR) * 12 + (currentMonth - GENESIS_MONTH) + 1;
+    const cumulativeLimit = Math.max(0, monthsDiff) * (totalResidents * 3500);
+
+    const fundExpenses = await Finance.aggregate([
+      { 
+        $match: { 
+          transactionType: 'Expense', 
+          transactionCategory: { $in: ['Salary', 'CommonRepair', 'Inventory', 'Incentive'] },
+          status: 'Paid', // Only count realized expenses
+          date: { $gte: new Date(GENESIS_YEAR, GENESIS_MONTH - 1, 1) }
+        } 
+      },
+      { $group: { _id: null, total: { $sum: '$amount' } } }
+    ]);
+    const totalFundSpent = fundExpenses[0]?.total || 0;
+
+    const monthlyFeesMatch = { type: "personal", month: currentMonth, year: currentYear };
+    const [paidFeesAgg, pendingFeesAgg] = await Promise.all([
+      Payment.aggregate([
+        { $match: { ...monthlyFeesMatch, status: "Paid" } },
+        { $group: { _id: null, total: { $sum: "$amount" }, count: { $sum: 1 } } },
+      ]),
+      Payment.aggregate([
+        { $match: { ...monthlyFeesMatch, status: "Pending" } },
+        { $group: { _id: null, total: { $sum: "$amount" }, count: { $sum: 1 } } },
+      ]),
+    ]);
+
+    res.json({
+      stats: { totalComplaints, inProgress, pendingApproval, pendingEstimates, resolvedComplaints, totalResidents, totalStaff },
+      fund: {
+        limit: cumulativeLimit,
+        spent: totalFundSpent,
+        balance: cumulativeLimit - totalFundSpent,
+>>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
       },
       residentMonthlyFees: {
         month: currentMonth,
         year: currentYear,
+<<<<<<< HEAD
         collectedAmount: incomeThisMonth,
         paidCount: paidCountThisMonth,
         pendingAmount: pendingThisMonth,
         pendingCount: pendingCountThisMonth,
+=======
+        collectedAmount: paidFeesAgg[0]?.total || 0,
+        paidCount: paidFeesAgg[0]?.count || 0,
+        pendingAmount: pendingFeesAgg[0]?.total || 0,
+        pendingCount: pendingFeesAgg[0]?.count || 0,
+>>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
       },
       recentComplaints,
       pendingEstimatesList,
       wipComplaints,
+<<<<<<< HEAD
       lowStockItems
+=======
+      lowStockItems,
+>>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
     });
   } catch (err) {
     console.error("[getDashboardStats]:", err);
@@ -156,7 +214,10 @@ exports.getDashboardStats = async (req, res) => {
 exports.getMonthlyStats = async (req, res) => {
   try {
     const data = await Complain.aggregate([
+<<<<<<< HEAD
       { $match: { createdAt: { $exists: true, $ne: null } } },
+=======
+>>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
       {
         $group: {
           _id: { month: { $month: "$createdAt" }, year: { $year: "$createdAt" } },
@@ -198,13 +259,18 @@ exports.assignComplaint = async (req, res) => {
     const { complaintId, staffIds, workType, scheduledAt, scheduledSlot, staffIncentive } = req.body;
     if (!complaintId || !staffIds || !Array.isArray(staffIds) || staffIds.length < 1 || !workType)
       return res.status(400).json({ error: "complaintId, staffIds (array with at least 1) and workType are required" });
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
 
 
     if (!["Personal", "CommonArea"].includes(workType))
       return res.status(400).json({ error: "workType must be Personal or CommonArea" });
 
     const staffMembers = await Staff.find({ _id: { $in: staffIds } });
+<<<<<<< HEAD
     if (staffMembers.length !== staffIds.length)
       return res.status(404).json({ error: "One or more staff not found" });
 
@@ -219,6 +285,22 @@ exports.assignComplaint = async (req, res) => {
       },
     });
 
+=======
+    if (staffMembers.length !== staffIds.length) 
+      return res.status(404).json({ error: "One or more staff not found" });
+
+    await Complain.findByIdAndUpdate(complaintId, {
+      $set: { 
+        assignedStaff: staffIds, 
+        status: "Assigned", 
+        workType, 
+        scheduledAt, 
+        scheduledSlot,
+        staffIncentive: Number(staffIncentive) || 0 
+      },
+    });
+    
+>>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
     // Mark all assigned staff as busy
     await Staff.updateMany({ _id: { $in: staffIds } }, { $set: { isAvailable: false } });
 
@@ -328,6 +410,7 @@ exports.getReportsData = async (req, res) => {
     // Income/Expense filtering conditions
     let paymentMatchIncome = { type: "personal", status: "Paid" };
     let paymentMatchExpense = { type: "maintenance", status: "Paid" };
+<<<<<<< HEAD
 
     if (filterMonth) {
       paymentMatchIncome.month = filterMonth;
@@ -336,6 +419,16 @@ exports.getReportsData = async (req, res) => {
     if (filterYear) {
       paymentMatchIncome.year = filterYear;
       paymentMatchExpense.year = filterYear;
+=======
+    
+    if (filterMonth) {
+        paymentMatchIncome.month = filterMonth;
+        paymentMatchExpense.month = filterMonth;
+    }
+    if (filterYear) {
+        paymentMatchIncome.year = filterYear;
+        paymentMatchExpense.year = filterYear;
+>>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
     }
 
     const [incomeData, expenseData] = await Promise.all([
@@ -352,6 +445,7 @@ exports.getReportsData = async (req, res) => {
     const totalIncome = incomeData[0]?.totalIncome || 0;
     const totalExpense = expenseData[0]?.totalExpense || 0;
 
+<<<<<<< HEAD
     // ── Maintenance Fund Real Data Logic ──
     let financeMatch = {
       transactionType: 'Expense',
@@ -369,17 +463,74 @@ exports.getReportsData = async (req, res) => {
       { $group: { _id: null, total: { $sum: '$amount' } } }
     ]);
     const totalFundSpent = fundExpenses[0]?.total || 0;
+=======
+    // ── Maintenance Fund Cumulative Pooled Logic ──
+    const GENESIS_MONTH = 2; // February
+    const GENESIS_YEAR = 2026;
+    
+    const MONTHLY_LIMIT = totalResidents * 3500;
+    let cumulativeLimit = MONTHLY_LIMIT;
+    let financeMatch = { 
+        transactionType: 'Expense', 
+        transactionCategory: { $in: ['Salary', 'CommonRepair', 'Inventory', 'Incentive'] },
+        date: { $gte: new Date(GENESIS_YEAR, GENESIS_MONTH - 1, 1) }
+    };
+
+    if (filterMonth && filterYear) {
+        // Calculate months since Genesis (Feb 2026) to calculate cumulative budget
+        let monthsDiff = (filterYear - GENESIS_YEAR) * 12 + (filterMonth - GENESIS_MONTH) + 1;
+        
+        // Before February 2026, everything is 0 as per user request
+        if (filterYear < GENESIS_YEAR || (filterYear === GENESIS_YEAR && filterMonth < GENESIS_MONTH)) {
+            monthsDiff = 0;
+            cumulativeLimit = 0;
+        } else {
+            cumulativeLimit = monthsDiff * MONTHLY_LIMIT;
+        }
+
+        // Total spent from beginning of time until the end of the selected month
+        const endDate = new Date(filterYear, filterMonth, 0, 23, 59, 59);
+        financeMatch.date.$lte = endDate;
+    }
+
+    const fundExpenses = await Finance.aggregate([
+      { $match: { ...financeMatch, status: 'Paid' } },
+      { $group: { _id: null, total: { $sum: '$amount' } } }
+    ]);
+    const totalFundSpent = fundExpenses[0]?.total || 0;
+    
+    // Period-specific spending (just for this month) for detail stats
+    let periodMatch = { ...financeMatch, status: 'Paid' };
+    if (filterMonth && filterYear) {
+        periodMatch.date = { 
+            $gte: new Date(filterYear, filterMonth - 1, 1),
+            $lte: new Date(filterYear, filterMonth, 0, 23, 59, 59)
+        };
+    }
+    const periodExpenses = await Finance.aggregate([
+        { $match: periodMatch },
+        { $group: { _id: null, total: { $sum: '$amount' } } }
+    ]);
+    const monthlySpent = periodExpenses[0]?.total || 0;
+>>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
 
     // Direct Staff Earnings (Personal Work)
     let earningsMatch = { transactionCategory: { $in: ['DirectPayment', 'Salary', 'CommonRepair', 'Incentive'] } };
     if (filterMonth && filterYear) {
+<<<<<<< HEAD
       const startDate = new Date(filterYear, filterMonth - 1, 1);
       const endDate = new Date(filterYear, filterMonth, 0, 23, 59, 59);
       earningsMatch.date = { $gte: startDate, $lte: endDate };
+=======
+        const startDate = new Date(filterYear, filterMonth - 1, 1);
+        const endDate = new Date(filterYear, filterMonth, 0, 23, 59, 59);
+        earningsMatch.date = { $gte: startDate, $lte: endDate };
+>>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
     }
 
     const staffEarnings = await Finance.aggregate([
       { $match: earningsMatch },
+<<<<<<< HEAD
       {
         $group: {
           _id: "$handledBy",
@@ -388,6 +539,14 @@ exports.getReportsData = async (req, res) => {
           repairs: { $sum: { $cond: [{ $eq: ["$transactionCategory", "CommonRepair"] }, "$amount", 0] } }
         }
       }
+=======
+      { $group: { 
+        _id: "$handledBy", 
+        salary: { $sum: { $cond: [{ $eq: ["$transactionCategory", "Salary"] }, "$amount", 0] } },
+        direct: { $sum: { $cond: [{ $in: ["$transactionCategory", ["DirectPayment", "Incentive"]] }, "$amount", 0] } },
+        repairs: { $sum: { $cond: [{ $eq: ["$transactionCategory", "CommonRepair"] }, "$amount", 0] } }
+      }}
+>>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
     ]);
 
     const inventoryCategories = await Inventory.aggregate([
@@ -396,7 +555,11 @@ exports.getReportsData = async (req, res) => {
     ]);
 
     const expenseDistribution = await Finance.aggregate([
+<<<<<<< HEAD
       { $match: financeMatch },
+=======
+      { $match: { ...financeMatch, status: 'Paid' } },
+>>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
       { $group: { _id: "$transactionCategory", total: { $sum: "$amount" } } }
     ]);
 
@@ -406,11 +569,22 @@ exports.getReportsData = async (req, res) => {
       categoryBreakdown,
       expenseDistribution, // Categorized sums for charts
       scheduleData,
+<<<<<<< HEAD
       fund: {
         totalIncome,
         totalExpense,
         spent: totalFundSpent, // Specific to filtered period
         balance: totalIncome - totalFundSpent,
+=======
+      fund: { 
+        limit: cumulativeLimit, 
+        spent: totalFundSpent, 
+        balance: cumulativeLimit - totalFundSpent,
+        monthlySpent: monthlySpent,
+        monthlyLimit: MONTHLY_LIMIT,
+        totalIncome, 
+        totalExpense 
+>>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
       },
       directLogs: staffEarnings,
       inventoryStats: inventoryCategories,
@@ -439,7 +613,10 @@ exports.createUser = async (req, res) => {
   try {
     const { email, name, age, phone, contact, aadhaar, flatNumber } = req.body;
     const phoneNum = phone || contact;
+<<<<<<< HEAD
     console.log("Body Object :", req.body);
+=======
+>>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
     if (!email || !name || !age || !phoneNum || !aadhaar)
       return res.status(400).json({ error: "All fields required" });
 
@@ -581,7 +758,11 @@ exports.updateAdminProfile = async (req, res) => {
 exports.recordSalaryPayment = async (req, res) => {
   try {
     const { staffId, amount, month, year, description } = req.body;
+<<<<<<< HEAD
     if (!staffId || !amount || !month || !year)
+=======
+    if (!staffId || !amount || !month || !year) 
+>>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
       return res.status(400).json({ error: "staffId, amount, month and year required" });
 
     const staff = await Staff.findById(staffId);
@@ -594,7 +775,11 @@ exports.recordSalaryPayment = async (req, res) => {
       amount: Number(amount),
       month: Number(month),
       year: Number(year),
+<<<<<<< HEAD
       status: "Paid",
+=======
+      status: "Paid", 
+>>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
       description: description || `Salary payment to ${staff.name} for ${month}/${year}`,
       handledBy: staffId
     });

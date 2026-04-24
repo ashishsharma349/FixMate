@@ -57,7 +57,10 @@ userRoute.post("/accept-estimate", isLoggedIn, userControllers.acceptEstimate);
 // ── NEW: Payment verification (both parties) ─────────────────────────
 userRoute.post("/record-payment", isLoggedIn, userControllers.recordPaymentVerification);
 
+<<<<<<< HEAD
 // ── NEW: Resident rates staff ─────────────────────────────────────────
 userRoute.post("/rate-staff", isLoggedIn, userControllers.rateStaff);
 
+=======
+>>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
 module.exports = userRoute;

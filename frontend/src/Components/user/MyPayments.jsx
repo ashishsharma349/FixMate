@@ -82,6 +82,7 @@ function PaymentCard({ payment, onPaid }) {
           name: payment.resident?.name || "",
         },
         theme: { color: "#2563eb" },
+<<<<<<< HEAD
         config: {
           display: {
             blocks: {
@@ -98,6 +99,8 @@ function PaymentCard({ payment, onPaid }) {
             sequence: ["block.upi", "block.cards"]
           }
         },
+=======
+>>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
         modal: {
           ondismiss: () => setPaying(false),
         },

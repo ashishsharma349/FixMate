@@ -54,9 +54,10 @@ async function deletePaymentByEmail(email) {
 }
 
 // Get email from command line argument
-const emailArg = process.argv[2];
+const residentEmail = "ENTER_RESIDENT_EMAIL_HERE"; // Replace with actual email when running
+const emailArg = process.argv[2] || residentEmail;
 
-if (!emailArg) {
+if (!emailArg || emailArg === "ENTER_RESIDENT_EMAIL_HERE") {
   console.log("\nUsage: node scripts/delete_payment.js <resident_email>");
   console.log("Example: node scripts/delete_payment.js ashishsharma90807@gmail.com\n");
   process.exit(1);

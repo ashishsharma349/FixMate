@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Dependencies
 node_modules/
 dist/
@@ -20,3 +21,30 @@ uploads/
 frontend/node_modules/
 frontend/dist/
 frontend/build/
+=======
+# dependencies
+node_modules/
+
+# environment
+.env
+.env.*
+
+# builds
+dist/
+build/
+
+# test / coverage
+coverage/
+
+# logs
+logs/
+*.log
+
+# user uploads
+uploads/
+
+*.txt
+atlas_export.js
+local_import.js
+atlas_data.json
+>>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c

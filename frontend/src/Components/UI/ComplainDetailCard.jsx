@@ -15,8 +15,11 @@ function ComplainDetailCard() {
   const [payAmount, setPayAmount] = useState("");
   const [processing, setProcessing] = useState(false);
   const [msg, setMsg] = useState("");
+<<<<<<< HEAD
   const [rating, setRating] = useState(0);
   const [ratingSubmitted, setRatingSubmitted] = useState(false);
+=======
+>>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
 
   const fetchComplain = useCallback(async () => {
     try {
@@ -71,6 +74,7 @@ function ComplainDetailCard() {
     finally { setProcessing(false); }
   };
 
+<<<<<<< HEAD
   const handleRateStaff = async () => {
     if (rating === 0 || !complain.assignedStaff?.[0]?._id) return;
     setProcessing(true);
@@ -89,6 +93,8 @@ function ComplainDetailCard() {
     finally { setProcessing(false); }
   };
 
+=======
+>>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
   if (!complain) return <div className="p-10 text-center">Loading...</div>;
 
   const isPersonal = complain.workType === "Personal";
@@ -156,11 +162,14 @@ function ComplainDetailCard() {
                                 <p className="text-sm font-bold text-slate-800">{staff.name}</p>
                                 <p className="text-[10px] font-bold text-blue-500 uppercase">{staff.department}</p>
                                 <p className="text-xs text-slate-400 mt-0.5">{staff.phone}</p>
+<<<<<<< HEAD
                                 {staff.rating && (
                                     <p className="text-[10px] font-bold text-yellow-600 mt-1">
                                         Rating: {staff.rating} ★ ({staff.ratingCount} {staff.ratingCount === 1 ? 'rating' : 'ratings'})
                                     </p>
                                 )}
+=======
+>>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
                             </div>
                           </div>
                         ))}
@@ -249,6 +258,7 @@ function ComplainDetailCard() {
             </div>
         )}
 
+<<<<<<< HEAD
         {/* 3. Staff Rating Section */}
         {complain.status === "Resolved" && isResident && complain.assignedStaff && complain.assignedStaff.length > 0 && !ratingSubmitted && (
             <div className="bg-purple-50 rounded-[2rem] p-8 border border-purple-100 mb-8 animation-fade-in">
@@ -278,6 +288,8 @@ function ComplainDetailCard() {
             </div>
         )}
 
+=======
+>>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
         {/* Materials List (for Common Area) */}
         {!isPersonal && complain.status === "Resolved" && complain.actualInventoryUsed?.length > 0 && (
             <div className="mb-8">

@@ -27,6 +27,7 @@ const razorpay = new Razorpay({
 });
 
 const generateRefId = async (type) => {
+<<<<<<< HEAD
   const prefix = type === "personal" ? "PER" : "MAN";
   
   // Find the most recent record of this type by refId sorting
@@ -43,6 +44,11 @@ const generateRefId = async (type) => {
   }
 
   return `${prefix}-${String(nextNum).padStart(5, "0")}`;
+=======
+  const count = await Payment.countDocuments({ type });
+  const prefix = type === "personal" ? "PER" : "MAN";
+  return `${prefix}-${String(count + 1).padStart(5, "0")}`;
+>>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
 };
 
 // GET /payments/list (admin)
@@ -375,6 +381,7 @@ router.post("/mark-paid", adminOnly, async (req, res) => {
       paymentId,
       { status: "Paid", paidAt: new Date(), razorpayPaymentId: "ADMIN_CONFIRMED" },
       { new: true }
+<<<<<<< HEAD
     ).populate("resident", "name flatNumber authId");
 
     if (!payment) return res.status(404).json({ error: "Payment not found" });
@@ -407,6 +414,10 @@ router.post("/mark-paid", adminOnly, async (req, res) => {
       }
     }
 
+=======
+    );
+    if (!payment) return res.status(404).json({ error: "Payment not found" });
+>>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
     res.json({ success: true, payment });
   } catch (err) {
     res.status(500).json({ error: err.message });
