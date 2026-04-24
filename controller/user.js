@@ -373,7 +373,6 @@ exports.revokeStaff = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: "Internal server error" });
   }
-<<<<<<< HEAD
 };
 
 // ── RESIDENT RATES STAFF ─────────────────────────────────────────────────────
@@ -410,6 +409,4 @@ exports.rateStaff = async (req, res) => {
     console.error("[rateStaff]:", err);
     res.status(500).json({ error: "Internal server error" });
   }
-=======
->>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
 };

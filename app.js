@@ -76,11 +76,6 @@ app.use(cors({
 
 app.set('view engine', 'ejs');
 
-<<<<<<< HEAD
-=======
-app.set("views", "./views");
-
->>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
 require('dotenv').config();
 
 
@@ -130,10 +125,6 @@ app.use(session({
     secure: false,
 
     maxAge: 1000 * 60 * 60 * 24 * 7
-<<<<<<< HEAD
-=======
-
->>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
   }
 
 }));
@@ -142,7 +133,6 @@ app.use(session({
 
 // ── Rate Limiting ─────────────────────────────────────────────────────────────
 
-<<<<<<< HEAD
 // const limiter = rateLimit({
 
 //   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -156,21 +146,6 @@ app.use(session({
 //   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 
 // });
-=======
-const limiter = rateLimit({
-
-  windowMs: 15 * 60 * 1000, // 15 minutes
-
-  max: 100, // limit each IP to 100 requests per windowMs
-
-  message: { error: "Too many requests from this IP, please try again later." },
-
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-
-});
->>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
 
 
 
@@ -182,7 +157,6 @@ const limiter = rateLimit({
 
 // Stricter rate limiting for auth routes
 
-<<<<<<< HEAD
 // const authLimiter = rateLimit({
 
 //   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -196,21 +170,6 @@ const limiter = rateLimit({
 //   legacyHeaders: false,
 
 // });
-=======
-const authLimiter = rateLimit({
-
-  windowMs: 15 * 60 * 1000, // 15 minutes
-
-  max: 5, // limit each IP to 5 auth requests per windowMs
-
-  message: { error: "Too many authentication attempts, please try again later." },
-
-  standardHeaders: true,
-
-  legacyHeaders: false,
-
-});
->>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
 
 
 
@@ -455,8 +414,4 @@ mongoose.connect(DB_PATH).then(async () => {
 // UPI ID	Result
 
 // success@razorpay	✅ Payment succeeds
-<<<<<<< HEAD
-=======
-
->>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
 // failure@razorpay  ❌ Payment fails

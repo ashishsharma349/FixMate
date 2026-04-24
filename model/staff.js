@@ -91,14 +91,11 @@ const StaffSchema = new Schema({
     min: 1,
     max: 5
   },
-<<<<<<< HEAD
   ratingCount: {
     type: Number,
     default: 1,
     min: 1
   },
-=======
->>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
   createdAt: {
     type: Date,
     default: Date.now,
