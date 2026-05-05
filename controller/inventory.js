@@ -4,9 +4,10 @@ const Finance = require("../model/finance");
 // ── GET ALL inventory items ───────────────────────────────────────────────────
 exports.getAll = async (req, res) => {
   try {
-    const { search } = req.query;
+    const { search, category } = req.query;
     const filter = {};
     if (search) filter.name = { $regex: search, $options: "i" };
+    if (category) filter.category = category;
     const items = await Inventory.find(filter).sort({ name: 1 });
     res.json({ items });
   } catch (err) {

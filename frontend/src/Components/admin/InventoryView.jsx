@@ -64,7 +64,7 @@ export function InventoryView() {
       setModal(null);
       fetchItems();
     } catch (err) {
-      setMsg("❌ " + err.message);
+      setMsg(err.message);
     } finally {
       setSaving(false);
     }
@@ -90,7 +90,7 @@ export function InventoryView() {
       <div className="bg-white rounded-2xl shadow-sm p-4 flex items-center gap-3 flex-wrap">
         {/* Search bar */}
         <div className="flex items-center bg-slate-100 rounded-xl px-3 py-2 gap-2 flex-1 min-w-[200px]">
-          <span className="text-gray-400 text-sm">🔍</span>
+          <span className="text-gray-400 text-sm"></span>
           <input
             className="bg-transparent text-sm text-gray-600 outline-none w-full placeholder-gray-400"
             placeholder="Search materials..."
@@ -122,21 +122,21 @@ export function InventoryView() {
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-3">
         <div className="bg-white rounded-2xl shadow-sm px-5 py-4 flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-lg">📦</div>
+          <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-lg"></div>
           <div>
             <p className="text-xs text-gray-400">Total Items</p>
             <p className="text-xl font-black text-gray-800">{items.length}</p>
           </div>
         </div>
         <div className="bg-white rounded-2xl shadow-sm px-5 py-4 flex items-center gap-3">
-          <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center text-lg">⚠️</div>
+          <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center text-lg"></div>
           <div>
             <p className="text-xs text-gray-400">Low Stock</p>
             <p className="text-xl font-black text-red-600">{items.filter(isLow).length}</p>
           </div>
         </div>
         <div className="bg-white rounded-2xl shadow-sm px-5 py-4 flex items-center gap-3">
-          <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center text-lg">✅</div>
+          <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center text-lg"></div>
           <div>
             <p className="text-xs text-gray-400">Well Stocked</p>
             <p className="text-xl font-black text-green-600">{items.filter((i) => !isLow(i)).length}</p>
@@ -220,7 +220,7 @@ export function InventoryView() {
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
             <div className="flex items-center justify-between px-6 py-4 border-b">
               <h3 className="text-base font-bold text-gray-800">{modal === "add" ? "Add New Item" : "Edit Item"}</h3>
-              <button onClick={() => setModal(null)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">×</button>
+              <button onClick={() => setModal(null)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">X</button>
             </div>
             <div className="px-6 py-5 space-y-3">
               {msg && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{msg}</p>}
@@ -267,7 +267,7 @@ export function InventoryView() {
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4">
             <div className="flex items-center justify-between px-6 py-4 border-b">
               <h3 className="text-base font-bold text-gray-800">Restock: {form.name}</h3>
-              <button onClick={() => setModal(null)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">×</button>
+              <button onClick={() => setModal(null)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">X</button>
             </div>
             <div className="px-6 py-5 space-y-3">
               {msg && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{msg}</p>}

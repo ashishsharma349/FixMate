@@ -23,6 +23,10 @@ import MyPayments from "./Components/user/MyPayments";
 // Staff-specific
 import Task from "./Components/Staff/Task";
 
+// Announcements
+import NoticePage from "./Components/announcements/NoticePage";
+
+
 function App() {
   const { isLoggedIn, role } = useContext(AuthContext);
 
@@ -66,6 +70,8 @@ function App() {
         <Route path="/logout" element={<Logout />} />
         <Route path="/change-password" element={<ChangePassword />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/notices" element={<NoticePage />} />
+
 
         {/* User routes */}
         <Route path="/FileComplain" element={role === "user" ? <ComplaintForm /> : <Navigate to="/" replace />} />

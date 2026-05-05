@@ -2,6 +2,9 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell } from "recharts";
 import { getAuthHeaders } from "../../utils/api";
 import { clearSessionId } from "../../utils/api";
+import AnnouncementBoard from "../announcements/AnnouncementBoard";
+import AnnouncementForm from "../announcements/AnnouncementForm";
+
 
 const API = "http://localhost:3000";
 
@@ -98,7 +101,7 @@ const statusColor = (s) => ({
   PaymentPending: "yellow",
   Resolved: "green"
 }[s] || "gray");
-const priorityColor = (p) => ({ Low: "green", Medium: "orange", High: "red", Emergency: "red" }[p] || "gray");
+const priorityColor = (p) => ({ Low: "green", Medium: "orange", High: "red" }[p] || "gray");
 
 function DashboardView({ onNavigate }) {
   const [stats, setStats] = useState(null);
@@ -127,11 +130,17 @@ function DashboardView({ onNavigate }) {
       revenues.forEach((r) => {
         if (r.monthNum != null && r.year != null) revMap[`${r.monthNum}-${r.year}`] = r.revenue;
       });
+      const now = new Date();
+      const curM = now.getMonth() + 1;
+      const curY = now.getFullYear();
+
       setChartData(
-        complaints.map((c) => ({
-          ...c,
-          revenue: revMap[`${c.monthNum}-${c.year}`] || 0,
-        }))
+        complaints
+          .map((c) => ({
+            ...c,
+            revenue: revMap[`${c.monthNum}-${c.year}`] || 0,
+          }))
+          .filter((d) => d.monthNum === curM && d.year === curY)
       );
     } catch (err) {
       console.error("Chart:", err);
@@ -164,11 +173,11 @@ function DashboardView({ onNavigate }) {
   const wip = stats?.wipComplaints || [];
 
   const statCards = [
-    { icon: "🏢", label: "Total Complaints", value: s.totalComplaints ?? 0, bg: "bg-blue-50", iconBg: "bg-blue-100" },
-    { icon: "🏠", label: "Total Residents", value: s.totalResidents ?? 0, bg: "bg-indigo-50", iconBg: "bg-indigo-100" },
-    { icon: "👷", label: "Total Staff", value: s.totalStaff ?? 0, bg: "bg-teal-50", iconBg: "bg-teal-100" },
-    { icon: "🔧", label: "Active Work", value: s.inProgress ?? 0, bg: "bg-yellow-50", iconBg: "bg-yellow-100" },
-    { icon: "✅", label: "Resolved", value: s.resolvedComplaints ?? 0, bg: "bg-green-50", iconBg: "bg-green-100" },
+    { icon: "", label: "Total Complaints", value: s.totalComplaints ?? 0, bg: "bg-blue-50", iconBg: "bg-blue-100" },
+    { icon: "", label: "Total Residents", value: s.totalResidents ?? 0, bg: "bg-indigo-50", iconBg: "bg-indigo-100" },
+    { icon: "", label: "Total Staff", value: s.totalStaff ?? 0, bg: "bg-teal-50", iconBg: "bg-teal-100" },
+    { icon: "", label: "Active Work", value: s.inProgress ?? 0, bg: "bg-yellow-50", iconBg: "bg-yellow-100" },
+    { icon: "", label: "Resolved", value: s.resolvedComplaints ?? 0, bg: "bg-green-50", iconBg: "bg-green-100" },
   ];
 
   return (
@@ -194,7 +203,7 @@ function DashboardView({ onNavigate }) {
       {lowStock.length > 0 && (
         <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4">
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-orange-500 text-lg">⚠️</span>
+            <span className="text-orange-500 text-lg">!</span>
             <h3 className="text-orange-700 font-bold text-sm">Low Stock Alert ({lowStock.length} items)</h3>
             <Btn color="orange" size="xs" className="ml-auto" onClick={() => onNavigate("Inventory")}>View Inventory</Btn>
           </div>
@@ -213,7 +222,7 @@ function DashboardView({ onNavigate }) {
         <div className="bg-white rounded-2xl shadow-sm p-5">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <span className="text-lg">🔄</span>
+              <span className="text-lg"></span>
               <h2 className="text-blue-600 font-bold text-sm">Work In Progress ({wip.length})</h2>
             </div>
             <Btn color="gray" size="xs" onClick={() => onNavigate("Complaints")}>View All</Btn>
@@ -221,7 +230,7 @@ function DashboardView({ onNavigate }) {
           <div className="overflow-x-auto">
             <table className="w-full text-sm min-w-[700px]">
               <thead className="bg-gray-50 border-b border-gray-100">
-                <tr>{["Title", "Status", "Scheduled Visit", "Type", "Staff", "📞 Staff Phone", "Resident", "📞 Res. Phone"].map(h => (
+                <tr>{["Title", "Status", "Scheduled Visit", "Type", "Staff", "Staff Phone", "Resident", "Res. Phone"].map(h => (
                   <th key={h} className="text-left px-3 py-2 text-xs font-semibold text-gray-500 whitespace-nowrap">{h}</th>
                 ))}</tr>
               </thead>
@@ -268,18 +277,18 @@ function DashboardView({ onNavigate }) {
                 </div>
                 <div className="flex flex-col gap-1 mt-2 text-[10px] text-gray-500 font-medium">
                   <div className="flex items-center gap-2">
-                    <span className="w-4">👤</span>
+                    <span className="w-4"></span>
                     <span className="truncate font-bold text-gray-700">{c.residentName || c.resident?.name || "—"}</span>
                     <span className="text-blue-600 font-bold ml-auto">{c.residentPhone || c.resident?.phone || ""}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="w-4">🔧</span>
+                    <span className="w-4"></span>
                     <span className="truncate">{c.assignedStaff?.[0]?.name || "Unassigned"}</span>
                     {c.assignedStaff?.[0]?.phone && <span className="text-teal-600 font-bold ml-auto">{c.assignedStaff[0].phone}</span>}
                   </div>
                   {c.scheduledSlot && (
                     <div className="flex items-center gap-2 text-purple-600 font-bold bg-purple-50 px-2 py-0.5 rounded-lg mt-1 w-fit">
-                      <span>⏰</span> {c.scheduledSlot}
+                      <span></span> {c.scheduledSlot}
                     </div>
                   )}
                 </div>
@@ -334,7 +343,7 @@ function DashboardView({ onNavigate }) {
                   <Btn color="green" size="xs" onClick={() => onNavigate("Complaints")}>Assign</Btn>
                 </div>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs text-gray-400">🕐 {new Date(c.createdAt).toLocaleDateString()}</span>
+                  <span className="text-xs text-gray-400">{new Date(c.createdAt).toLocaleDateString()}</span>
                   <Badge color={priorityColor(c.priority)}>{c.priority}</Badge>
                 </div>
               </div>
@@ -351,18 +360,19 @@ function DashboardView({ onNavigate }) {
           <ResponsiveContainer width="100%" height={170}>
             <BarChart data={chartData} barSize={18}>
               <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
-              <YAxis hide />
+              <YAxis yAxisId="left" hide />
+              <YAxis yAxisId="right" hide orientation="right" />
               <Tooltip contentStyle={{ borderRadius: 8, border: "none", fontSize: 11 }} />
               <Legend wrapperStyle={{ fontSize: 11 }} />
-              <Bar dataKey="complaints" name="Complaints" fill="#6088f4" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="revenue" name="Fees collected (₹)" fill="#22c55e" radius={[4, 4, 0, 0]} />
+              <Bar yAxisId="left" dataKey="complaints" name="Complaints" fill="#6088f4" radius={[4, 4, 0, 0]} />
+              <Bar yAxisId="right" dataKey="revenue" name="Fees collected (₹)" fill="#22c55e" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
         <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col justify-between">
           <div>
             <div className="flex justify-between items-start mb-1">
-              <h2 className="text-gray-700 font-bold text-sm">🛡️ Maintenance Fund (Pooled)</h2>
+              <h2 className="text-gray-700 font-bold text-sm">Maintenance Fund (Pooled)</h2>
               <button onClick={() => onNavigate("Payments")} className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-lg font-bold hover:bg-blue-100 transition-colors">Details &rsaquo;</button>
             </div>
             <p className="text-[10px] text-gray-400 mb-2 font-medium italic">Monthly fund summary for {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][new Date().getMonth()]} {new Date().getFullYear()}</p>
@@ -371,6 +381,11 @@ function DashboardView({ onNavigate }) {
                 <span className="font-black text-slate-500 uppercase tracking-wide">Resident monthly fees · {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][stats.residentMonthlyFees.month - 1]} {stats.residentMonthlyFees.year}</span>
                 <p className="mt-1"><span className="text-emerald-600 font-bold">₹{(stats.residentMonthlyFees.collectedAmount ?? 0).toLocaleString()}</span> collected ({stats.residentMonthlyFees.paidCount ?? 0} flats paid)</p>
                 <p><span className="text-amber-600 font-bold">₹{(stats.residentMonthlyFees.pendingAmount ?? 0).toLocaleString()}</span> outstanding ({stats.residentMonthlyFees.pendingCount ?? 0} pending)</p>
+                <div className="mt-2 pt-2 border-t border-slate-200 flex flex-col gap-1">
+                  <p className="font-black text-blue-600 uppercase tracking-widest text-[9px]">Overall Society Status</p>
+                  <p className="text-slate-800">Total Fund (Real Money): <span className="font-bold">₹{(stats.residentMonthlyFees.overallBalance ?? 0).toLocaleString()}</span></p>
+                  <p className="text-slate-800">Left to Collect Overall: <span className="font-bold">₹{(stats.residentMonthlyFees.overallPending ?? 0).toLocaleString()}</span></p>
+                </div>
               </div>
             )}
           </div>
@@ -378,7 +393,7 @@ function DashboardView({ onNavigate }) {
           <div className="flex-1 flex flex-col justify-center">
             <div className="flex items-baseline gap-2 mb-2">
               <p className="text-3xl font-black text-blue-600">₹{stats?.fund?.balance?.toLocaleString() || 0}</p>
-              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">Available</p>
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">Current Month Balance</p>
             </div>
 
             <div className="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden border border-gray-100 mb-2">
@@ -487,7 +502,7 @@ function DashboardView({ onNavigate }) {
 
             {viewEstimateModal.workType === "Personal" ? (
               <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100">
-                <p className="text-xs text-blue-700 font-medium italic">🏠 This is a private repair. The resident must approve this estimate, not the admin. You are seeing this for monitoring purposes.</p>
+                <p className="text-xs text-blue-700 font-medium italic">This is a private repair. The resident must approve this estimate, not the admin. You are seeing this for monitoring purposes.</p>
               </div>
             ) : (
               <div className="flex justify-end gap-3 pt-2">
@@ -516,7 +531,7 @@ function DashboardView({ onNavigate }) {
                     {new Date(viewWipModal.scheduledAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short" })} · {viewWipModal.scheduledSlot}
                   </p>
                 </div>
-                <span className="text-xl">⏰</span>
+                <span className="text-xl"></span>
               </div>
             )}
             <div className="grid grid-cols-2 gap-3">
@@ -629,16 +644,16 @@ function ComplaintsView() {
 
   const handleAssign = async () => {
     if (assignForm.staffIds.length < 1) {
-      alert("❌ Please select at least 1 staff member");
+      alert("Please select at least 1 staff member");
       return;
     }
     setAssigning(true);
     try {
       await apiFetch("/admin/assign-complaint", { method: "POST", body: JSON.stringify({ complaintId: assignModal._id, ...assignForm }) });
-      setMsg("✅ Assigned successfully to " + assignForm.staffIds.length + " technicians!");
+      setMsg("Assigned successfully to " + assignForm.staffIds.length + " technicians!");
       setAssignModal(null);
       fetchData();
-    } catch (err) { setMsg("❌ " + err.message); }
+    } catch (err) { setMsg(err.message); }
     finally { setAssigning(false); }
   };
 
@@ -664,7 +679,7 @@ function ComplaintsView() {
   });
 
   const allCategories = ["All", ...Array.from(new Set(complaints.map(c => c.category).filter(Boolean)))];
-  const allPriorities = ["All", "Low", "Medium", "High", "Emergency"];
+  const allPriorities = ["All", "Low", "Medium", "High"];
 
   const departments = ["All", ...Array.from(new Set(staff.map(s => s.department).filter(Boolean)))];
   const filteredStaff = staff.filter(s => {
@@ -676,7 +691,7 @@ function ComplaintsView() {
   return (
     <div className="space-y-4">
       {msg && (
-        <div className={`px-4 py-2 rounded-xl text-sm font-medium flex items-center justify-between ${msg.startsWith("✅") ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
+        <div className={`px-4 py-2 rounded-xl text-sm font-medium flex items-center justify-between ${msg.includes("successfully") ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
           {msg}<button className="text-xs underline ml-4" onClick={() => setMsg("")}>dismiss</button>
         </div>
       )}
@@ -713,7 +728,7 @@ function ComplaintsView() {
         ) : (
           <table className="w-full text-sm min-w-[800px]">
             <thead className="bg-gray-50 border-b border-gray-100">
-              <tr>{["#", "Title", "Visit Slot", "Resident", "📞 Phone", "Flat", "Priority", "Status", "Work Type", "Staff", "Est. Cost", "Date", "Action"].map(h => (
+              <tr>{["#", "Title", "Visit Slot", "Resident", "Phone", "Flat", "Priority", "Status", "Work Type", "Staff", "Est. Cost", "Date", "Action"].map(h => (
                 <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500 whitespace-nowrap">{h}</th>
               ))}</tr>
             </thead>
@@ -740,7 +755,7 @@ function ComplaintsView() {
                   <td className="px-4 py-3 text-gray-600">
                     <div className="flex flex-col">
                       <span className="font-semibold text-gray-700">{c.assignedStaff?.[0]?.name || <span className="text-gray-300">—</span>}</span>
-                      {c.assignedStaff?.[0]?.phone && <span className="text-[10px] text-blue-500 font-bold">📞 {c.assignedStaff[0].phone}</span>}
+                      {c.assignedStaff?.[0]?.phone && <span className="text-[10px] text-blue-500 font-bold">{c.assignedStaff[0].phone}</span>}
                     </div>
                   </td>
                   <td className="px-4 py-3 text-gray-600">{c.estimatedCost !== null && c.estimatedCost !== undefined ? `₹${c.estimatedCost}` : <span className="text-gray-300">—</span>}</td>
@@ -779,8 +794,8 @@ function ComplaintsView() {
               <label className="text-xs font-bold text-gray-700 uppercase tracking-wide block mb-2">Work Type</label>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { value: "Personal", icon: "🏠", label: "Personal Flat Work", desc: "Resident deals with cost. Auto-approved estimate." },
-                  { value: "CommonArea", icon: "🏢", label: "Common Area Work", desc: "Estimate → admin approval → fund pays." },
+                  { value: "Personal", icon: "", label: "Personal Flat Work", desc: "Resident deals with cost. Auto-approved estimate." },
+                  { value: "CommonArea", icon: "", label: "Common Area Work", desc: "Estimate → admin approval → fund pays." },
                 ].map(opt => (
                   <button key={opt.value} onClick={() => setAssignForm(f => ({ ...f, workType: opt.value }))}
                     className={`border-2 rounded-xl p-3 text-left transition-all ${assignForm.workType === opt.value ? "border-blue-500 bg-blue-50" : "border-gray-200 bg-white hover:border-gray-300"}`}>
@@ -941,7 +956,7 @@ function InventoryView() {
       }
       setModal(null);
       fetchItems();
-    } catch (err) { setMsg("❌ " + err.message); }
+    } catch (err) { setMsg(err.message); }
     finally { setSaving(false); }
   };
 
@@ -962,7 +977,7 @@ function InventoryView() {
     <div className="space-y-4">
       <div className="bg-white rounded-2xl shadow-sm p-4 flex items-center gap-3 flex-wrap">
         <div className="flex items-center bg-slate-100 rounded-xl px-3 py-2 gap-2 flex-1 min-w-[200px]">
-          <span className="text-gray-400 text-sm">🔍</span>
+          <span className="text-gray-400 text-sm"></span>
           <input className="bg-transparent text-sm text-gray-600 outline-none w-full placeholder-gray-400"
             placeholder="Search materials..." value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
@@ -985,15 +1000,15 @@ function InventoryView() {
 
       <div className="grid grid-cols-3 gap-3">
         <div className="bg-white rounded-2xl shadow-sm px-5 py-4 flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-lg">📦</div>
+          <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-lg"></div>
           <div><p className="text-xs text-gray-400">Total Items</p><p className="text-xl font-black text-gray-800">{items.length}</p></div>
         </div>
         <div className="bg-white rounded-2xl shadow-sm px-5 py-4 flex items-center gap-3">
-          <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center text-lg">⚠️</div>
+          <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center text-lg"></div>
           <div><p className="text-xs text-gray-400">Low Stock</p><p className="text-xl font-black text-red-600">{items.filter(isLow).length}</p></div>
         </div>
         <div className="bg-white rounded-2xl shadow-sm px-5 py-4 flex items-center gap-3">
-          <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center text-lg">✅</div>
+          <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center text-lg"></div>
           <div><p className="text-xs text-gray-400">Well Stocked</p><p className="text-xl font-black text-green-600">{items.filter((i) => !isLow(i)).length}</p></div>
         </div>
       </div>
@@ -1538,15 +1553,15 @@ function PaymentsView() {
         method: "POST",
         body: JSON.stringify({ staffId: salaryModal._id, ...salaryForm })
       });
-      setMsg("✅ Salary recorded for " + salaryModal.name);
+      setMsg("Salary recorded for " + salaryModal.name);
       setSalaryModal(null);
       fetchData();
-    } catch (err) { setMsg("❌ " + err.message); }
+    } catch (err) { setMsg(err.message); }
     finally { setProcessing(false); }
   };
 
   const handleAddExpense = async () => {
-    if (!expenseForm.title || !expenseForm.amount) return setMsg("❌ Title and amount are required");
+    if (!expenseForm.title || !expenseForm.amount) return setMsg("Title and amount are required");
     setProcessing(true); setMsg("");
     try {
       const fd = new FormData();
@@ -1579,7 +1594,7 @@ function PaymentsView() {
 
   const handleGenerateMonthly = async () => {
     const hasExisting = monthlyPersonal.length > 0;
-    const confirmMsg = hasExisting 
+    const confirmMsg = hasExisting
       ? `Records already exist for ${mMonth}/${mYear}. Generate for any missing residents only?`
       : `Generate maintenance dues for ${mMonth}/${mYear}?`;
 
@@ -1588,15 +1603,14 @@ function PaymentsView() {
     try {
       const amount = prompt("Enter maintenance amount:", "5000");
       if (amount === null) return; // cancelled
-      
+
       const res = await apiFetch("/payments/generate-monthly", {
         method: "POST",
         body: JSON.stringify({ amount: Number(amount) })
       });
-      setMsg(`✅ Generated ${res.created} records. Skipped ${res.skipped} already existing.`);
+      setMsg(`Generated ${res.created} records. Skipped ${res.skipped} already existing.`);
       fetchMonthly();
-    } catch (err) { setMsg("❌ " + err.message); }
-    finally { setProcessing(false); }
+    } catch (err) { setMsg(err.message); } finally { setProcessing(false); }
   };
 
   const fExt = (field) => ({
@@ -1613,22 +1627,36 @@ function PaymentsView() {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
-          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Fund Balance</p>
-          <p className="text-2xl font-black text-blue-600">₹{(stats.balance ?? 0).toLocaleString()}</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-slate-900 p-5 rounded-3xl shadow-xl shadow-slate-200">
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Society Fund (Real Money)</p>
+          <p className="text-2xl font-black text-white">₹{(stats.overallBalance ?? 0).toLocaleString()}</p>
+          <p className="text-[9px] text-slate-500 font-bold mt-1 uppercase italic">Actual cash in hand (All time)</p>
         </div>
-        <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
-          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Income (fees)</p>
-          <p className="text-2xl font-black text-green-600">₹{(stats.totalIncome ?? 0).toLocaleString()}</p>
-        </div>
-        <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
-          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Spent</p>
-          <p className="text-2xl font-black text-red-600">₹{(stats.totalSpent ?? 0).toLocaleString()}</p>
+        <div className="bg-amber-50 p-5 rounded-3xl shadow-sm border border-amber-100">
+          <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1">Total Outstanding Dues (All Months)</p>
+          <p className="text-2xl font-black text-amber-700">₹{(stats.overallPending ?? 0).toLocaleString()}</p>
+          <p className="text-[9px] text-amber-400 font-bold mt-1 uppercase italic">Unpaid records from all history</p>
         </div>
         <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
           <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Pending Payouts</p>
           <p className="text-2xl font-black text-orange-600">₹{pendingPayoutSum.toLocaleString()}</p>
+          <p className="text-[9px] text-gray-400 font-bold mt-1 uppercase italic">Approved common area costs</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Monthly Fee Collected this month ({filterHint})</p>
+          <p className="text-2xl font-black text-blue-600">₹{(stats.balance ?? 0).toLocaleString()}</p>
+        </div>
+        <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Collected This Month ({filterHint})</p>
+          <p className="text-2xl font-black text-green-600">₹{(stats.totalIncome ?? 0).toLocaleString()}</p>
+        </div>
+        <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Spent ({filterHint})</p>
+          <p className="text-2xl font-black text-red-600">₹{(stats.totalSpent ?? 0).toLocaleString()}</p>
         </div>
       </div>
 
@@ -2289,6 +2317,20 @@ function SettingsView() {
   );
 }
 
+function NoticesView() {
+  const [refresh, setRefresh] = useState(0);
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="space-y-6">
+        <AnnouncementForm onCreated={() => setRefresh(prev => prev + 1)} />
+      </div>
+      <div className="space-y-6">
+        <AnnouncementBoard key={refresh} />
+      </div>
+    </div>
+  );
+}
+
 export default function AdminDashboard() {
   const [activeNav, setActiveNav] = useState("Dashboard");
 
@@ -2300,7 +2342,9 @@ export default function AdminDashboard() {
     { label: "Inventory", icon: "📦" },
     { label: "Bills / Records", icon: "📁" },
     { label: "Settings", icon: "⚙️" },
+    { label: "Notices", icon: "📢" },
     { label: "Logout", icon: "🚪" },
+
   ];
 
   const handleLogout = async () => {
@@ -2318,6 +2362,8 @@ export default function AdminDashboard() {
       case "Inventory": return <InventoryView />;
       case "Bills / Records": return <BillsRecordsView />;
       case "Settings": return <SettingsView />;
+      case "Notices": return <NoticesView />;
+
       default: return null;
     }
   };

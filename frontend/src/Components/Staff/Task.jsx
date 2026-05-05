@@ -1,5 +1,9 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, useContext } from "react";
 import { API, getAuthHeaders, jsonAuthHeaders } from "../../utils/api";
+import { AuthContext } from "../../Context/AuthContext";
+
+
+
 
 // Auto-refresh hook
 const usePolling = (fetchFn, intervalMs = 15000) => {
@@ -79,10 +83,10 @@ function TaskCard({ task, onRefresh }) {
       const res = await fetch(`${API}/users/submit-estimate`, {
         method: "POST",
         headers: jsonAuthHeaders(),
-        body: JSON.stringify({ 
-            complaintId: task._id, 
-            labourEstimate: labourEst,
-            inventoryEstimate: isCommonArea ? estMaterials : []
+        body: JSON.stringify({
+          complaintId: task._id,
+          labourEstimate: labourEst,
+          inventoryEstimate: isCommonArea ? estMaterials : []
         }),
       });
       const data = await res.json();
@@ -129,24 +133,24 @@ function TaskCard({ task, onRefresh }) {
     if (!paymentAmount) return;
     setVerifyingPayment(true);
     try {
-        const res = await fetch(`${API}/users/record-payment`, {
-            method: "POST",
-            headers: jsonAuthHeaders(),
-            body: JSON.stringify({ complaintId: task._id, amount: paymentAmount }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
-        if (data.mismatch) {
-          setPayMsg(`⚠️ ${data.message}`);
-          setPaymentAmount("");
-        } else {
-          setPayMsg("✅ " + data.message);
-        }
-        onRefresh();
+      const res = await fetch(`${API}/users/record-payment`, {
+        method: "POST",
+        headers: jsonAuthHeaders(),
+        body: JSON.stringify({ complaintId: task._id, amount: paymentAmount }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      if (data.mismatch) {
+        setPayMsg(`⚠️ ${data.message}`);
+        setPaymentAmount("");
+      } else {
+        setPayMsg("✅ " + data.message);
+      }
+      onRefresh();
     } catch (err) {
-        setPayMsg("❌ " + err.message);
+      setPayMsg("❌ " + err.message);
     } finally {
-        setVerifyingPayment(false);
+      setVerifyingPayment(false);
     }
   };
 
@@ -250,7 +254,7 @@ function TaskCard({ task, onRefresh }) {
           <div className="bg-green-50 rounded-2xl px-4 py-3 text-center">
             <p className="text-sm font-bold text-green-700">✅ Approved — Estimated Cost: ₹{task.estimatedCost}</p>
             <p className="text-xs text-green-500">
-              {task.status === "InProgress" 
+              {task.status === "InProgress"
                 ? "Work is in progress. Upload proof and confirm payment details when done."
                 : "Submit completion details below once fix is done."}
             </p>
@@ -343,17 +347,17 @@ function TaskCard({ task, onRefresh }) {
       {task.status === "PaymentPending" && (
         <div className="bg-yellow-50 rounded-[2rem] p-6 border border-yellow-100">
           <p className="text-[10px] font-black uppercase tracking-widest text-yellow-600 mb-2">Final Step: Verify Payment</p>
-          
+
           {task.paymentMismatchCount > 0 && (
             <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-4">
               <p className="text-xs font-black text-red-600 uppercase mb-1">⚠️ Payment Mismatch Detected ({task.paymentMismatchCount}x)</p>
               <p className="text-[11px] text-red-500">
-                Last attempt — You entered: ₹{task.lastMismatchStaffAmount}, Resident entered: ₹{task.lastMismatchUserAmount}. 
+                Last attempt — You entered: ₹{task.lastMismatchStaffAmount}, Resident entered: ₹{task.lastMismatchUserAmount}.
                 Please verify with the resident and re-enter the correct amount.
               </p>
             </div>
           )}
-          
+
           <p className="text-xs font-medium text-yellow-700 mb-4">
             Enter the exact amount you received from the resident. Once both parties enter matching amounts, the task will be resolved.
           </p>
@@ -372,15 +376,15 @@ function TaskCard({ task, onRefresh }) {
           >
             {verifyingPayment ? "RECORDING..." : "CONFIRM RECEIPT"}
           </button>
-          
+
           <div className="mt-4 flex flex-col gap-2">
             <div className={`p-3 rounded-xl flex items-center justify-between text-[10px] font-bold uppercase ${task.staffPaymentAmount !== null ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-400"}`}>
-                <span>Staff Record</span>
-                <span>{task.staffPaymentAmount !== null ? `₹${task.staffPaymentAmount}` : "Pending"}</span>
+              <span>Staff Record</span>
+              <span>{task.staffPaymentAmount !== null ? `₹${task.staffPaymentAmount}` : "Pending"}</span>
             </div>
             <div className={`p-3 rounded-xl flex items-center justify-between text-[10px] font-bold uppercase ${task.userPaymentAmount !== null ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-400"}`}>
-                <span>Resident Record</span>
-                <span>{task.userPaymentAmount !== null ? `₹${task.userPaymentAmount}` : "Pending"}</span>
+              <span>Resident Record</span>
+              <span>{task.userPaymentAmount !== null ? `₹${task.userPaymentAmount}` : "Pending"}</span>
             </div>
           </div>
         </div>
@@ -431,8 +435,10 @@ function Task() {
   });
 
   return (
-    <div className="max-w-md mx-auto bg-slate-50 min-h-screen pb-20 font-sans">
-      <header className="bg-white px-6 py-5 border-b sticky top-0 z-20 shadow-sm">
+    <div className="max-w-md mx-auto bg-slate-50 min-h-screen pb-20 font-sans px-4">
+      <div className="pt-6">
+      </div>
+      <header className="bg-white px-6 py-5 border-b sticky top-0 z-20 shadow-sm rounded-3xl mt-4">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-lg font-black uppercase tracking-tight text-slate-800">My Assignments</h1>

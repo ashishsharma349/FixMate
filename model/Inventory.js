@@ -15,6 +15,9 @@ const InventorySchema = new Schema({
   updatedAt:   { type: Date, default: Date.now },
 });
 
-InventorySchema.pre("save", function (next) { this.updatedAt = new Date(); next(); });
+InventorySchema.index({ category: 1 });
+InventorySchema.index({ name: 1 });
+
+InventorySchema.pre("save", function () { this.updatedAt = new Date(); });
 
 module.exports = mongoose.models.Inventory || mongoose.model("Inventory", InventorySchema);

@@ -61,7 +61,7 @@ exports.handlePost_login = async (req, res) => {
         success: true,
         role: authUser.role,
         isFirstLogin: authUser.isFirstLogin,
-        sessionId: req.sessionID, // 
+        sessionId: req.sessionID, //
         message: "Logged in"
       });
     });
@@ -137,7 +137,6 @@ exports.handlePost_createUser = async (req, res) => {
       console.log("[ROLLBACK]: Auth record deleted due to profile error");
       throw profileError;
     }
-
     await sendTempPasswordMail(email, name, tempPassword, userType);
 
     res.status(201).json({ msg: `${userType} account created successfully.` });

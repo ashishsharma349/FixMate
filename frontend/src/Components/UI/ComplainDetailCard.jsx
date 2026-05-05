@@ -42,9 +42,9 @@ function ComplainDetailCard() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      setMsg("✅ Estimate accepted! Staff will start work.");
+      setMsg("Estimate accepted! Staff will start work.");
       fetchComplain();
-    } catch (err) { setMsg("❌ " + err.message); }
+    } catch (err) { setMsg(err.message); }
     finally { setProcessing(false); }
   };
 
@@ -61,13 +61,13 @@ function ComplainDetailCard() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       if (data.mismatch) {
-        setMsg(`⚠️ ${data.message}`);
+        setMsg(data.message);
         setPayAmount("");
       } else {
-        setMsg("✅ " + data.message);
+        setMsg(data.message);
       }
       fetchComplain();
-    } catch (err) { setMsg("❌ " + err.message); }
+    } catch (err) { setMsg(err.message); }
     finally { setProcessing(false); }
   };
 
@@ -83,9 +83,9 @@ function ComplainDetailCard() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      setMsg("✅ Rating submitted successfully!");
+      setMsg("Rating submitted successfully!");
       setRatingSubmitted(true);
-    } catch (err) { setMsg("❌ " + err.message); }
+    } catch (err) { setMsg(err.message); }
     finally { setProcessing(false); }
   };
 
@@ -138,7 +138,7 @@ function ComplainDetailCard() {
                 <div className="grid grid-cols-2 gap-4">
                     <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
                         <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">Priority</p>
-                        <p className={`text-xs font-black uppercase ${complain.priority === 'Emergency' ? 'text-red-600' : 'text-slate-700'}`}>{complain.priority}</p>
+                        <p className="text-xs font-black uppercase text-slate-700">{complain.priority}</p>
                     </div>
                     <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
                         <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">Work Type</p>
@@ -151,14 +151,14 @@ function ComplainDetailCard() {
                         <h3 className="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-3">Assigned Staff</h3>
                         {complain.assignedStaff.map((staff, idx) => (
                           <div key={idx} className="flex items-center gap-4 mb-2">
-                            <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-xl">🔧</div>
+                            <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-xl"></div>
                             <div>
                                 <p className="text-sm font-bold text-slate-800">{staff.name}</p>
                                 <p className="text-[10px] font-bold text-blue-500 uppercase">{staff.department}</p>
                                 <p className="text-xs text-slate-400 mt-0.5">{staff.phone}</p>
                                 {staff.rating && (
                                     <p className="text-[10px] font-bold text-yellow-600 mt-1">
-                                        Rating: {staff.rating} ★ ({staff.ratingCount} {staff.ratingCount === 1 ? 'rating' : 'ratings'})
+                                        Rating: {staff.rating} ({staff.ratingCount} {staff.ratingCount === 1 ? 'rating' : 'ratings'})
                                     </p>
                                 )}
                             </div>
@@ -209,7 +209,7 @@ function ComplainDetailCard() {
                 
                 {complain.paymentMismatchCount > 0 && (
                     <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-4">
-                        <p className="text-xs font-black text-red-600 uppercase mb-1">⚠️ Payment Mismatch ({complain.paymentMismatchCount}x)</p>
+                        <p className="text-xs font-black text-red-600 uppercase mb-1">Payment Mismatch ({complain.paymentMismatchCount}x)</p>
                         <p className="text-[11px] text-red-500">
                             Last attempt — You entered: ₹{complain.lastMismatchUserAmount}, Staff entered: ₹{complain.lastMismatchStaffAmount}. 
                             Please verify with the staff and re-enter the correct amount.
@@ -264,7 +264,7 @@ function ComplainDetailCard() {
                             onClick={() => setRating(star)}
                             className={`text-3xl transition-transform hover:scale-125 ${rating >= star ? 'text-yellow-400' : 'text-gray-300'}`}
                         >
-                            ★
+                            *
                         </button>
                     ))}
                 </div>
@@ -299,7 +299,7 @@ function ComplainDetailCard() {
                 onClick={() => navigate(-1)}
                 className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors"
             >
-                ← Back to List
+                Back to List
             </button>
             <p className="text-[10px] font-bold text-slate-300 uppercase">Created: {new Date(complain.createdAt).toLocaleDateString()}</p>
         </div>

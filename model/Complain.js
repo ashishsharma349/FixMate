@@ -22,7 +22,7 @@ const ComplainSchema = new Schema({
   },
   priority: {
     type: String,
-    enum: ["Low", "Medium", "High", "Emergency"],
+    enum: ["Low", "Medium", "High"],
     required: true,
   },
   description:    { type: String, required: true },

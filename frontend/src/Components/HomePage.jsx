@@ -2,6 +2,8 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../Context/AuthContext';
 
+
+
 const Home = () => {
   const { isLoggedIn, role, isFirstLogin, sessionExpired, dismissExpired } = useContext(AuthContext);
   const [profileName, setProfileName] = useState("");
@@ -127,7 +129,7 @@ const Home = () => {
               <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mb-8 text-3xl shadow-inner">📊</div>
               <h3 className="text-3xl font-black mb-6 tracking-tight">For Management</h3>
               <ul className="space-y-5">
-                {['Staff task assignment', 'Inventory management', 'Resolution reporting', 'Emergency broadcast'].map((item, i) => (
+                {['Staff task assignment', 'Inventory management', 'Resolution reporting', 'System announcements'].map((item, i) => (
                   <li key={i} className="flex items-center gap-4 text-slate-200 font-bold">
                     <span className="flex-shrink-0 w-6 h-6 bg-blue-400 text-white rounded-full flex items-center justify-center text-[10px]">✓</span> {item}
                   </li>

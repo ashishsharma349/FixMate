@@ -19,6 +19,8 @@ const profileRouter = require('./routes/profileRouter');
 const inventoryRouter = require('./routes/inventoryRoutes');
 
 const paymentRouter = require('./routes/paymentRoutes');
+const announcementRouter = require('./routes/announcementRouter');
+
 
 
 
@@ -123,8 +125,6 @@ app.use(session({
     sameSite: "lax",
 
     secure: false,
-
-    maxAge: 1000 * 60 * 60 * 24 * 7
   }
 
 }));
@@ -183,7 +183,9 @@ app.use(session({
 
 
 
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 
 app.use(cookieParser());
 
@@ -222,16 +224,14 @@ app.use("/check-login", (req, res) => {
 
 
 app.use(authRouter);
-
 app.use("/users", userRouter);
-
 app.use("/admin", adminRouter);
-
 app.use("/profile", profileRouter);
-
 app.use("/inventory", inventoryRouter);
-
 app.use("/payments", paymentRouter);
+app.use("/api", announcementRouter);
+
+
 
 
 

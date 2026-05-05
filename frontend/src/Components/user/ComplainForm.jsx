@@ -190,7 +190,6 @@ const ComplaintForm = () => {
                   <option value="Low">Low</option>
                   <option value="Medium">Medium</option>
                   <option value="High">High</option>
-                  <option value="Emergency">Emergency</option>
                 </select>
               </div>
             </div>
@@ -231,9 +230,7 @@ const ComplaintForm = () => {
             <div>
 
               <label className="text-sky-400 text-[10px] font-black uppercase ml-1 mb-2 block">
-
-                📷 Photo Evidence <span className="text-red-400">(Required)</span>
-
+                Photo Evidence <span className="text-red-400">(Required)</span>
               </label>
 
               <label className={`block w-full p-5 rounded-2xl border-2 border-dashed text-center cursor-pointer transition-all ${formData.photo ? 'border-green-400 bg-green-900/20' : 'border-slate-500 bg-[#334463] hover:bg-[#3d5175]'}`}>
@@ -242,7 +239,7 @@ const ComplaintForm = () => {
 
                 {formData.photo ? (
 
-                  <span className="text-green-300 text-sm font-semibold">✅ {formData.photo.name}</span>
+                  <span className="text-green-300 text-sm font-semibold">{formData.photo.name}</span>
 
                 ) : (
 

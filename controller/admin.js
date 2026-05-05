@@ -79,8 +79,8 @@ exports.getDashboardStats = async (req, res) => {
     const currentMonth = now.getMonth() + 1;
     const currentYear = now.getFullYear();
 
-    // 1. Current Month Income (Resident Fees + Direct Fund Topups)
-    const [incomePaymentAgg, incomeFinanceAgg] = await Promise.all([
+    // 1. Current Month Income + GLOBAL OVERALL STATS
+    const [incomePaymentAgg, incomeFinanceAgg, pendingPaymentOverallAgg, incomePaymentOverallAgg, incomeFinanceOverallAgg, spentFinanceOverallAgg] = await Promise.all([
       Payment.aggregate([
         { $match: { type: "personal", status: "Paid", month: currentMonth, year: currentYear } },
         { $group: { _id: null, total: { $sum: "$amount" } } },
@@ -88,8 +88,29 @@ exports.getDashboardStats = async (req, res) => {
       Finance.aggregate([
         { $match: { transactionType: "Income", status: "Paid", month: currentMonth, year: currentYear } },
         { $group: { _id: null, total: { $sum: "$amount" } } },
+      ]),
+      Payment.aggregate([
+        { $match: { type: "personal", status: "Pending" } },
+        { $group: { _id: null, total: { $sum: "$amount" } } },
+      ]),
+      Payment.aggregate([
+        { $match: { type: "personal", status: "Paid" } },
+        { $group: { _id: null, total: { $sum: "$amount" } } },
+      ]),
+      Finance.aggregate([
+        { $match: { transactionType: "Income", status: "Paid" } },
+        { $group: { _id: null, total: { $sum: "$amount" } } },
+      ]),
+      Finance.aggregate([
+        { $match: { transactionType: "Expense", status: "Paid" } },
+        { $group: { _id: null, total: { $sum: "$amount" } } },
       ])
     ]);
+
+    const totalIncomeOverall = (incomePaymentOverallAgg[0]?.total || 0) + (incomeFinanceOverallAgg[0]?.total || 0);
+    const totalSpentOverall = spentFinanceOverallAgg[0]?.total || 0;
+    const overallBalance = totalIncomeOverall - totalSpentOverall;
+    const overallPending = pendingPaymentOverallAgg[0]?.total || 0;
 
     // 2. Current Month Expenses (Worker Payouts + Society Costs)
     const [spentPaymentAgg, spentFinanceAgg] = await Promise.all([
@@ -140,6 +161,8 @@ exports.getDashboardStats = async (req, res) => {
         paidCount: paidCountThisMonth,
         pendingAmount: pendingThisMonth,
         pendingCount: pendingCountThisMonth,
+        overallBalance: overallBalance,
+        overallPending: overallPending
       },
       recentComplaints,
       pendingEstimatesList,
@@ -163,7 +186,7 @@ exports.getMonthlyStats = async (req, res) => {
           complaints: { $sum: 1 },
         },
       },
-      { $sort: { "_id.year": 1, "_id.month": 1 } },
+      { $sort: { "_id.year": -1, "_id.month": -1 } },
       { $limit: 12 },
     ]);
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -449,7 +472,10 @@ exports.createUser = async (req, res) => {
     const tempPassword = generateTempPassword();
     auth = await Auth.create({ email, password: tempPassword, role: "user", isFirstLogin: true });
     const user = await User.create({ authId: auth._id, name, age, phone: phoneNum, aadhaar, flatNumber: flatNumber || null });
-    await sendTempPasswordMail(email, tempPassword, "Resident");
+
+    // await sendTempPasswordMail(email, tempPassword, "Resident");
+    await sendTempPasswordMail(email, name, tempPassword, "Resident");
+
 
     res.status(201).json({ message: "User created", userId: user._id });
   } catch (err) {
@@ -684,6 +710,31 @@ exports.getFinancesData = async (req, res) => {
         .populate("assignedStaff", "name"),
     ]);
 
+    // 1. GLOBAL OVERALL STATS (Cumulative - ignoring any filters)
+    const [overallIncomePaymentAgg, overallIncomeFinanceAgg, overallSpentAgg, overallPendingAgg] = await Promise.all([
+      Payment.aggregate([
+        { $match: { type: "personal", status: "Paid" } },
+        { $group: { _id: null, total: { $sum: "$amount" } } },
+      ]),
+      Finance.aggregate([
+        { $match: { transactionType: "Income", status: "Paid" } },
+        { $group: { _id: null, total: { $sum: "$amount" } } },
+      ]),
+      Finance.aggregate([
+        { $match: { transactionType: "Expense", status: "Paid" } },
+        { $group: { _id: null, total: { $sum: "$amount" } } },
+      ]),
+      Payment.aggregate([
+        { $match: { type: "personal", status: "Pending" } },
+        { $group: { _id: null, total: { $sum: "$amount" } } },
+      ])
+    ]);
+
+    const overallIncome = (overallIncomePaymentAgg[0]?.total || 0) + (overallIncomeFinanceAgg[0]?.total || 0);
+    const overallSpent = overallSpentAgg[0]?.total || 0;
+    const overallPending = overallPendingAgg[0]?.total || 0;
+    const overallBalance = overallIncome - overallSpent;
+
     const expenses = allFinances.filter((f) => f.transactionCategory !== "Salary");
     const salaries = allFinances.filter((f) => f.transactionCategory === "Salary");
 
@@ -737,6 +788,8 @@ exports.getFinancesData = async (req, res) => {
         totalSpent,
         balance: totalIncome - totalSpent,
         fundLimit,
+        overallBalance,
+        overallPending
       },
       filters: {
         month: !isNaN(filterMonth) ? filterMonth : null,

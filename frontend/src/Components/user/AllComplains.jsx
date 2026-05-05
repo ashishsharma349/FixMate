@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API, getAuthHeaders, jsonAuthHeaders } from "../../utils/api";
 
+
+
+
 // ── Status color helper ───────────────────────────────────────────────────────
 const getStatusStyle = (status) => {
   const map = {
@@ -43,11 +46,11 @@ function ComplainCard({ data, onRevoke }) {
       });
       const result = await res.json();
       if (!res.ok) throw new Error(result.error);
-      setRevokeMsg("✅ Staff revoked. Complaint reopened.");
+      setRevokeMsg("Staff revoked. Complaint reopened.");
       setShowRevokeBox(false);
       onRevoke(); // refresh list
     } catch (err) {
-      setRevokeMsg("❌ " + err.message);
+      setRevokeMsg(err.message);
     } finally {
       setRevoking(false);
     }
@@ -73,7 +76,7 @@ function ComplainCard({ data, onRevoke }) {
           style={{ display: data.image_url ? "none" : "flex" }}
           className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-slate-400"
         >
-          <span className="text-4xl">📷</span>
+          <span className="text-4xl"></span>
           <span className="text-xs font-semibold uppercase tracking-widest">No Photo</span>
         </div>
         {/* Status badge */}
@@ -83,7 +86,7 @@ function ComplainCard({ data, onRevoke }) {
         {/* WorkType badge */}
         {data.workType && (
           <div className={`absolute top-4 left-4 px-2.5 py-1 rounded-full text-[10px] font-bold ${data.workType === "Personal" ? "bg-blue-600 text-white" : "bg-teal-600 text-white"}`}>
-            {data.workType === "Personal" ? "🏠 Personal" : "🏢 Common"}
+            {data.workType === "Personal" ? "Personal" : "Common"}
           </div>
         )}
       </div>
@@ -98,8 +101,8 @@ function ComplainCard({ data, onRevoke }) {
         {/* Assigned staff info */}
         {data.assignedStaff && data.assignedStaff.length > 0 && (
           <p className="text-xs text-gray-500 mb-3">
-            🔧 Assigned to: {data.assignedStaff.map(s => s.name).join(", ")}
-            {data.assignedStaff[0].phone && <span className="ml-2 bg-blue-50 text-blue-600 px-2 py-0.5 rounded-md font-bold">📞 {data.assignedStaff[0].phone}</span>}
+            Assigned to: {data.assignedStaff.map(s => s.name).join(", ")}
+            {data.assignedStaff[0].phone && <span className="ml-2 bg-blue-50 text-blue-600 px-2 py-0.5 rounded-md font-bold">{data.assignedStaff[0].phone}</span>}
             {data.assignedStaff[0].department && ` · ${data.assignedStaff[0].department}`}
           </p>
         )}
@@ -107,7 +110,7 @@ function ComplainCard({ data, onRevoke }) {
         {/* Estimated cost (if submitted) */}
         {data.estimatedCost && (
           <p className="text-xs text-gray-500 mb-3">
-            💰 Estimated: <span className="font-semibold">₹{data.estimatedCost}</span>
+            Estimated: <span className="font-semibold">₹{data.estimatedCost}</span>
             {data.estimateStatus && (
               <span className={`ml-2 px-2 py-0.5 rounded-full text-[10px] font-semibold ${data.estimateStatus === "Approved" ? "bg-green-100 text-green-700" :
                   data.estimateStatus === "Rejected" ? "bg-red-100 text-red-700" :
@@ -135,9 +138,9 @@ function ComplainCard({ data, onRevoke }) {
             </span>
             <div className="flex flex-col gap-0.5 mt-1">
               {data.scheduledAt && (
-                <span className="text-xs font-bold text-slate-700">📅 {new Date(data.scheduledAt).toLocaleDateString()}</span>
+                <span className="text-xs font-bold text-slate-700">{new Date(data.scheduledAt).toLocaleDateString()}</span>
               )}
-              <span className="text-xs font-bold text-blue-600">🕒 {data.scheduledSlot || "Not specified"}</span>
+              <span className="text-xs font-bold text-blue-600">{data.scheduledSlot || "Not specified"}</span>
             </div>
           </div>
         </div>
@@ -173,7 +176,7 @@ function ComplainCard({ data, onRevoke }) {
         {showRevokeBox && (
           <div className="mt-4 bg-red-50 rounded-2xl p-4 border border-red-100">
             <p className="text-xs font-bold text-red-700 mb-2">
-              ⚠️ Are you sure? This will unassign the staff and reopen the complaint.
+              Are you sure? This will unassign the staff and reopen the complaint.
             </p>
             <textarea
               className="w-full text-xs p-3 rounded-xl border border-red-200 bg-white resize-none focus:outline-none mb-3"
@@ -274,8 +277,10 @@ function ShowComplains() {
 
   return (
     <div className="min-h-screen bg-slate-50 pb-20">
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="flex items-center justify-between mb-10 flex-wrap gap-4">
+      <div className="max-w-6xl mx-auto px-6 py-10 relative z-20">
+        
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+
           <div>
             <h1 className="text-3xl font-black text-[#1a365d] tracking-tight">Your Complaints</h1>
             <p className="text-sm text-gray-500 font-medium">Track and manage your reported issues</p>
@@ -292,7 +297,7 @@ function ShowComplains() {
         <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 mb-8 space-y-4">
           <div className="flex items-center gap-4 flex-wrap">
             <div className="flex-1 min-w-[280px] relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">🔍</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></span>
               <input 
                 className="w-full border border-gray-100 rounded-2xl pl-12 pr-4 py-3 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all font-medium"
                 placeholder="Search by ID or title..." 
@@ -319,10 +324,9 @@ function ShowComplains() {
                 value={filterPriority} onChange={e => setFilterPriority(e.target.value)}
               >
                 <option value="All">All Priorities</option>
-                <option value="Emergency">🚨 Emergency</option>
-                <option value="High">🔴 High</option>
-                <option value="Medium">🟠 Medium</option>
-                <option value="Low">🟢 Low</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
               </select>
             </div>
           </div>

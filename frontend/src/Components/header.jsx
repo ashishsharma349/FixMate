@@ -24,6 +24,7 @@ function Header() {
             <Link to="/" style={homeNavStyle}>{logoMark}Home</Link>
             <Link to="/profile" style={navItemStyle}>Profile</Link>
             <Link to="/FileComplain" style={navItemStyle}>Register Complaint</Link>
+            <Link to="/notices" style={navItemStyle}>Notice Board</Link>
             <Link to="/All-Complains" style={navItemStyle}>All Complaints</Link>
             <Link to="/my-payments" style={navItemStyle}>💳 My Payments</Link>
           </>
@@ -34,7 +35,9 @@ function Header() {
           <>
             <Link to="/" style={homeNavStyle}>{logoMark}Home</Link>
             <Link to="/profile" style={navItemStyle}>Profile</Link>
+            <Link to="/notices" style={navItemStyle}>Notice Board</Link>
             <Link to="/Assigned-Tasks" style={navItemStyle}>Assigned Tasks</Link>
+
           </>
         )}
 
@@ -43,8 +46,10 @@ function Header() {
           <>
             <Link to="/" style={homeNavStyle}>{logoMark}Home</Link>
             <Link to="/profile" style={navItemStyle}>Profile</Link>
+            <Link to="/notices" style={navItemStyle}>Notice Board</Link>
             <Link to="/AssignStaff" style={navItemStyle}>Assign Staff</Link>
             <Link to="/create-user" style={navItemStyle}>Create User</Link>
+
           </>
         )}
 

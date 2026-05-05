@@ -44,8 +44,8 @@ const nodemailer = require("nodemailer");
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.MAIL_USER, 
-    pass: process.env.MAIL_PASS 
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS
   }
 });
 
@@ -57,7 +57,7 @@ exports.sendTempPasswordMail = async (toEmail, name, tempPassword, role) => {
     const mailOptions = {
       from: `"FixMate Admin" <${process.env.MAIL_USER}>`,
       to: toEmail,
-      subject: "Welcome to FixMate – Your Account Details",
+      subject: "Welcome to FixMate Your Account Details",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 8px;">
           <h2 style="color: #4f46e5;">Welcome to FixMate, ${name}!</h2>
@@ -89,7 +89,7 @@ exports.sendTempPasswordMail = async (toEmail, name, tempPassword, role) => {
 exports.sendPaymentReceipt = async (toEmail, paymentDetails) => {
   try {
     const { residentName, flatNumber, amount, refId, paidAt, razorpayPaymentId } = paymentDetails;
-    
+
     const mailOptions = {
       from: `"FixMate Admin" <${process.env.MAIL_USER}>`,
       to: toEmail,

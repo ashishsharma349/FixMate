@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../Context/AuthContext";
 import { getAuthHeaders } from "../utils/api";
 
+
+
+
 // ─── Stat Card (admin only) ───────────────────────────────────────────────────
 function StatCard({ label, value, color }) {
   return (
@@ -97,7 +100,7 @@ function Profile() {
               {photoSrc ? (
                 <img src={photoSrc} alt="Profile" className="w-full h-full object-cover" />
               ) : (
-                <span className="text-5xl">👤</span>
+                <span className="text-5xl"></span>
               )}
             </div>
             {/* Photo upload button - not for admin */}
@@ -108,9 +111,9 @@ function Profile() {
                 title="Change photo"
               >
                 {photoUploading ? (
-                  <span className="text-white text-xs animate-spin">↻</span>
+                  <span className="text-white text-[10px] animate-pulse">...</span>
                 ) : (
-                  <span className="text-white text-xs">📷</span>
+                  <span className="text-white text-xs"></span>
                 )}
               </button>
             )}
@@ -145,7 +148,9 @@ function Profile() {
         )}
 
         {/* ── INFO CARD ── */}
+
         <div className="bg-white rounded-[30px] shadow-sm border border-gray-100 p-6 mb-6">
+
           <h2 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">Account Details</h2>
           <div className="space-y-4">
 
@@ -166,7 +171,7 @@ function Profile() {
             {profile.role === "staff" && (
               <>
                 <InfoRow label="Department" value={profile.department} />
-                <InfoRow label="Rating" value={`${"⭐".repeat(profile.rating)} (${profile.rating}/5)`} />
+                <InfoRow label="Rating" value={`${profile.rating}/5`} />
               </>
             )}
 
@@ -181,7 +186,7 @@ function Profile() {
           <Link to="/change-password"
             className="flex items-center justify-between p-4 rounded-2xl bg-gray-50 hover:bg-gray-100 transition group">
             <div className="flex items-center gap-3">
-              <span className="text-xl">🔒</span>
+              <span className="text-xl"></span>
               <span className="font-bold text-slate-700">Change Password</span>
             </div>
             <span className="text-slate-400 group-hover:text-slate-600">→</span>
@@ -191,7 +196,7 @@ function Profile() {
             <Link to="/create-user"
               className="flex items-center justify-between p-4 rounded-2xl bg-gray-50 hover:bg-gray-100 transition group">
               <div className="flex items-center gap-3">
-                <span className="text-xl">👤</span>
+                <span className="text-xl"></span>
                 <span className="font-bold text-slate-700">Create User / Staff</span>
               </div>
               <span className="text-slate-400 group-hover:text-slate-600">→</span>
@@ -202,7 +207,7 @@ function Profile() {
             <Link to="/FileComplain"
               className="flex items-center justify-between p-4 rounded-2xl bg-gray-50 hover:bg-gray-100 transition group">
               <div className="flex items-center gap-3">
-                <span className="text-xl">📋</span>
+                <span className="text-xl"></span>
                 <span className="font-bold text-slate-700">File a Complaint</span>
               </div>
               <span className="text-slate-400 group-hover:text-slate-600">→</span>
@@ -212,7 +217,7 @@ function Profile() {
           <Link to="/logout"
             className="flex items-center justify-between p-4 rounded-2xl bg-red-50 hover:bg-red-100 transition group">
             <div className="flex items-center gap-3">
-              <span className="text-xl">🚪</span>
+              <span className="text-xl"></span>
               <span className="font-bold text-red-600">Logout</span>
             </div>
             <span className="text-red-400 group-hover:text-red-600">→</span>
