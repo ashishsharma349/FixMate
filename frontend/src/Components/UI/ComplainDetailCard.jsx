@@ -20,7 +20,7 @@ function ComplainDetailCard() {
 
   const fetchComplain = useCallback(async () => {
     try {
-      const res = await fetch(`${API}/users/All-Complains`, { headers: getAuthHeaders() });
+      const res = await fetch(`${API}/users/All-Complains`, { headers: getAuthHeaders(), credentials: "include" });
       const data = await res.json();
       if (res.ok) {
         const found = data.complains.find(c => c._id === initialComplain._id);
@@ -38,6 +38,7 @@ function ComplainDetailCard() {
       const res = await fetch(`${API}/users/accept-estimate`, {
         method: "POST",
         headers: jsonAuthHeaders(),
+        credentials: "include",
         body: JSON.stringify({ complaintId: complain._id }),
       });
       const data = await res.json();
@@ -56,6 +57,7 @@ function ComplainDetailCard() {
       const res = await fetch(`${API}/users/record-payment`, {
         method: "POST",
         headers: jsonAuthHeaders(),
+        credentials: "include",
         body: JSON.stringify({ complaintId: complain._id, amount: payAmount }),
       });
       const data = await res.json();
@@ -79,6 +81,7 @@ function ComplainDetailCard() {
       const res = await fetch(`${API}/users/rate-staff`, {
         method: "POST",
         headers: jsonAuthHeaders(),
+        credentials: "include",
         body: JSON.stringify({ staffId: complain.assignedStaff[0]._id, rating }),
       });
       const data = await res.json();

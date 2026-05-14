@@ -14,7 +14,7 @@ exports.handlePost_createAnnouncement = async (req, res) => {
             content,
             targetAudience: targetAudience || 'All',
             priority: priority || 'Medium',
-            createdBy: req.session.user.id
+            createdBy: req.user.id
         });
 
         res.status(201).json({
@@ -29,7 +29,7 @@ exports.handlePost_createAnnouncement = async (req, res) => {
 // Get Announcements (Based on role)
 exports.handleGet_allAnnouncements = async (req, res) => {
     try {
-        const userRole = req.session.user.role;
+        const userRole = req.user.role;
         let filter = { targetAudience: 'All' };
         
         if (userRole === 'admin') {

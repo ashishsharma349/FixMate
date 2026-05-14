@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../Context/AuthContext';
+import { getAuthHeaders, API } from '../utils/api';
 
 
 
@@ -10,8 +11,9 @@ const Home = () => {
 
   useEffect(() => {
     if (!isLoggedIn) return;
-    fetch("http://localhost:3000/profile", {
-      headers: { "Content-Type": "application/json", "X-Session-Id": sessionStorage.getItem("fixmate_sid") }
+    fetch(`${API}/profile`, {
+      headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+      credentials: "include",
     })
       .then(res => res.json())
       .then(data => setProfileName(data.profile?.name || ""))
@@ -148,7 +150,7 @@ const Home = () => {
                 { label: 'Frontend', val: 'React & Tailwind' },
                 { label: 'Backend', val: 'Node / Express' },
                 { label: 'Database', val: 'MongoDB NoSQL' },
-                { label: 'Security', val: 'Session Based' }
+                { label: 'Security', val: 'JWT Auth' }
               ].map((tech, i) => (
                 <div key={i} className="group">
                   <p className="text-[10px] font-black text-blue-500 uppercase mb-2 tracking-widest">{tech.label}</p>

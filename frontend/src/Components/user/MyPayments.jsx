@@ -41,6 +41,7 @@ function PaymentCard({ payment, onPaid }) {
       const res = await fetch(`${API}/payments/create-order`, {
         method: "POST",
         headers: jsonAuthHeaders(),
+        credentials: "include",
         body: JSON.stringify({ paymentId: payment._id }),
       });
       const data = await res.json();
@@ -63,6 +64,7 @@ function PaymentCard({ payment, onPaid }) {
             const vRes = await fetch(`${API}/payments/verify`, {
               method: "POST",
               headers: jsonAuthHeaders(),
+              credentials: "include",
               body: JSON.stringify({
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
@@ -201,7 +203,7 @@ export default function MyPayments() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`${API}/payments/my-payments`, { headers: getAuthHeaders() });
+      const res = await fetch(`${API}/payments/my-payments`, { headers: getAuthHeaders(), credentials: "include" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to fetch payments");
       setPayments(data.payments || []);

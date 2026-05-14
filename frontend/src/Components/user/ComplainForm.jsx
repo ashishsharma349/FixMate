@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { getAuthHeaders } from '../../utils/api';
+import { getAuthHeaders, API } from '../../utils/api';
 
 
 
@@ -27,8 +27,9 @@ const ComplaintForm = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch("http://localhost:3000/profile", {
+        const res = await fetch(`${API}/profile`, {
           headers: getAuthHeaders(),
+          credentials: "include",
         });
         const data = await res.json();
         if (res.ok) {
@@ -93,14 +94,11 @@ const ComplaintForm = () => {
 
     try {
 
-      const res = await fetch("http://localhost:3000/users/complains", {
-
+      const res = await fetch(`${API}/users/complains`, {
         method: "POST",
-
         body: data,
-
         headers: getAuthHeaders(),
-
+        credentials: "include",
       });
 
       const result = await res.json();

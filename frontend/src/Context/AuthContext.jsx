@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from "react";
-import { getAuthHeaders, storeSessionId, clearSessionId, getSessionId } from "../utils/api";
+import { getAuthHeaders, storeToken, clearToken, getToken, API } from "../utils/api";
 
 export const AuthContext = createContext();
 
@@ -10,18 +10,41 @@ export function AuthProvider({ children }) {
   const [sessionExpired, setSessionExpired] = useState(false);
 
   useEffect(() => {
-    const sid = getSessionId();
-    if (!sid) {
+    const token = getToken();
+    if (!token) {
       setIsLoggedIn(false);
       setRole(null);
       setIsFirstLogin(false);
       return;
     }
 
-    fetch("http://localhost:3000/check-login", {
-      headers: { "Cache-Control": "no-cache", ...getAuthHeaders() }
+    // Verify token with the server
+    fetch(`${API}/check-login`, {
+      headers: { "Cache-Control": "no-cache", ...getAuthHeaders() },
+      credentials: "include",
     })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          // 401 = token invalid/expired → try silent refresh
+          return fetch(`${API}/auth/refresh`, { method: "POST", credentials: "include" })
+            .then(refreshRes => {
+              if (!refreshRes.ok) throw new Error("refresh failed");
+              return refreshRes.json();
+            })
+            .then(refreshData => {
+              if (refreshData.token) {
+                storeToken(refreshData.token);
+                // Retry check-login with new token
+                return fetch(`${API}/check-login`, {
+                  headers: { "Cache-Control": "no-cache", "Authorization": `Bearer ${refreshData.token}` },
+                  credentials: "include",
+                }).then(r => r.json());
+              }
+              throw new Error("no token in refresh");
+            });
+        }
+        return res.json();
+      })
       .then(data => {
         if (data.isLoggedIn) {
           setIsLoggedIn(true);
@@ -29,23 +52,21 @@ export function AuthProvider({ children }) {
           setIsFirstLogin(data.isFirstLogin ?? false);
           setSessionExpired(false);
         } else {
-          // Session existed locally but server says not logged in = expired
-          clearSessionId();
-          setIsLoggedIn(false);
-          setRole(null);
-          setIsFirstLogin(false);
-          setSessionExpired(true); // show expired message
+          throw new Error("not logged in");
         }
       })
       .catch(() => {
+        clearToken();
         setIsLoggedIn(false);
         setRole(null);
         setIsFirstLogin(false);
+        // Only show expired banner if there WAS a token (user was previously logged in)
+        if (token) setSessionExpired(true);
       });
   }, []);
 
-  const login = (roleFromServer, firstLogin = false, sessionId = null) => {
-    if (sessionId) storeSessionId(sessionId);
+  const login = (roleFromServer, firstLogin = false, token = null) => {
+    if (token) storeToken(token);
     setIsLoggedIn(true);
     setRole(roleFromServer ?? null);
     setIsFirstLogin(firstLogin);
@@ -53,7 +74,7 @@ export function AuthProvider({ children }) {
   };
 
   const logout = () => {
-    clearSessionId();
+    clearToken();
     setIsLoggedIn(false);
     setRole(null);
     setIsFirstLogin(false);

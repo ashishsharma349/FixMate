@@ -1,40 +1,22 @@
 const express = require("express");
-
 const cookieParser = require('cookie-parser');
-
 const path = require('path');
-
 const app = express();
 
-
-
 const userRouter = require('./routes/userRoutes');
-
 const adminRouter = require('./routes/adminRoutes');
-
 const authRouter = require('./routes/authRouter');
-
 const profileRouter = require('./routes/profileRouter');
-
 const inventoryRouter = require('./routes/inventoryRoutes');
-
 const paymentRouter = require('./routes/paymentRoutes');
 const announcementRouter = require('./routes/announcementRouter');
 
+const { verifyToken } = require('./middleware/jwtMiddleware');
+const authController = require('./controller/auth');
 
-
-
-const session = require('express-session');
-
-const MongoDbStore = require("connect-mongodb-session")(session);
-
-const cors = require("cors");
-
-const mongoose = require("mongoose");
-
-const sessionHeaderMiddleware = require("./middleware/sessionHeader");
-
-const rateLimit = require("express-rate-limit");
+const cors = require('cors');
+const mongoose = require('mongoose');
+const rateLimit = require('express-rate-limit');
 
 
 
@@ -83,68 +65,22 @@ require('dotenv').config();
 
 
 const PORT = process.env.PORT || 3000;
-
 const DB_PATH = process.env.MONGO_URI;
 
-const SESSION_SECRET = process.env.SESSION_SECRET || "fixmate_secret";
 
 
 
-const store = new MongoDbStore({
-
-  uri: DB_PATH,
-
-  collection: 'sessions',
-
-});
-
-
-
-// ── Session Header middleware: reads X-Session-Id header and injects as cookie
-
-// This MUST run BEFORE express-session so it picks up the right session per-tab
-
-app.use(sessionHeaderMiddleware(SESSION_SECRET));
-
-
-
-app.use(session({
-
-  secret: SESSION_SECRET,
-
-  resave: false,
-
-  saveUninitialized: false,
-
-  store: store,
-
-  cookie: {
-
-    httpOnly: true,
-
-    sameSite: "lax",
-
-    secure: false,
-  }
-
-}));
 
 
 
 // ── Rate Limiting ─────────────────────────────────────────────────────────────
 
 // const limiter = rateLimit({
-
 //   windowMs: 15 * 60 * 1000, // 15 minutes
-
 //   max: 100, // limit each IP to 100 requests per windowMs
-
 //   message: { error: "Too many requests from this IP, please try again later." },
-
 //   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-
 //   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-
 // });
 
 
@@ -195,31 +131,21 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 
 
-// ── Check login state ─────────────────────────────────────────────────────────
-
-app.use("/check-login", (req, res) => {
-
+// ── Check login state (JWT) ───────────────────────────────────────────────────
+app.get("/check-login", verifyToken, (req, res) => {
   res.set("Cache-Control", "no-store");
-
-  if (req.session.user) {
-
-    res.json({
-
-      isLoggedIn: true,
-
-      role: req.session.user.role,
-
-      isFirstLogin: req.session.user.isFirstLogin
-
-    });
-
-  } else {
-
-    res.json({ isLoggedIn: false, role: null });
-
-  }
-
+  res.json({
+    isLoggedIn: true,
+    role: req.user.role,
+    isFirstLogin: req.user.isFirstLogin,
+  });
 });
+
+// Fallback: if verifyToken fails, the middleware returns 401.
+// Frontend handles 401 from /check-login as "not logged in".
+
+// ── Token refresh endpoint ────────────────────────────────────────────────────
+app.post("/auth/refresh", authController.handlePost_refresh);
 
 
 
@@ -259,7 +185,7 @@ app.use((err, req, res, next) => {
 
     query: req.query,
 
-    user: req.session?.user?.id || 'anonymous'
+    user: req.user?.id || 'anonymous'
 
   });
 
@@ -377,7 +303,7 @@ app.use((err, req, res, next) => {
 
 
 
-  res.status(statusCode).json({ 
+  res.status(statusCode).json({
 
     error: message,
 

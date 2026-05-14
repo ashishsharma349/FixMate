@@ -225,7 +225,7 @@ function ShowComplains() {
 
   const fetchComplains = () => {
     setLoading(true);
-    fetch(`${API}/users/All-Complains`, { method: "GET", headers: getAuthHeaders() })
+    fetch(`${API}/users/All-Complains`, { method: "GET", headers: getAuthHeaders(), credentials: "include" })
       .then((res) => {
         if (!res.ok) {
           if (res.status === 401) throw new Error("Not authenticated");

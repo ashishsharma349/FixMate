@@ -2,7 +2,7 @@ const Complain=require("../model/Complain");
 
 exports.fetch_task = async (req, res) => {
   try {
-    const sessionUser = req.session.user;
+    const sessionUser = req.user;
 
     if (!sessionUser || sessionUser.role !== "staff") {
       return res.status(401).json({ error: "Unauthorized" });

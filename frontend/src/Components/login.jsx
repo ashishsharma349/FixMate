@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import { Link, useNavigate, Navigate } from "react-router-dom";
 import { AuthContext } from "../Context/AuthContext";
+import { API } from "../utils/api";
 
 function Login() {
   const navigate = useNavigate();
@@ -21,16 +22,17 @@ function Login() {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/login", {
+      const res = await fetch(`${API}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include", // for refresh token cookie
         body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
 
       if (data.success) {
-        login(data.role, data.isFirstLogin, data.sessionId);
+        login(data.role, data.isFirstLogin, data.token);
         if (data.isFirstLogin) {
           navigate("/change-password");
         } else {

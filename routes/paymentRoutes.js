@@ -5,21 +5,12 @@ const Razorpay = require("razorpay");
 const crypto = require("crypto");
 const Payment = require("../model/Payment");
 const User = require("../model/User");
+const { verifyToken, adminOnly } = require("../middleware/jwtMiddleware");
 
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 
-const adminOnly = (req, res, next) => {
-  if (!req.session.user || req.session.user.role !== "admin")
-    return res.status(403).json({ error: "Forbidden: Admin only" });
-  next();
-};
-
-const loggedIn = (req, res, next) => {
-  if (!req.session.user)
-    return res.status(401).json({ error: "Not logged in" });
-  next();
-};
+const loggedIn = verifyToken;
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -108,7 +99,7 @@ router.get("/list", adminOnly, async (req, res) => {
 router.get("/my-payments", loggedIn, async (req, res) => {
   try {
     const user = await User.findOne({
-      authId: req.session.user.id || req.session.user._id,
+      authId: req.user.id,
     });
     if (!user) return res.status(404).json({ error: "User profile not found" });
 

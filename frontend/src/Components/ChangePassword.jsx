@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { AuthContext } from "../Context/AuthContext";
-import { jsonAuthHeaders } from "../utils/api";
+import { jsonAuthHeaders, storeToken, API } from "../utils/api";
 
 function ChangePassword() {
   const navigate = useNavigate();
@@ -40,9 +40,10 @@ function ChangePassword() {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:3000/change-password", {
+      const res = await fetch(`${API}/change-password`, {
         method: "POST",
         headers: jsonAuthHeaders(),
+        credentials: "include",
         body: JSON.stringify({
           currentPassword: formData.currentPassword,
           newPassword: formData.newPassword,
@@ -53,6 +54,7 @@ function ChangePassword() {
       const data = await res.json();
 
       if (data.success) {
+        if (data.token) storeToken(data.token);
         clearFirstLogin();
         navigate("/");
       } else {

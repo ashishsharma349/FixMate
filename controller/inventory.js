@@ -33,7 +33,7 @@ exports.addItem = async (req, res) => {
       description, 
       unitPrice: Number(unitPrice), 
       supplier: "Default Supplier",
-      approvedBy: approvedBy || (req.session && req.session.user ? req.session.user.email : "Admin"),
+      approvedBy: approvedBy || (req.user ? req.user.email : "Admin"),
       approvedDate: approvedDate ? new Date(approvedDate) : new Date()
     });
     res.status(201).json({ message: "Item added", item });
@@ -93,7 +93,7 @@ exports.restock = async (req, res) => {
     item.quantity += Number(addQty);
     item.unitPrice = Number(costPerUnit);
     item.updatedAt = new Date();
-    item.approvedBy = req.session && req.session.user ? req.session.user.email : "Admin";
+    item.approvedBy = req.user ? req.user.email : "Admin";
     item.approvedDate = new Date();
     await item.save();
 
@@ -109,7 +109,7 @@ exports.restock = async (req, res) => {
       billImage,
       quantity: Number(addQty),
       costPerUnit: Number(costPerUnit),
-      handledBy: req.session.user.profileId // Logged by admin
+      handledBy: req.user.profileId // Logged by admin
     });
 
     res.json({ message: "Item restocked and expense created", item });

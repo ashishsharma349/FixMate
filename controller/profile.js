@@ -6,7 +6,7 @@ const Complain = require("../model/Complain");
 // ─── GET PROFILE (user / staff / admin) ──────────────────────────────────────
 exports.getProfile = async (req, res) => {
   try {
-    const sessionUser = req.session.user;
+    const sessionUser = req.user;
     if (!sessionUser) return res.status(401).json({ error: "Not logged in" });
 
     const auth = await Auth.findById(sessionUser.id);

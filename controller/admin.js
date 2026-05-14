@@ -107,7 +107,7 @@ exports.getDashboardStats = async (req, res) => {
       ])
     ]);
 
-    const totalIncomeOverall = (incomePaymentOverallAgg[0]?.total || 0) + (incomeFinanceOverallAgg[0]?.total || 0);
+    const totalIncomeOverall = incomePaymentOverallAgg[0]?.total || 0;
     const totalSpentOverall = spentFinanceOverallAgg[0]?.total || 0;
     const overallBalance = totalIncomeOverall - totalSpentOverall;
     const overallPending = pendingPaymentOverallAgg[0]?.total || 0;
@@ -136,7 +136,7 @@ exports.getDashboardStats = async (req, res) => {
       ])
     ]);
 
-    const totalIncome = (incomePaymentAgg[0]?.total || 0) + (incomeFinanceAgg[0]?.total || 0);
+    const totalIncome = incomePaymentAgg[0]?.total || 0;
     const totalSpent = (spentPaymentAgg[0]?.total || 0) + (spentFinanceAgg[0]?.total || 0);
     const incomeThisMonth = monthlyIncomeAgg[0]?.total || 0;
     const paidCountThisMonth = monthlyIncomeAgg[0]?.count || 0;
@@ -575,9 +575,9 @@ exports.deleteStaff = async (req, res) => {
 // ── ADMIN SETTINGS ─────────────────────────────────────────────────────────────
 exports.updateAdminProfile = async (req, res) => {
   try {
-    const sessionUser = req.session.user;
+    const tokenUser = req.user;
     const { name, email, currentPassword, newPassword } = req.body;
-    const auth = await Auth.findById(sessionUser.id).select("+password");
+    const auth = await Auth.findById(tokenUser.id).select("+password");
     if (!auth) return res.status(404).json({ error: "Admin not found" });
 
     if (email && email !== auth.email) {
@@ -593,10 +593,13 @@ exports.updateAdminProfile = async (req, res) => {
     }
 
     await auth.save();
-    if (email) req.session.user.email = email;
-    req.session.save();
 
-    res.json({ message: "Profile updated successfully" });
+    // Issue fresh access token with updated email
+    const jwt = require("jsonwebtoken");
+    const payload = { id: auth._id.toString(), email: auth.email, role: auth.role, profileId: null, isFirstLogin: auth.isFirstLogin };
+    const newToken = jwt.sign(payload, process.env.JWT_SECRET || "fxm_acc_fallback", { expiresIn: process.env.JWT_ACCESS_EXPIRY || "15m" });
+
+    res.json({ message: "Profile updated successfully", token: newToken });
   } catch (err) {
     console.error("[updateAdminProfile]:", err);
     res.status(500).json({ error: err.message });

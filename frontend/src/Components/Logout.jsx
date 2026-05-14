@@ -1,7 +1,7 @@
 import { useEffect, useContext } from "react";
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { getAuthHeaders, clearSessionId } from "../utils/api";
+import { getAuthHeaders, clearToken, API } from "../utils/api";
 
 function Logout() {
   const { logout } = useContext(AuthContext);
@@ -10,11 +10,13 @@ function Logout() {
   useEffect(() => {
     const doLogout = async () => {
       try {
-        await fetch("http://localhost:3000/logout", {
+        // Tell server to revoke refresh token (fire-and-forget)
+        await fetch(`${API}/logout`, {
           method: "POST",
           headers: { ...getAuthHeaders() },
+          credentials: "include", // sends refresh token cookie for revocation
         });
-        logout(); // clears both storages + resets state
+        logout(); // clears token + resets state
         navigate("/");
       } catch (err) {
         console.log(err);

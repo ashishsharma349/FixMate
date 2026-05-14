@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { getAuthHeaders } from "../utils/api";
+import { getAuthHeaders, API } from "../utils/api";
 
 const ComplaintAssignmentPage = () => {
   const [complaints, setComplaints] = useState([]);
@@ -16,11 +16,11 @@ const ComplaintAssignmentPage = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const staffRes = await fetch("http://localhost:3000/users/All-Staff", { headers: getAuthHeaders() });
+        const staffRes = await fetch(`${API}/users/All-Staff`, { headers: getAuthHeaders(), credentials: "include" });
         const staffData = await staffRes.json();
         setStaffList(Array.isArray(staffData) ? staffData : []);
 
-        const compRes = await fetch("http://localhost:3000/users/All-Complains", { headers: getAuthHeaders() });
+        const compRes = await fetch(`${API}/users/All-Complains`, { headers: getAuthHeaders(), credentials: "include" });
         const compData = await compRes.json();
         setComplaints(Array.isArray(compData?.complains) ? compData.complains : []);
       } catch (err) {
@@ -52,9 +52,10 @@ const ComplaintAssignmentPage = () => {
       return;
     }
     try {
-      const response = await fetch("http://localhost:3000/users/Assign-Complain", {
+      const response = await fetch(`${API}/users/Assign-Complain`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        credentials: "include",
         body: JSON.stringify({ staffId: selectedStaffId, complaintIds: selectedComplaints, workType }),
       });
       if (!response.ok) throw new Error("Assignment failed");

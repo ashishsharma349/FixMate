@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext, useRef } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../Context/AuthContext";
-import { getAuthHeaders } from "../utils/api";
+import { getAuthHeaders, API } from "../utils/api";
 
 
 
@@ -27,7 +27,7 @@ function Profile() {
   const fileInputRef = useRef();
 
   useEffect(() => {
-    fetch("http://localhost:3000/profile", { headers: getAuthHeaders() })
+    fetch(`${API}/profile`, { headers: getAuthHeaders(), credentials: "include" })
       .then(res => res.json())
       .then(data => {
         setProfile(data);
@@ -51,9 +51,10 @@ function Profile() {
     setPhotoUploading(true);
 
     try {
-      const res = await fetch("http://localhost:3000/profile/photo", {
+      const res = await fetch(`${API}/profile/photo`, {
         method: "POST",
         headers: getAuthHeaders(),
+        credentials: "include",
         body: formData,
       });
       const data = await res.json();
@@ -79,7 +80,7 @@ function Profile() {
     <div className="min-h-screen flex items-center justify-center text-red-500 font-semibold">{error}</div>
   );
 
-  const API = "http://localhost:3000";
+
   const resolvePhoto = (url) => {
     if (!url) return null;
     if (url.startsWith("http")) return url;

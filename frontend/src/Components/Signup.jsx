@@ -52,9 +52,10 @@ export default function CreateUser() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:3000/admin/create-user", {
+      const res = await fetch(`${API}/admin/create-user`, {
         method: "POST",
         headers: jsonAuthHeaders(),
+        credentials: "include",
         body: JSON.stringify(formData),
       });
 

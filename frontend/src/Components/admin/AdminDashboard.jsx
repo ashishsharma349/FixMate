@@ -1,16 +1,16 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell } from "recharts";
-import { getAuthHeaders } from "../../utils/api";
-import { clearSessionId } from "../../utils/api";
+import { getAuthHeaders, clearToken, API } from "../../utils/api";
 import AnnouncementBoard from "../announcements/AnnouncementBoard";
 import AnnouncementForm from "../announcements/AnnouncementForm";
 
 
-const API = "http://localhost:3000";
+
 
 const apiFetch = async (url, opts = {}) => {
   const res = await fetch(`${API}${url}`, {
     headers: { "Content-Type": "application/json", ...getAuthHeaders(), ...(opts.headers || {}) },
+    credentials: "include",
     ...opts,
   });
   const data = await res.json();
@@ -1571,13 +1571,13 @@ function PaymentsView() {
       if (expenseForm.date) fd.append("date", expenseForm.date);
       if (billFile) fd.append("billImage", billFile);
 
-      const API = "http://localhost:3000";
       const authHeaderMap = getAuthHeaders();
       const res = await fetch(`${API}/admin/add-expense`, {
         method: "POST",
         headers: {
           ...authHeaderMap,
         },
+        credentials: "include",
         body: fd
       });
       const returnedData = await res.json();
@@ -2310,7 +2310,7 @@ function SettingsView() {
           <div className="flex justify-between py-2 border-b border-gray-50"><span>App Name</span><span className="font-semibold text-gray-700">FixMate</span></div>
           <div className="flex justify-between py-2 border-b border-gray-50"><span>Version</span><span className="font-semibold text-gray-700">1.0.0</span></div>
           <div className="flex justify-between py-2 border-b border-gray-50"><span>Stack</span><span className="font-semibold text-gray-700">React + Node.js + MongoDB</span></div>
-          <div className="flex justify-between py-2"><span>Session Auth</span><span className="font-semibold text-green-600">Active</span></div>
+          <div className="flex justify-between py-2"><span>JWT Auth</span><span className="font-semibold text-green-600">Active</span></div>
         </div>
       </div>
     </div>
@@ -2348,8 +2348,8 @@ export default function AdminDashboard() {
   ];
 
   const handleLogout = async () => {
-    try { await fetch(`${API}/logout`, { method: "POST", headers: getAuthHeaders() }); } catch (_) { }
-    clearSessionId();
+    try { await fetch(`${API}/logout`, { method: "POST", headers: getAuthHeaders(), credentials: "include" }); } catch (_) { }
+    clearToken();
     window.location.href = "/";
   };
 

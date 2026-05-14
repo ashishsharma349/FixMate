@@ -1,16 +1,15 @@
 const express = require("express");
 const inventoryControllers = require("../controller/inventory");
 const upload = require("../config/multerconfig");
+const { verifyToken } = require("../middleware/jwtMiddleware");
 
 const inventoryRoute = express.Router();
 inventoryRoute.use(express.json());
 
-// ── Guard: admin for modifications, staff allowed to GET ───────────
+// ── Guard: admin for modifications, staff allowed to GET (JWT) ─────
+inventoryRoute.use(verifyToken);
 inventoryRoute.use((req, res, next) => {
-  if (!req.session.user)
-    return res.status(401).json({ error: "Not logged in" });
-  
-  const role = req.session.user.role;
+  const role = req.user.role;
   if (role === "admin") return next();
   if (role === "staff" && req.method === "GET") return next();
 

@@ -49,7 +49,7 @@ function TaskCard({ task, onRefresh }) {
   // Fetch inventory for CommonArea during Assigned (Estimate) AND InProgress (Completion)
   useEffect(() => {
     if (isCommonArea && ["Assigned", "InProgress", "EstimateApproved"].includes(task.status)) {
-      fetch(`${API}/inventory`, { headers: getAuthHeaders() })
+      fetch(`${API}/inventory`, { headers: getAuthHeaders(), credentials: "include" })
         .then((r) => r.json())
         .then((d) => setInventoryItems(d.items || []))
         .catch(console.error);
@@ -83,6 +83,7 @@ function TaskCard({ task, onRefresh }) {
       const res = await fetch(`${API}/users/submit-estimate`, {
         method: "POST",
         headers: jsonAuthHeaders(),
+        credentials: "include",
         body: JSON.stringify({
           complaintId: task._id,
           labourEstimate: labourEst,
@@ -116,6 +117,7 @@ function TaskCard({ task, onRefresh }) {
       const res = await fetch(`${API}/users/complete-task`, {
         method: "POST",
         headers: getAuthHeaders(),
+        credentials: "include",
         body: formData,
       });
       const data = await res.json();
@@ -136,6 +138,7 @@ function TaskCard({ task, onRefresh }) {
       const res = await fetch(`${API}/users/record-payment`, {
         method: "POST",
         headers: jsonAuthHeaders(),
+        credentials: "include",
         body: JSON.stringify({ complaintId: task._id, amount: paymentAmount }),
       });
       const data = await res.json();
@@ -409,7 +412,7 @@ function Task() {
 
   const fetchTasks = useCallback(async () => {
     try {
-      const res = await fetch(`${API}/users/Task`, { headers: getAuthHeaders() });
+      const res = await fetch(`${API}/users/Task`, { headers: getAuthHeaders(), credentials: "include" });
       const data = await res.json();
       if (data?.complains) setComplains(data.complains);
     } catch (err) {

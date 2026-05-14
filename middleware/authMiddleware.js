@@ -1,14 +1,7 @@
-exports.isLoggedIn = (req, res, next) => {
-  if (req.session && req.session.isLoggedIn && req.session.user) {
-    return next();
-  }
-  return res.status(401).json({ error: "Unauthorized. Please log in." });
-};
+const { verifyToken, requireRole } = require("./jwtMiddleware");
 
-// Middleware: only allow admin
-exports.isAdmin = (req, res, next) => {
-  if (req.session && req.session.user && req.session.user.role === "admin") {
-    return next();
-  }
-  return res.status(403).json({ error: "Forbidden. Admins only." });
-};
+// Re-export verifyToken as isLoggedIn for backward compatibility with existing route files
+exports.isLoggedIn = verifyToken;
+
+// isAdmin: verifyToken + admin role check (array of middleware)
+exports.isAdmin = [verifyToken, requireRole("admin")];

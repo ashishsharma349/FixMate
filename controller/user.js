@@ -5,7 +5,7 @@ const { deductMaterials } = require("./inventory");
 // ── FILE UPLOAD FOR COMPLAINT ──────────────────────────────────────────────────
 exports.handlePost_fileUpload = async (req, res) => {
   try {
-    if (!req.session || !req.session.user) {
+    if (!req.user) {
       return res.status(401).json({ error: "Unauthorized. Please log in." });
     }
     if (!req.body.title || !req.body.description || !req.body.priority) {
@@ -25,7 +25,7 @@ exports.handlePost_fileUpload = async (req, res) => {
       residentName:  req.body.residentName,
       residentPhone: req.body.residentPhone,
       scheduledSlot: req.body.scheduledSlot,
-      resident:      req.session.user.profileId || req.session.user.id,
+      resident:      req.user.profileId || req.user.id,
     };
     await Complain.create(complain);
     res.status(201).json({ message: "Complaint filed successfully" });
@@ -38,7 +38,7 @@ exports.handlePost_fileUpload = async (req, res) => {
 // ── SHOW COMPLAINTS ────────────────────────────────────────────────────────────
 exports.ShowComplains = async (req, res) => {
   try {
-    const sessionUser = req.session.user;
+    const sessionUser = req.user;
     if (!sessionUser) return res.status(401).json({ error: "Not logged in" });
     const filter = sessionUser.role === "admin" ? {} : { resident: sessionUser.profileId || sessionUser.id };
     const data = await Complain.find(filter)
@@ -84,7 +84,7 @@ exports.handleComplainAssign = async (req, res) => {
 // ── FETCH STAFF TASKS ──────────────────────────────────────────────────────────
 exports.fetch_task = async (req, res) => {
   try {
-    const sessionUser = req.session.user;
+    const sessionUser = req.user;
     if (!sessionUser || sessionUser.role !== "staff")
       return res.status(401).json({ error: "Unauthorized" });
     const complains = await Complain.find({ assignedStaff: sessionUser.profileId })
@@ -100,7 +100,7 @@ exports.fetch_task = async (req, res) => {
 exports.handleProfilePhotoUpload = async (req, res) => {
   try {
     const Staff = require("../model/staff");
-    const sessionUser = req.session.user;
+    const sessionUser = req.user;
     if (!sessionUser) return res.status(401).json({ error: "Not logged in" });
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
     const photoPath = req.file.filename;
@@ -122,7 +122,7 @@ exports.handleProfilePhotoUpload = async (req, res) => {
 // CommonArea = labour + inventory, goes to admin for approval
 exports.submitEstimate = async (req, res) => {
   try {
-    const sessionUser = req.session.user;
+    const sessionUser = req.user;
     if (!sessionUser || sessionUser.role !== "staff")
       return res.status(401).json({ error: "Unauthorized" });
 
@@ -166,7 +166,7 @@ exports.submitEstimate = async (req, res) => {
 // ── RESIDENT ACCEPTS ESTIMATE (Personal Work Only) ─────────────────────────────
 exports.acceptEstimate = async (req, res) => {
     try {
-        const sessionUser = req.session.user;
+        const sessionUser = req.user;
         if (!sessionUser || sessionUser.role !== "user")
           return res.status(401).json({ error: "Unauthorized" });
     
@@ -199,7 +199,7 @@ exports.acceptEstimate = async (req, res) => {
 // CommonArea → Mark Completed, Admin verifies and releases fund
 exports.completeTask = async (req, res) => {
   try {
-    const sessionUser = req.session.user;
+    const sessionUser = req.user;
     if (!sessionUser || sessionUser.role !== "staff")
       return res.status(401).json({ error: "Unauthorized" });
 
@@ -272,7 +272,7 @@ exports.completeTask = async (req, res) => {
 // ── RECORD PAYMENT VERIFICATION (Personal Work Only) ───────────────────────────
 exports.recordPaymentVerification = async (req, res) => {
     try {
-        const sessionUser = req.session.user;
+        const sessionUser = req.user;
         const { complaintId, amount } = req.body;
         
         if (!complaintId || !amount)
@@ -297,17 +297,7 @@ exports.recordPaymentVerification = async (req, res) => {
                 complaint.status = "Resolved";
                 complaint.isPaymentVerified = true;
                 
-                // Final staff earning log for transparency
-                const Finance = require("../model/finance");
-                await Finance.create({
-                    transactionType: "Income", // Tracked for transparency
-                    transactionCategory: "DirectPayment",
-                    amount: complaint.userPaymentAmount,
-                    status: "Paid",
-                    description: `Verified personal repair payment: ${complaint.title}`,
-                    relatedComplaint: complaint._id,
-                    handledBy: complaint.assignedStaff?.[0] || null
-                });
+                // Payment verified, no extra finance log needed as per user request to only track monthly fees as income.
                 
                 // Release staff
                 const Staff = require("../model/staff");
@@ -345,7 +335,7 @@ exports.recordPaymentVerification = async (req, res) => {
 exports.revokeStaff = async (req, res) => {
   try {
     const Staff = require("../model/staff");
-    const sessionUser = req.session.user;
+    const sessionUser = req.user;
     if (!sessionUser || sessionUser.role !== "user")
       return res.status(401).json({ error: "Unauthorized" });
     const { complaintId, revokeReason } = req.body;
@@ -379,7 +369,7 @@ exports.revokeStaff = async (req, res) => {
 exports.rateStaff = async (req, res) => {
   try {
     const Staff = require("../model/staff");
-    const sessionUser = req.session.user;
+    const sessionUser = req.user;
     if (!sessionUser || sessionUser.role !== "user")
       return res.status(401).json({ error: "Unauthorized" });
     

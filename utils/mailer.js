@@ -73,8 +73,9 @@ exports.sendTempPasswordMail = async (toEmail, name, tempPassword, role) => {
       `
     };
 
-    const info = await transporter.sendMail(mailOptions);
-    console.log("[Mail Sent]: " + info.response);
+    // const info = await transporter.sendMail(mailOptions);
+    // console.log("[Mail Sent]: " + info.response);
+    console.log(`[MOCK MAIL]: Welcome email for ${name} (${role}) would be sent to ${toEmail}`);
   } catch (error) {
     console.error("[Mailer Error]: ", error);
     throw error; // Throw so the controller knows it failed
@@ -149,8 +150,9 @@ exports.sendPaymentReceipt = async (toEmail, paymentDetails) => {
       `
     };
 
-    const info = await transporter.sendMail(mailOptions);
-    console.log("[Payment Receipt Mail Sent]: " + info.response);
+    // const info = await transporter.sendMail(mailOptions);
+    // console.log("[Payment Receipt Mail Sent]: " + info.response);
+    console.log(`[MOCK RECEIPT]: Receipt for ₹${amount} would be sent to ${toEmail}`);
   } catch (error) {
     console.error("[Payment Receipt Mail Error]: ", error);
     throw error;

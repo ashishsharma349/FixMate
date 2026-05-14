@@ -7,7 +7,7 @@ A production-grade, full-stack society management platform designed to streamlin
 ### Backend
 *   **Node.js & Express (v5.x):** Chosen for its asynchronous nature and rapid development cycle. Express 5 provides improved error handling and promise support.
 *   **MongoDB & Mongoose:** NoSQL allows for flexible schemas for varied complaint types and evolving inventory structures.
-*   **Express-Session & Connect-MongoDB-Session:** Implemented for secure, persistent server-side sessions, ensuring user state is maintained across server restarts.
+*   **JWT (Access + Refresh Tokens):** Implemented a production-grade stateless authentication system with short-lived access tokens and secure, httpOnly refresh tokens for persistent sessions.
 *   **Bcrypt:** Industry-standard password hashing for robust authentication security.
 *   **Razorpay SDK:** Seamless payment gateway integration for resident maintenance fees.
 *   **Nodemailer:** Automated email notifications for temporary password generation and system alerts.
@@ -64,7 +64,7 @@ FixMate/
 
 ## Key Design Decisions
 
-1.  **Session Isolation:** Implemented a custom `sessionHeader` middleware that uses an `X-Session-Id` header to allow users to maintain separate sessions across browser tabs—critical for admin multitasking.
+1.  **Stateless JWT Authentication:** Migrated from stateful sessions to a stateless JWT architecture using an Access/Refresh token pair. This ensures high scalability, improved security, and robust multi-tab support via tab-isolated access tokens.
 2.  **Automated Financial Reconciliation:** Inventory restocking and repair completions automatically generate "Pending" expenses in the finance module, ensuring the society's balance sheet is always accurate without manual entry.
 3.  **Conflict-Free Payments:** For personal repairs, the system requires both parties to confirm the amount. If amounts mismatch, the system flags the conflict, forcing a re-entry or admin intervention.
 4.  **Hardcoded vs. AI Logic:** Purposefully used deterministic logic for financial calculations and state transitions to ensure 100% auditability and compliance, avoiding the "black box" unpredictability of AI for core accounting.
@@ -88,7 +88,10 @@ cd FixMate
 Create a `.env` file in the root directory:
 ```env
 MONGO_URI=your_mongodb_connection_string
-SESSION_SECRET=your_secure_random_secret
+JWT_SECRET=your_secure_access_token_secret
+JWT_REFRESH_SECRET=your_secure_refresh_token_secret
+JWT_ACCESS_EXPIRY=15m
+JWT_REFRESH_EXPIRY=7d
 PORT=3000
 RAZORPAY_KEY_ID=your_key
 RAZORPAY_KEY_SECRET=your_secret
