@@ -16,7 +16,7 @@ exports.handlePost_fileUpload = async (req, res) => {
       return res.status(400).json({ error: "Photo is required" });
     }
     const complain = {
-      image_url:     `/uploads/${req.file.filename}`,
+      image_url:     req.file.path,
       title:         req.body.title,
       category:      req.body.category || "General",
       priority:      req.body.priority,
@@ -103,15 +103,15 @@ exports.handleProfilePhotoUpload = async (req, res) => {
     const sessionUser = req.user;
     if (!sessionUser) return res.status(401).json({ error: "Not logged in" });
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
-    const photoPath = req.file.filename;
+    const photoUrl = req.file.path;
     if (sessionUser.role === "user") {
-      await User.findOneAndUpdate({ authId: sessionUser.id }, { $set: { photo: photoPath } });
+      await User.findOneAndUpdate({ authId: sessionUser.id }, { $set: { photo: photoUrl } });
     } else if (sessionUser.role === "staff") {
-      await Staff.findOneAndUpdate({ authId: sessionUser.id }, { $set: { photo: photoPath } });
+      await Staff.findOneAndUpdate({ authId: sessionUser.id }, { $set: { photo: photoUrl } });
     } else {
       return res.status(403).json({ error: "Admin does not have a profile photo" });
     }
-    res.status(200).json({ success: true, photo: `/uploads/${photoPath}` });
+    res.status(200).json({ success: true, photo: photoUrl });
   } catch (err) {
     res.status(500).json({ error: "Could not update profile photo" });
   }
@@ -222,7 +222,7 @@ exports.completeTask = async (req, res) => {
     const finalTotal = finalLabour + finalInvCost;
 
     const updateData = {
-        proofImage:    `/uploads/${req.file.filename}`,
+        proofImage:    req.file.path,
         worklog:       worklog || "",
         actualLabourCost: finalLabour,
         actualInventoryUsed: isPersonal ? [] : inventory,

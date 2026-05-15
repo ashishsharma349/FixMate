@@ -662,7 +662,7 @@ exports.addExpense = async (req, res) => {
       return res.status(400).json({ error: "Title and amount are required" });
     }
 
-    const billImage = req.file ? `/uploads/${req.file.filename}` : null;
+    const billImage = req.file ? req.file.path : null;
 
     const expenseDate = date ? new Date(date) : new Date();
 

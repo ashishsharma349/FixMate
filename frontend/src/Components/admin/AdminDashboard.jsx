@@ -1,22 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell } from "recharts";
-import { getAuthHeaders, clearToken, API } from "../../utils/api";
+import { getAuthHeaders, clearToken, API, apiFetch } from "../../utils/api";
 import AnnouncementBoard from "../announcements/AnnouncementBoard";
 import AnnouncementForm from "../announcements/AnnouncementForm";
 
 
 
-
-const apiFetch = async (url, opts = {}) => {
-  const res = await fetch(`${API}${url}`, {
-    headers: { "Content-Type": "application/json", ...getAuthHeaders(), ...(opts.headers || {}) },
-    credentials: "include",
-    ...opts,
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || "Request failed");
-  return data;
-};
 
 const usePolling = (fetchFn, intervalMs = 10000) => {
   const savedFn = useRef(fetchFn);

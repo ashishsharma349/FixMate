@@ -9,8 +9,8 @@ const Staff = require("../model/staff");
 const RefreshToken = require("../model/RefreshToken");
 const { sendTempPasswordMail } = require("../utils/mailer");
 
-const JWT_SECRET = process.env.JWT_SECRET || "fxm_acc_fallback";
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || "fxm_ref_fallback";
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 const JWT_ACCESS_EXPIRY = process.env.JWT_ACCESS_EXPIRY || "15m";
 const JWT_REFRESH_EXPIRY = process.env.JWT_REFRESH_EXPIRY || "7d";
 
@@ -87,11 +87,8 @@ exports.handlePost_login = async (req, res) => {
     const authUser = await Auth.findOne({ email }).select("+password");
     if (!authUser) return res.status(401).json({ error: "Email not found" });
 
-    // SUPPORT BOTH BCRYPT HASHES AND PLAIN TEXT (For demo flexibility)
     const isMatch = await bcrypt.compare(password, authUser.password);
-    const isPlainMatch = password === authUser.password;
-
-    if (!isMatch && !isPlainMatch) {
+    if (!isMatch) {
       return res.status(401).json({ error: "Invalid password" });
     }
 
@@ -206,10 +203,11 @@ exports.handlePost_createUser = async (req, res) => {
 
     const tempPassword = generateTempPassword();
 
-    // Store plain text password (for demo — easy to remember)
+    const hashedPassword = await bcrypt.hash(tempPassword, 10);
+
     const authUser = await Auth.create({
       email,
-      password: tempPassword,
+      password: hashedPassword,
       role: userType,
       isFirstLogin: true
     });
@@ -262,11 +260,12 @@ exports.handlePost_changePassword = async (req, res) => {
     const authUser = await Auth.findById(tokenUser.id).select("+password");
     if (!authUser) return res.status(404).json({ error: "User not found" });
 
-    // Plain text comparison
-    if (currentPassword !== authUser.password)
+    // Bcrypt comparison
+    const isMatch = await bcrypt.compare(currentPassword, authUser.password);
+    if (!isMatch)
       return res.status(401).json({ error: "Current password is incorrect" });
 
-    authUser.password = newPassword;
+    authUser.password = await bcrypt.hash(newPassword, 10);
     authUser.isFirstLogin = false;
     await authUser.save();
 

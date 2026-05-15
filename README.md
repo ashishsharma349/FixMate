@@ -1,157 +1,207 @@
-# FixMate: Intelligent Society Management System
+# FixMate — Society Complaint & Maintenance System
 
-A production-grade, full-stack society management platform designed to streamline maintenance, complaints, inventory, and financial tracking for modern residential complexes.
+A full-stack web application for managing residential society complaints, staff assignments, inventory, finances, and maintenance fee collection. Built with the MERN stack as a final year project.
+
+---
 
 ## Tech Stack
 
 ### Backend
-*   **Node.js & Express (v5.x):** Chosen for its asynchronous nature and rapid development cycle. Express 5 provides improved error handling and promise support.
-*   **MongoDB & Mongoose:** NoSQL allows for flexible schemas for varied complaint types and evolving inventory structures.
-*   **JWT (Access + Refresh Tokens):** Implemented a production-grade stateless authentication system with short-lived access tokens and secure, httpOnly refresh tokens for persistent sessions.
-*   **Bcrypt:** Industry-standard password hashing for robust authentication security.
-*   **Razorpay SDK:** Seamless payment gateway integration for resident maintenance fees.
-*   **Nodemailer:** Automated email notifications for temporary password generation and system alerts.
+- **Node.js & Express 5** — REST API server with async error handling
+- **MongoDB Atlas & Mongoose** — Cloud-hosted NoSQL database with schema validation
+- **JWT Authentication** — Stateless auth using access tokens (15 min) + refresh tokens (7 days, httpOnly cookie)
+- **Bcrypt** — Password hashing with 10-round salt; no plain-text passwords stored
+- **Helmet** — Sets secure HTTP headers (CSP, X-Frame-Options, HSTS, etc.)
+- **Sliding Window Rate Limiter** — Custom middleware to block brute-force login attempts (5 per 15 min per IP)
+- **Cloudinary** — Cloud storage for complaint images, proof-of-work photos, and bill receipts
+- **Razorpay** — Payment gateway for online maintenance fee collection
+- **Nodemailer** — Sends temporary passwords and system alerts via Gmail SMTP
 
 ### Frontend
-*   **React (v19):** Leveraging the latest React features for a highly responsive and componentized UI.
-*   **Vite:** Used as the build tool for near-instant hot module replacement and optimized production builds.
-*   **Tailwind CSS:** Utility-first CSS framework for rapid, consistent, and responsive styling.
-*   **Recharts:** Dynamic data visualization for admin dashboards and financial reporting.
-*   **Lucide React:** Modern, consistent iconography across the platform.
+- **React 19** with **Vite** — Fast dev server and optimized production builds
+- **Tailwind CSS** — Utility-first styling
+- **Recharts** — Admin dashboard charts (revenue vs expenses, complaint trends)
+- **Lucide React** — Icon library
 
 ---
 
-## Key Features
+## Features
 
-### Admin Management
-*   **Real-time Analytics Dashboard:** Track active complaints, staff efficiency, and financial health (Income vs. Expenses) at a glance.
-*   **Resident & Staff Onboarding:** Automated user creation with secure temporary password generation sent via email.
-*   **Maintenance Fund Tracking:** Automated reconciliation of monthly society fees and repair expenses.
-*   **Inventory Control:** Centralized tracking of maintenance supplies with low-stock alerts and automated material deduction upon repair completion.
-*   **Expense Approval:** Digital bill management for restock and common area repairs.
+### Admin Dashboard
+- Real-time stats: active complaints, staff workload, monthly revenue vs. expenses
+- Create resident and staff accounts — system generates a temp password and emails it, user must change on first login
+- Assign complaints to staff based on department and availability
+- Set work type: "Personal" (billed to resident) or "Common Area" (billed to society fund)
+- Inventory management with low-stock alerts and restock tracking (with bill image upload)
+- Expense management — approve/reject repair costs, view society balance sheet
+- Society-wide announcement broadcasts
 
-### Maintenance & Staff
-*   **Smart Complaint Assignment:** Assign staff based on department, availability, and specific time slots.
-*   **Estimate Workflow:** Staff submit labour and inventory estimates; personal repairs are approved by residents, while common area repairs are approved by admin.
-*   **Digital Proof of Work:** Mandatory photo upload upon task completion for transparency.
-*   **Staff Performance Metrics:** Rating system based on resident feedback and task completion speed.
+### Staff Panel
+- View assigned tasks with scheduling details
+- Submit labour + inventory cost estimates
+- Upload proof-of-work photos on task completion
+- Log actual materials used (auto-deducted from inventory)
 
-### Resident Experience
-*   **Visual Complaint Filing:** Upload photos and descriptions of issues directly from the mobile-friendly dashboard.
-*   **Trustless Payment Verification:** A unique double-entry system where both staff and resident must enter the paid amount to resolve "Personal" repairs, preventing financial fraud.
-*   **Maintenance Fee Payment:** Integrated Razorpay flow for monthly society dues with historical tracking.
-*   **Announcements:** Stay updated with society-wide broadcasts.
+### Resident Portal
+- File complaints with photo upload, category selection, and priority (Low / Medium / High)
+- Track complaint status through the full lifecycle
+- Approve or reject repair estimates for personal work
+- Revoke staff assignment if unsatisfied (reopens the complaint)
+- Pay monthly maintenance fees via Razorpay
+- Double-entry payment verification for personal repairs — both staff and resident enter the amount paid; mismatches are flagged
+- Rate staff after job completion
 
 ---
 
-## Folder Structure
+## Complaint Lifecycle
 
-```text
+```
+Pending → Assigned → EstimateSubmitted → EstimateApproved → InProgress → Resolved
+                                                                  ↓
+                                                          (Personal work only)
+                                                          PaymentPending → Resolved
+```
+
+- **Personal work:** Resident approves estimates, pays staff directly. Both parties confirm the amount before the system marks it resolved.
+- **Common area work:** Admin approves estimates. Cost is logged as a society expense on completion.
+
+---
+
+## Security
+
+| Layer | Implementation |
+|-------|---------------|
+| Password Storage | Bcrypt hashing (10 salt rounds). Migration script included for existing accounts. |
+| Authentication | JWT access + refresh token pair. Access token in sessionStorage (tab-isolated), refresh token in httpOnly cookie. |
+| Token Refresh | Automatic silent refresh on 401 via centralized `apiFetch` utility — no user-facing logouts on token expiry. |
+| Brute-Force Protection | Sliding window log rate limiter on `/login` — 5 attempts per 15 minutes per IP. |
+| HTTP Headers | Helmet.js sets Content-Security-Policy, X-Frame-Options, Strict-Transport-Security, X-Content-Type-Options, and more. |
+| CORS | Strict origin whitelist with credentials support. No wildcard origins. |
+| Input Validation | express-validator on user and staff creation routes. |
+
+---
+
+## Project Structure
+
+```
 FixMate/
-├── app.js               # Entry point, middleware orchestration & DB connection
-├── config/              # Environment & database configurations
-├── controller/          # Business logic (Admin, User, Auth, Inventory, Payments)
-├── frontend/            # Vite + React 19 source code
-├── middleware/          # Auth guards, file uploaders, and session isolators
-├── model/               # Mongoose schemas (User, Complain, Finance, Inventory)
-├── routes/              # Express API route definitions
-├── utils/               # Helper functions (Mailer, Path utils)
-├── uploads/             # Local storage for images (Complaints/Bills)
-└── tests/               # Jest & Supertest suites
+├── app.js                     # Express server, middleware chain, DB connection
+├── .env                       # Environment variables (not committed)
+├── config/
+│   └── multerconfig.js        # Cloudinary + Multer file upload config
+├── controller/
+│   ├── admin.js               # Dashboard stats, user CRUD, expense management
+│   ├── auth.js                # Login, signup, token refresh, password change
+│   ├── inventory.js           # Stock levels, restocking with bill tracking
+│   └── user.js                # Complaints, task completion, payment verification
+├── middleware/
+│   ├── authMiddleware.js      # Backward-compat auth wrappers (isLoggedIn, isAdmin)
+│   ├── jwtMiddleware.js       # verifyToken, requireRole, adminOnly, staffOrAdmin
+│   ├── rateLimiter.js         # Sliding window log rate limiter
+│   └── validator.js           # express-validator rules for user/staff creation
+├── model/
+│   ├── Auth.js                # Email, hashed password, role, isFirstLogin
+│   ├── Complain.js            # Full complaint schema with estimate + payment fields
+│   ├── Finance.js             # Income/expense records for society accounting
+│   ├── Inventory.js           # Item stock with restock history
+│   ├── Payment.js             # Razorpay payment records
+│   ├── RefreshToken.js        # Stored refresh tokens for revocation support
+│   ├── User.js                # Resident profile (name, phone, flat, aadhaar)
+│   └── staff.js               # Staff profile (department, rating, task count)
+├── routes/                    # Express route definitions per module
+├── scripts/
+│   └── migrate-passwords.js   # One-time: hash all existing plain-text passwords
+├── frontend/                  # React 19 + Vite app
+│   └── src/
+│       ├── Components/        # Page components (Admin, Staff, Resident views)
+│       ├── Context/           # AuthContext (JWT state management)
+│       └── utils/api.js       # Centralized fetch with auto token refresh
+└── utils/
+    ├── mailer.js              # Nodemailer transporter config
+    └── pathUtil.js            # Root directory helper
 ```
 
 ---
 
-## Key Design Decisions
-
-1.  **Stateless JWT Authentication:** Migrated from stateful sessions to a stateless JWT architecture using an Access/Refresh token pair. This ensures high scalability, improved security, and robust multi-tab support via tab-isolated access tokens.
-2.  **Automated Financial Reconciliation:** Inventory restocking and repair completions automatically generate "Pending" expenses in the finance module, ensuring the society's balance sheet is always accurate without manual entry.
-3.  **Conflict-Free Payments:** For personal repairs, the system requires both parties to confirm the amount. If amounts mismatch, the system flags the conflict, forcing a re-entry or admin intervention.
-4.  **Hardcoded vs. AI Logic:** Purposefully used deterministic logic for financial calculations and state transitions to ensure 100% auditability and compliance, avoiding the "black box" unpredictability of AI for core accounting.
-
----
-
-## Installation & Setup
+## Setup
 
 ### Prerequisites
-*   Node.js (v18+)
-*   MongoDB Instance (Local or Atlas)
-*   Cloudinary Account (Optional, for production image hosting)
+- Node.js v18+
+- MongoDB Atlas cluster (or local MongoDB)
+- Cloudinary account
+- Razorpay test/live keys
+- Gmail with App Password for Nodemailer
 
-### 1. Clone the Repository
+### Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+MONGO_URI=mongodb+srv://user:pass@cluster.mongodb.net/dbName
+JWT_SECRET=your_access_token_secret
+JWT_REFRESH_SECRET=your_refresh_token_secret
+JWT_ACCESS_EXPIRY=15m
+JWT_REFRESH_EXPIRY=7d
+CLOUDINARY_API_KEY=your_key
+CLOUDINARY_API_SECRET=your_secret
+RAZORPAY_KEY_ID=rzp_test_xxx
+RAZORPAY_KEY_SECRET=your_secret
+MAIL_USER=your@gmail.com
+MAIL_PASS=your_gmail_app_password
+```
+
+### Install & Run
+
 ```bash
 git clone https://github.com/ashishsharma349/FixMate
 cd FixMate
-```
-
-### 2. Environment Setup
-Create a `.env` file in the root directory:
-```env
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_secure_access_token_secret
-JWT_REFRESH_SECRET=your_secure_refresh_token_secret
-JWT_ACCESS_EXPIRY=15m
-JWT_REFRESH_EXPIRY=7d
-PORT=3000
-RAZORPAY_KEY_ID=your_key
-RAZORPAY_KEY_SECRET=your_secret
-EMAIL_USER=your_email
-EMAIL_PASS=your_app_password
-NODE_ENV=development
-```
-
-### 3. Install Dependencies
-```bash
-# Install Backend dependencies
 npm install
+cd frontend && npm install && cd ..
 
-# Install Frontend dependencies
-cd frontend
-npm install
-cd ..
+# Start backend (nodemon) + Tailwind watcher
+npm start
 ```
 
-### 4. Run the Application
-```bash
-# Development mode (with Nodemon and Tailwind Watch)
-npm run start
-```
+- Backend: `http://localhost:3000`
+- Frontend: `http://localhost:5173`
+
+### First Login
+
+An admin account is seeded using `ADMIN_EMAIL` and `ADMIN_PASSWORD` from `.env`. Log in as admin and create residents/staff from the dashboard. New users receive a temporary password via email and must change it on first login.
 
 ---
 
-## Testing Section
+## Design Decisions
 
-The repository uses **Jest** and **Supertest** for automated validation.
+1. **Stateless JWT over Sessions** — No server-side session store needed. Each browser tab holds its own access token in sessionStorage, so one tab logging out doesn't affect others. Refresh tokens in httpOnly cookies survive page refreshes.
 
-*   **Unit Tests:** Controllers and utility functions.
-*   **Integration Tests:** API endpoints and Mongoose model validation using `mongodb-memory-server`.
+2. **Deterministic Logic over AI** — Financial calculations, status transitions, and payment verification use hardcoded business rules. For a system handling real money, every code path must be auditable and predictable.
 
-**Run tests:**
+3. **Double-Entry Payment Verification** — For personal repairs, both the staff and resident independently report the amount paid. The system only marks the payment as verified when both amounts match. Mismatches are flagged for re-entry or admin intervention.
+
+4. **Sliding Window Rate Limiting** — Chose a sliding window log algorithm over the standard fixed-window approach. Fixed-window has a known burst vulnerability at window boundaries; the sliding window tracks individual timestamps for accurate throttling.
+
+5. **Cloudinary over Local Storage** — Complaint photos and proof-of-work images are stored on Cloudinary instead of a local `uploads/` folder. This prevents data loss on server restarts or redeployment.
+
+---
+
+## Testing
+
 ```bash
 npm test
-# Get coverage report
 npm run test:coverage
 ```
 
----
-
-## Production Checklist
-
-- [ ] **Input Validation:** Ensure `express-validator` is active on all POST/PUT routes.
-- [ ] **Rate Limiting:** Uncomment the `limiter` middleware in `app.js` to prevent Brute Force/DoS.
-- [ ] **Security Headers:** Implement `helmet` for CSP and XSS protection.
-- [ ] **Cloud Storage:** Transition `multer` from local `uploads/` to `multer-storage-cloudinary` for scalability.
-- [ ] **Environment Variables:** Ensure `NODE_ENV` is set to `production` to hide stack traces.
+Uses Jest and Supertest with `mongodb-memory-server` for isolated integration tests.
 
 ---
 
-## Roadmap
+## Remaining for Production Deployment
 
-*   **Mobile App:** Flutter/React Native companion for staff notifications.
-*   **Visitor Management:** QR-code based entry/exit logs.
-*   **Smart Metering:** Integration with IoT water/electricity meters.
-*   **AI Chatbot:** Automated FAQ and initial complaint categorization.
+- [ ] Set `secure: true` on refresh token cookies (requires HTTPS)
+- [ ] Set `NODE_ENV=production` to suppress error stack traces
+- [ ] Add Razorpay webhook handler as a fallback for client-side payment verification
 
 ---
 
-**FixMate** — *Maintenance Simplified, Community Amplified.*
+Built by Ashish — 2025-26.

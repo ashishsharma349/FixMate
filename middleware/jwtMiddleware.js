@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-const JWT_SECRET = process.env.JWT_SECRET || "fxm_acc_fallback";
+const JWT_SECRET = process.env.JWT_SECRET;
 
 /**
  * verifyToken — Extracts and verifies the access token from Authorization header.
@@ -51,8 +51,8 @@ function requireRole(...roles) {
   };
 }
 
-// Convenience shortcuts
-const adminOnly = requireRole("admin");
-const staffOrAdmin = requireRole("admin", "staff");
+// Convenience shortcuts (self-contained: verify token + check role)
+const adminOnly = [verifyToken, requireRole("admin")];
+const staffOrAdmin = [verifyToken, requireRole("admin", "staff")];
 
 module.exports = { verifyToken, requireRole, adminOnly, staffOrAdmin };

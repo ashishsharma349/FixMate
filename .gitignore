@@ -1,14 +1,23 @@
-<<<<<<< HEAD
 # Dependencies
 node_modules/
+frontend/node_modules/
+
+# Environment
+.env
+.env.*
+
+# Builds
 dist/
 build/
-.env
+frontend/dist/
+frontend/build/
 
 # Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+logs/
+*.log
 
 # IDE / OS
 .vscode/
@@ -18,33 +27,9 @@ Thumbs.db
 
 # Project Specific
 uploads/
-frontend/node_modules/
-frontend/dist/
-frontend/build/
-=======
-# dependencies
-node_modules/
-
-# environment
-.env
-.env.*
-
-# builds
-dist/
-build/
-
-# test / coverage
-coverage/
-
-# logs
-logs/
-*.log
-
-# user uploads
-uploads/
-
+mongodb_data/
 *.txt
 atlas_export.js
 local_import.js
 atlas_data.json
->>>>>>> bdfa590df068d40d85cb979dd4b992907a4e016c
+scripts/migrate-passwords.js

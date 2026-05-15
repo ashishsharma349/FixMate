@@ -79,7 +79,7 @@ exports.deleteItem = async (req, res) => {
 exports.restock = async (req, res) => {
   try {
     const { itemId, addQty, costPerUnit, month, year } = req.body;
-    const billImage = req.file ? `/uploads/${req.file.filename}` : null;
+    const billImage = req.file ? req.file.path : null;
 
     if (!itemId || !addQty || !costPerUnit)
       return res.status(400).json({ error: "itemId, quantity and cost are required" });

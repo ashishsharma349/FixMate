@@ -7,20 +7,8 @@
 //   case "Inventory": return <InventoryView />;
 
 import { useState, useEffect, useCallback } from "react";
-import { getAuthHeaders, API } from "../../utils/api";
+import { getAuthHeaders, API, apiFetch } from "../../utils/api";
 
-
-
-const apiFetch = async (url, opts = {}) => {
-  const res = await fetch(`${API}${url}`, {
-    headers: { "Content-Type": "application/json", ...getAuthHeaders(), ...(opts.headers || {}) },
-    credentials: "include",
-    ...opts,
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || "Request failed");
-  return data;
-};
 
 const CATEGORIES = ["All", "Plumbing", "Electrical", "Carpentry", "Cleaning", "Security", "General"];
 

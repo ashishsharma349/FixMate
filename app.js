@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const cookieParser = require('cookie-parser');
 const path = require('path');
@@ -16,23 +17,21 @@ const authController = require('./controller/auth');
 
 const cors = require('cors');
 const mongoose = require('mongoose');
-const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const slidingWindowLimiter = require('./middleware/rateLimiter');
 
 
 
-const allowedOrigins = [
-
-  'http://127.0.0.1:5501',
-
-  'http://localhost:5501',
-
-  'http://localhost:5500',
-
-  'http://127.0.0.1:5500',
-
-  'http://localhost:5173'
-
-];
+const allowedOrigins = process.env.ALLOWED_ORIGINS 
+  ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+  : [
+      'http://localhost:5173',
+      'http://localhost:5174',
+      'http://localhost:5500',
+      'http://localhost:5501',
+      'http://127.0.0.1:5500',
+      'http://127.0.0.1:5501'
+    ];
 
 
 
@@ -58,9 +57,11 @@ app.use(cors({
 
 
 
+app.use(helmet());
+
 app.set('view engine', 'ejs');
 
-require('dotenv').config();
+
 
 
 
@@ -73,51 +74,9 @@ const DB_PATH = process.env.MONGO_URI;
 
 
 
-// ── Rate Limiting ─────────────────────────────────────────────────────────────
-
-// const limiter = rateLimit({
-//   windowMs: 15 * 60 * 1000, // 15 minutes
-//   max: 100, // limit each IP to 100 requests per windowMs
-//   message: { error: "Too many requests from this IP, please try again later." },
-//   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-//   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-// });
-
-
-
-// Apply rate limiting to all requests
-
-// app.use(limiter);
-
-
-
-// Stricter rate limiting for auth routes
-
-// const authLimiter = rateLimit({
-
-//   windowMs: 15 * 60 * 1000, // 15 minutes
-
-//   max: 5, // limit each IP to 5 auth requests per windowMs
-
-//   message: { error: "Too many authentication attempts, please try again later." },
-
-//   standardHeaders: true,
-
-//   legacyHeaders: false,
-
-// });
-
-
-
-// Apply stricter rate limiting to auth routes
-
-// app.use("/api/auth", authLimiter);
-
-// app.use("/login", authLimiter);
-
-// app.use("/register", authLimiter);
-
-
+// ── Sliding Window Rate Limiter on auth routes ───────────────────────────────
+const authLimiter = slidingWindowLimiter({ windowMs: 15 * 60 * 1000, max: 5 });
+app.use("/login", authLimiter);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

@@ -10,43 +10,51 @@ export function AuthProvider({ children }) {
   const [sessionExpired, setSessionExpired] = useState(false);
 
   useEffect(() => {
-    const token = getToken();
-    if (!token) {
-      setIsLoggedIn(false);
-      setRole(null);
-      setIsFirstLogin(false);
-      return;
-    }
+    const hadToken = !!getToken();
 
-    // Verify token with the server
-    fetch(`${API}/check-login`, {
-      headers: { "Cache-Control": "no-cache", ...getAuthHeaders() },
-      credentials: "include",
-    })
-      .then(res => {
-        if (!res.ok) {
-          // 401 = token invalid/expired → try silent refresh
-          return fetch(`${API}/auth/refresh`, { method: "POST", credentials: "include" })
-            .then(refreshRes => {
-              if (!refreshRes.ok) throw new Error("refresh failed");
-              return refreshRes.json();
-            })
-            .then(refreshData => {
-              if (refreshData.token) {
-                storeToken(refreshData.token);
-                // Retry check-login with new token
-                return fetch(`${API}/check-login`, {
-                  headers: { "Cache-Control": "no-cache", "Authorization": `Bearer ${refreshData.token}` },
-                  credentials: "include",
-                }).then(r => r.json());
-              }
-              throw new Error("no token in refresh");
-            });
+    // Helper: try /check-login with current access token
+    const tryCheckLogin = async () => {
+      const token = getToken();
+      if (!token) return null;
+      const res = await fetch(`${API}/check-login`, {
+        headers: { "Cache-Control": "no-cache", "Authorization": `Bearer ${token}` },
+        credentials: "include",
+      });
+      if (!res.ok) return null;
+      return res.json();
+    };
+
+    // Helper: try silent refresh via httpOnly cookie
+    const tryRefresh = async () => {
+      const res = await fetch(`${API}/auth/refresh`, {
+        method: "POST",
+        credentials: "include",
+      });
+      if (!res.ok) return null;
+      const data = await res.json();
+      if (data.token) {
+        storeToken(data.token);
+        return data.token;
+      }
+      return null;
+    };
+
+    const init = async () => {
+      try {
+        // Step 1: If we have an access token, try it
+        let data = await tryCheckLogin();
+
+        // Step 2: If no token or token expired, try refreshing via cookie
+        if (!data) {
+          const newToken = await tryRefresh();
+          if (newToken) {
+            // Retry check-login with the fresh token
+            data = await tryCheckLogin();
+          }
         }
-        return res.json();
-      })
-      .then(data => {
-        if (data.isLoggedIn) {
+
+        // Step 3: Set state based on result
+        if (data?.isLoggedIn) {
           setIsLoggedIn(true);
           setRole(data.role);
           setIsFirstLogin(data.isFirstLogin ?? false);
@@ -54,15 +62,16 @@ export function AuthProvider({ children }) {
         } else {
           throw new Error("not logged in");
         }
-      })
-      .catch(() => {
+      } catch {
         clearToken();
         setIsLoggedIn(false);
         setRole(null);
         setIsFirstLogin(false);
-        // Only show expired banner if there WAS a token (user was previously logged in)
-        if (token) setSessionExpired(true);
-      });
+        if (hadToken) setSessionExpired(true);
+      }
+    };
+
+    init();
   }, []);
 
   const login = (roleFromServer, firstLogin = false, token = null) => {

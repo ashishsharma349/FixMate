@@ -2,14 +2,14 @@ const express = require("express");
 const adminControllers = require("../controller/admin");
 const { createUserRules, validate } = require("../middleware/validator");
 const upload = require("../config/multerconfig");
-const { verifyToken, adminOnly } = require("../middleware/jwtMiddleware");
+const { adminOnly } = require("../middleware/jwtMiddleware");
 
 const adminRoute = express.Router();
 adminRoute.use(express.json());
 adminRoute.use(express.urlencoded({ extended: true }));
 
 // ── Guard: only admin can access these routes (JWT) ───────────────────────────
-adminRoute.use(verifyToken, adminOnly);
+adminRoute.use(adminOnly);
 
 // ── Dashboard stats ───────────────────────────────────────────────────────────
 adminRoute.get("/dashboard-stats", adminControllers.getDashboardStats);
