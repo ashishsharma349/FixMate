@@ -8,13 +8,7 @@
 //   }
 // });
 
-// /**
-//  * Sends a welcome email with temp password to newly created user/staff
-//  * @param {string} toEmail - recipient email
-//  * @param {string} name - recipient name
-//  * @param {string} tempPassword - auto-generated temp password
-//  * @param {string} role - "user" or "staff"
-//  */
+// 
 // exports.sendTempPasswordMail = async (toEmail, name, tempPassword, role) => {
 //   const mailOptions = {
 //     from: `"FixMate Admin" <${process.env.MAIL_USER}>`,
@@ -38,7 +32,7 @@
 //   await transporter.sendMail(mailOptions);
 // };
 
-require("dotenv").config(); // CRITICAL: This loads your .env file
+require("dotenv").config();
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
@@ -49,9 +43,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-/**
- * Sends a welcome email with temp password to newly created user/staff
- */
+
 exports.sendTempPasswordMail = async (toEmail, name, tempPassword, role) => {
   try {
     const mailOptions = {
@@ -82,11 +74,7 @@ exports.sendTempPasswordMail = async (toEmail, name, tempPassword, role) => {
   }
 };
 
-/**
- * Sends payment receipt email to residents after successful online payment
- * @param {string} toEmail - recipient email
- * @param {Object} paymentDetails - payment information
- */
+
 exports.sendPaymentReceipt = async (toEmail, paymentDetails) => {
   try {
     const { residentName, flatNumber, amount, refId, paidAt, razorpayPaymentId } = paymentDetails;

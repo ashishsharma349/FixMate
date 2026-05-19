@@ -37,7 +37,7 @@ function PaymentCard({ payment, onPaid }) {
     setPaying(true);
     setMsg("");
     try {
-      // Step 1 — Create / reuse Razorpay order
+
       const res = await fetch(`${API}/payments/create-order`, {
         method: "POST",
         headers: jsonAuthHeaders(),
@@ -47,7 +47,7 @@ function PaymentCard({ payment, onPaid }) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to create order");
 
-      // Step 2 — Load Razorpay and open checkout
+
       const loaded = await loadRazorpay();
       if (!loaded) throw new Error("Razorpay SDK failed to load");
 
@@ -60,7 +60,7 @@ function PaymentCard({ payment, onPaid }) {
         order_id: data.orderId,
         handler: async (response) => {
           try {
-            // Step 3 — Verify payment
+
             const vRes = await fetch(`${API}/payments/verify`, {
               method: "POST",
               headers: jsonAuthHeaders(),
@@ -75,7 +75,7 @@ function PaymentCard({ payment, onPaid }) {
             if (!vRes.ok) throw new Error(vData.error || "Verification failed");
 
             setMsg("Payment successful!");
-            onPaid(); // refresh parent list
+            onPaid();
           } catch (e) {
             setMsg(e.message);
           }

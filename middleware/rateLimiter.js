@@ -1,10 +1,4 @@
-/**
- * Sliding Window Log Rate Limiter
- * ────────────────────────────────
- * Stores a log of request timestamps per IP. On each request,
- * removes entries older than the window, then checks if the
- * count exceeds the limit.
- */
+
 
 function slidingWindowLimiter({ windowMs = 15 * 60 * 1000, max = 5, message } = {}) {
   const ipLogs = new Map(); // IP → [timestamp, timestamp, ...]

@@ -8,7 +8,7 @@ describe('FixMate System Tests', () => {
     app = express();
     app.use(express.json());
     
-    // Health check endpoint
+
     app.get('/health', (req, res) => {
       res.json({ 
         status: 'OK', 
@@ -18,7 +18,7 @@ describe('FixMate System Tests', () => {
       });
     });
 
-    // API status endpoint
+
     app.get('/api/status', (req, res) => {
       res.json({
         database: 'Connected',
@@ -28,7 +28,7 @@ describe('FixMate System Tests', () => {
       });
     });
 
-    // Basic test endpoint
+
     app.get('/test', (req, res) => {
       res.json({ message: 'Test endpoint working' });
     });

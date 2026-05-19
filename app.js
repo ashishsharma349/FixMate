@@ -100,8 +100,6 @@ app.get("/check-login", verifyToken, (req, res) => {
   });
 });
 
-// Fallback: if verifyToken fails, the middleware returns 401.
-// Frontend handles 401 from /check-login as "not logged in".
 
 // ── Token refresh endpoint ────────────────────────────────────────────────────
 app.post("/auth/refresh", authController.handlePost_refresh);

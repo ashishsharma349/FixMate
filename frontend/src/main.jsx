@@ -5,7 +5,7 @@ import App from './App.jsx'
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from './Context/AuthContext.jsx'
 
- // ab jitne bi childs hoge iske un sab me authstate shared hogi
+
 createRoot(document.getElementById('root')).render(
 <BrowserRouter>
   <AuthProvider>

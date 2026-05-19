@@ -20,7 +20,7 @@ const razorpay = new Razorpay({
 const generateRefId = async (type) => {
   const prefix = type === "personal" ? "PER" : "MAN";
   
-  // Find the most recent record of this type by refId sorting
+
   const lastRecord = await Payment.findOne({ type, refId: { $regex: new RegExp(`^${prefix}-`) } })
     .sort({ refId: -1 })
     .exec();
@@ -41,7 +41,7 @@ router.get("/list", adminOnly, async (req, res) => {
   try {
     const { month, year } = req.query;
     
-    // Build match conditions for personal payments (maintenance fees)
+
     let personalMatch = { type: "personal" };
     if (month && month !== "") {
       personalMatch.month = parseInt(month);
@@ -50,7 +50,7 @@ router.get("/list", adminOnly, async (req, res) => {
       personalMatch.year = parseInt(year);
     }
     
-    // Build match conditions for maintenance payments
+
     let maintenanceMatch = { type: "maintenance" };
     if ((month && month !== "") || (year && year !== "")) {
       const currentYear = new Date().getFullYear();
@@ -118,10 +118,10 @@ router.get("/monthly-revenue", adminOnly, async (req, res) => {
   try {
     const { month, year } = req.query;
     
-    // Build match condition - Only filter if month/year provided, otherwise group all
+
     let matchCondition = { type: "personal", status: "Paid" };
     
-    // Add month/year filters if provided
+
     if (month && year) {
       matchCondition.month = parseInt(month);
       matchCondition.year = parseInt(year);
@@ -207,7 +207,7 @@ router.post("/create-order", loggedIn, async (req, res) => {
     if (!payment) return res.status(404).json({ error: "Payment record not found" });
     if (payment.status === "Paid") return res.status(400).json({ error: "Already paid" });
 
-    // Reuse existing order if already created
+
     if (payment.razorpayOrderId) {
       return res.json({
         orderId: payment.razorpayOrderId,
@@ -243,7 +243,7 @@ router.post("/create-order", loggedIn, async (req, res) => {
     });
   } catch (err) {
     console.error("Razorpay Create Order Error:", err);
-    // Handle specific errors
+
     if (err.name === 'TypeError') {
       return res.status(400).json({ error: "Invalid payment amount" });
     }
@@ -256,7 +256,7 @@ router.post("/verify", loggedIn, async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
-    // Validate required fields
+
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return res.status(400).json({ error: "Missing required payment verification fields" });
     }
@@ -282,16 +282,16 @@ router.post("/verify", loggedIn, async (req, res) => {
 
     if (!payment) return res.status(404).json({ error: "Payment not found" });
 
-    // Send email receipt for personal payments
+
     if (payment.type === "personal" && payment.resident) {
       try {
         const Auth = require("../model/Auth");
-        // Handle both cases: resident might have authId directly or need to look it up
+
         let auth;
         if (payment.resident.authId) {
           auth = await Auth.findById(payment.resident.authId);
         } else {
-          // Fallback: find auth record by user reference
+
           auth = await Auth.findOne({ _id: payment.resident._id });
         }
         
@@ -311,7 +311,7 @@ router.post("/verify", loggedIn, async (req, res) => {
         }
       } catch (emailErr) {
         console.error("[Payment Receipt Email Error]:", emailErr.message);
-        // Don't fail the payment verification if email fails
+
       }
     }
 
@@ -319,7 +319,7 @@ router.post("/verify", loggedIn, async (req, res) => {
   } catch (err) {
     console.error("[Payment Verification Error]:", err);
     
-    // Handle specific errors
+
     if (err.name === 'CastError') {
       return res.status(400).json({ error: "Invalid payment ID format" });
     }
@@ -370,7 +370,7 @@ router.post("/mark-paid", adminOnly, async (req, res) => {
 
     if (!payment) return res.status(404).json({ error: "Payment not found" });
 
-    // Send email receipt for personal payments (offline)
+
     if (payment.type === "personal" && payment.resident) {
       try {
         const Auth = require("../model/Auth");
@@ -418,7 +418,7 @@ router.put("/:id", adminOnly, async (req, res) => {
     const payment = await Payment.findByIdAndUpdate(req.params.id, { $set: update }, { new: true });
     if (!payment) return res.status(404).json({ error: "Payment not found" });
 
-    // Sync amount to linked complaint's actualCost if this is a maintenance payment with a complaint
+
     if (payment.type === "maintenance" && payment.complaint && amount !== undefined) {
       const Complain = require("../model/Complain");
       await Complain.findByIdAndUpdate(payment.complaint, { 

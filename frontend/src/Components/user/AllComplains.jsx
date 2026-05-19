@@ -26,10 +26,10 @@ function ComplainCard({ data, onRevoke }) {
   const [showRevokeBox, setShowRevokeBox] = useState(false);
   const [revokeMsg, setRevokeMsg] = useState("");
 
-  // Navigate to detail page (existing behaviour)
+
   const showDetail = () => navigate(`/ComplainDetail/${data._id}`, { state: data });
 
-  // Can revoke only if Personal + not yet in InProgress/Resolved
+
   const canRevoke =
     data.workType === "Personal" &&
     ["Assigned", "EstimatePending", "EstimateApproved"].includes(data.status);
@@ -38,7 +38,7 @@ function ComplainCard({ data, onRevoke }) {
     setRevoking(true);
     setRevokeMsg("");
     try {
-      // Uses new PATCH /users/revoke-complaint endpoint
+
       const res = await fetch(`${API}/users/revoke-complaint`, {
         method: "PATCH",
         headers: jsonAuthHeaders(),
@@ -48,7 +48,7 @@ function ComplainCard({ data, onRevoke }) {
       if (!res.ok) throw new Error(result.error);
       setRevokeMsg("Staff revoked. Complaint reopened.");
       setShowRevokeBox(false);
-      onRevoke(); // refresh list
+      onRevoke();
     } catch (err) {
       setRevokeMsg(err.message);
     } finally {
@@ -214,7 +214,7 @@ function ShowComplains() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   
-  // High-end filters
+
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
   const [filterPriority, setFilterPriority] = useState("All");

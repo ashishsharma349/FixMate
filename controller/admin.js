@@ -34,14 +34,14 @@ exports.getDashboardStats = async (req, res) => {
     const [totalComplaints, inProgress, pendingApproval, pendingEstimates, resolvedComplaints, totalResidents, totalStaff] = await Promise.all([
       Complain.countDocuments(),
       Complain.countDocuments({ status: { $in: ["Assigned", "EstimateSubmitted", "EstimateApproved", "InProgress", "PaymentPending"] } }),
-      Complain.countDocuments({ status: "Pending", assignedStaff: null }), // unassigned only
-      Complain.countDocuments({ estimateStatus: "Pending", workType: "CommonArea" }), // CommonArea estimates waiting for admin
-      Complain.countDocuments({ status: "Resolved" }),                     // Finished tickets
+      Complain.countDocuments({ status: "Pending", assignedStaff: null }),
+      Complain.countDocuments({ estimateStatus: "Pending", workType: "CommonArea" }),
+      Complain.countDocuments({ status: "Resolved" }),
       User.countDocuments(),
       Staff.countDocuments(),
     ]);
 
-    // Efficiency Score Calculation
+
     const [personalTotal, personalResolved, publicTotal, publicResolved] = await Promise.all([
       Complain.countDocuments({ workType: "Personal" }),
       Complain.countDocuments({ workType: "Personal", status: "Resolved" }),
@@ -62,7 +62,7 @@ exports.getDashboardStats = async (req, res) => {
       .populate("assignedStaff", "name phone department")
       .populate("resident", "name phone email flatNumber");
 
-    // WIP = complaints that are assigned and being worked on (not Pending, not Resolved)
+
     const wipComplaints = await Complain.find({
       status: { $in: ["Assigned", "EstimateSubmitted", "EstimateApproved", "InProgress", "PaymentPending"] }
     })
@@ -79,7 +79,7 @@ exports.getDashboardStats = async (req, res) => {
     const currentMonth = now.getMonth() + 1;
     const currentYear = now.getFullYear();
 
-    // 1. Current Month Income + GLOBAL OVERALL STATS
+
     const [incomePaymentAgg, incomeFinanceAgg, pendingPaymentOverallAgg, incomePaymentOverallAgg, incomeFinanceOverallAgg, spentFinanceOverallAgg] = await Promise.all([
       Payment.aggregate([
         { $match: { type: "personal", status: "Paid", month: currentMonth, year: currentYear } },
@@ -112,7 +112,7 @@ exports.getDashboardStats = async (req, res) => {
     const overallBalance = totalIncomeOverall - totalSpentOverall;
     const overallPending = pendingPaymentOverallAgg[0]?.total || 0;
 
-    // 2. Current Month Expenses (Worker Payouts + Society Costs)
+
     const [spentPaymentAgg, spentFinanceAgg] = await Promise.all([
       Payment.aggregate([
         { $match: { type: "maintenance", status: "Paid", month: currentMonth, year: currentYear } },
@@ -124,7 +124,7 @@ exports.getDashboardStats = async (req, res) => {
       ])
     ]);
 
-    // 3. Monthly Stats (Resident Fees Detail)
+
     const [monthlyIncomeAgg, monthlyPendingAgg] = await Promise.all([
       Payment.aggregate([
         { $match: { type: "personal", month: currentMonth, year: currentYear, status: "Paid" } },
@@ -150,8 +150,8 @@ exports.getDashboardStats = async (req, res) => {
         publicWork: publicEfficiency
       },
       fund: {
-        limit: totalIncome, // Combined cumulative income
-        spent: totalSpent, // Combined cumulative expenses
+        limit: totalIncome,
+        spent: totalSpent,
         balance: totalIncome - totalSpent,
       },
       residentMonthlyFees: {
@@ -242,7 +242,7 @@ exports.assignComplaint = async (req, res) => {
       },
     });
 
-    // Mark all assigned staff as busy
+
     await Staff.updateMany({ _id: { $in: staffIds } }, { $set: { isAvailable: false } });
 
     res.json({ message: "Complaint assigned to " + staffIds.length + " staff members", workType });
@@ -291,7 +291,7 @@ exports.getStaffAvailability = async (req, res) => {
     const { date, slot } = req.query;
     if (!date || !slot) return res.status(400).json({ error: "date and slot are required" });
 
-    // Find all complaints assigned to staff on this date and slot that are not resolved
+
     const busyComplaints = await Complain.find({
       scheduledAt: {
         $gte: new Date(date + "T00:00:00.000Z"),
@@ -348,7 +348,7 @@ exports.getReportsData = async (req, res) => {
       .populate("assignedStaff", "name department")
       .populate("resident", "name flatNumber");
 
-    // Income/Expense filtering conditions
+
     let paymentMatchIncome = { type: "personal", status: "Paid" };
     let paymentMatchExpense = { type: "maintenance", status: "Paid" };
 
@@ -393,7 +393,7 @@ exports.getReportsData = async (req, res) => {
     ]);
     const totalFundSpent = fundExpenses[0]?.total || 0;
 
-    // Direct Staff Earnings (Personal Work)
+
     let earningsMatch = { transactionCategory: { $in: ['DirectPayment', 'Salary', 'CommonRepair', 'Incentive'] } };
     if (filterMonth && filterYear) {
       const startDate = new Date(filterYear, filterMonth - 1, 1);
@@ -427,12 +427,12 @@ exports.getReportsData = async (req, res) => {
       complaints: { total: totalComplaints, resolved: resolvedComplaints, pending: pendingComplaints, inProgress: inProgressComplaints },
       staff: { total: totalStaff, available: availableStaff, busy: totalStaff - availableStaff },
       categoryBreakdown,
-      expenseDistribution, // Categorized sums for charts
+      expenseDistribution,
       scheduleData,
       fund: {
         totalIncome,
         totalExpense,
-        spent: totalFundSpent, // Specific to filtered period
+        spent: totalFundSpent,
         balance: totalIncome - totalFundSpent,
       },
       directLogs: staffEarnings,
@@ -594,7 +594,7 @@ exports.updateAdminProfile = async (req, res) => {
 
     await auth.save();
 
-    // Issue fresh access token with updated email
+
     const jwt = require("jsonwebtoken");
     const payload = { id: auth._id.toString(), email: auth.email, role: auth.role, profileId: null, isFirstLogin: auth.isFirstLogin };
     const newToken = jwt.sign(payload, process.env.JWT_SECRET || "fxm_acc_fallback", { expiresIn: process.env.JWT_ACCESS_EXPIRY || "15m" });
@@ -616,7 +616,7 @@ exports.recordSalaryPayment = async (req, res) => {
     const staff = await Staff.findById(staffId);
     if (!staff) return res.status(404).json({ error: "Staff not found" });
 
-    // Create Finance Expense
+
     await Finance.create({
       transactionType: "Expense",
       transactionCategory: "Salary",
@@ -645,7 +645,7 @@ exports.payoutExpense = async (req, res) => {
     if (finance.status === "Paid") return res.status(400).json({ error: "Already paid" });
 
     finance.status = "Paid";
-    finance.date = new Date(); // Update to actual payment date
+    finance.date = new Date();
     await finance.save();
 
     res.json({ message: "Payment processed successfully" });
@@ -713,7 +713,7 @@ exports.getFinancesData = async (req, res) => {
         .populate("assignedStaff", "name"),
     ]);
 
-    // 1. GLOBAL OVERALL STATS (Cumulative - ignoring any filters)
+
     const [overallIncomePaymentAgg, overallIncomeFinanceAgg, overallSpentAgg, overallPendingAgg] = await Promise.all([
       Payment.aggregate([
         { $match: { type: "personal", status: "Paid" } },

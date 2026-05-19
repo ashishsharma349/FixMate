@@ -2,7 +2,7 @@ const request = require('supertest');
 const express = require('express');
 const session = require('express-session');
 
-// Import real routes and controllers
+
 const authRoutes = require('../routes/authRouter');
 const paymentRoutes = require('../routes/paymentRoutes');
 
@@ -14,7 +14,7 @@ describe('REAL API Tests', () => {
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
     
-    // Mock session for testing
+
     app.use(session({
       secret: 'test-secret',
       resave: false,
@@ -22,11 +22,11 @@ describe('REAL API Tests', () => {
       cookie: { httpOnly: true }
     }));
     
-    // Mount real routes
+
     app.use('/auth', authRoutes);
     app.use('/payments', paymentRoutes);
     
-    // Test endpoints
+
     app.get('/health', (req, res) => {
       res.json({ status: 'OK', timestamp: new Date().toISOString() });
     });
@@ -44,7 +44,7 @@ describe('REAL API Tests', () => {
         .post('/auth/login')
         .send({ email: 'test@test.com', password: 'test123' });
       
-      // Test that endpoint exists and responds (even with error)
+
       expect([200, 401, 400, 500]).toContain(response.status);
       expect(typeof response.body).toBe('object');
     });
@@ -53,7 +53,7 @@ describe('REAL API Tests', () => {
       const response = await request(app)
         .get('/payments/my-payments');
       
-      // Test that endpoint exists and responds (even with error)
+
       expect([200, 401, 500]).toContain(response.status);
     });
 
@@ -61,7 +61,7 @@ describe('REAL API Tests', () => {
       const response = await request(app)
         .get('/payments/list');
       
-      // Test that endpoint exists and responds (even with error)
+
       expect([200, 403, 401, 500]).toContain(response.status);
     });
   });
@@ -82,7 +82,7 @@ describe('REAL API Tests', () => {
     });
 
     it('should validate payment controller functions exist', () => {
-      // Payment routes are defined, test their structure
+
       expect(paymentRoutes).toBeDefined();
       expect(typeof paymentRoutes).toBe('function');
     });
@@ -126,7 +126,7 @@ describe('REAL API Tests', () => {
       const emailTemplatePath = path.join(__dirname, '../views/emails');
       const templateExists = fs.existsSync(emailTemplatePath);
       
-      // Test if email directory exists
+
       expect(typeof templateExists).toBe('boolean');
     });
   });
@@ -159,7 +159,7 @@ describe('REAL API Tests', () => {
   describe('Real Security Features', () => {
     it('should validate CORS configuration', () => {
       const app = require('../app');
-      // Test that CORS middleware is configured
+
       expect(app._router).toBeDefined();
     });
 
@@ -180,7 +180,7 @@ describe('REAL API Tests', () => {
       const Auth = require('../model/Auth');
       const User = require('../model/User');
       
-      // Test that models have expected schema paths
+
       const authSchema = Auth.schema;
       const userSchema = User.schema;
       

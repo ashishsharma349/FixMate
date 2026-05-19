@@ -42,13 +42,13 @@ exports.addItem = async (req, res) => {
   }
 };
 
-// ... updateItem and deleteItem stay mostly same but use Default Supplier
+
 exports.updateItem = async (req, res) => {
   try {
     const { itemId } = req.params;
     const { name, category, unit, quantity, minQuantity, description, unitPrice, approvedBy, approvedDate } = req.body;
     
-    // Construct exactly what to update
+
     const updatePayload = { name, category, unit, quantity, minQuantity, description, unitPrice, supplier: "Default Supplier", updatedAt: new Date() };
     if (approvedBy) updatePayload.approvedBy = approvedBy;
     if (approvedDate) updatePayload.approvedDate = new Date(approvedDate);
@@ -89,7 +89,7 @@ exports.restock = async (req, res) => {
 
     const totalCost = Number(addQty) * Number(costPerUnit);
 
-    // 1. Increase inventory quantity and update price
+
     item.quantity += Number(addQty);
     item.unitPrice = Number(costPerUnit);
     item.updatedAt = new Date();
@@ -97,19 +97,19 @@ exports.restock = async (req, res) => {
     item.approvedDate = new Date();
     await item.save();
 
-    // 2. Create Expense (Pending)
+
     await Finance.create({
       transactionType: "Expense",
       transactionCategory: "Inventory",
       amount: totalCost,
-      status: "Pending", // Admin pays later
+      status: "Pending",
       description: `Restock: ${addQty} ${item.unit} of ${item.name}`,
       month: Number(month) || new Date().getMonth() + 1,
       year: Number(year) || new Date().getFullYear(),
       billImage,
       quantity: Number(addQty),
       costPerUnit: Number(costPerUnit),
-      handledBy: req.user.profileId // Logged by admin
+      handledBy: req.user.profileId
     });
 
     res.json({ message: "Item restocked and expense created", item });
@@ -120,7 +120,7 @@ exports.restock = async (req, res) => {
 };
 
 // ── AUTO-DEDUCT: called internally when staff completes a CommonArea task ────
-// materialsUsed = [{ name, qty }] — deducts from inventory for each item
+
 exports.deductMaterials = async (materialsUsed = []) => {
   if (!materialsUsed || materialsUsed.length === 0) return;
   for (const mat of materialsUsed) {
@@ -137,7 +137,7 @@ exports.deductMaterials = async (materialsUsed = []) => {
 // ── GET low stock items (below minimum) — used by admin dashboard ─────────────
 exports.getLowStock = async (req, res) => {
   try {
-    // Returns items where current quantity < minimum threshold
+
     const items = await Inventory.find({ $expr: { $lt: ["$quantity", "$minQuantity"] } }).sort({ quantity: 1 });
     res.json({ items });
   } catch (err) {

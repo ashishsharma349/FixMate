@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "./Context/AuthContext";
 
-// Admin — full screen, no shared header
+
 import AdminDashboard from "./Components/admin/AdminDashboard";
 
 // Shared components

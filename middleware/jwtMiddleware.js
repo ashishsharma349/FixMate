@@ -2,11 +2,7 @@ const jwt = require("jsonwebtoken");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-/**
- * verifyToken — Extracts and verifies the access token from Authorization header.
- * On success, attaches decoded payload to req.user with shape:
- *   { id, email, role, profileId, isFirstLogin }
- */
+
 function verifyToken(req, res, next) {
   const authHeader = req.headers.authorization;
 
@@ -18,7 +14,6 @@ function verifyToken(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    // Attach user payload — same shape as old req.session.user
     req.user = {
       id: decoded.id,
       email: decoded.email,
@@ -35,10 +30,7 @@ function verifyToken(req, res, next) {
   }
 }
 
-/**
- * requireRole — Factory middleware that checks req.user.role against allowed roles.
- * Usage: requireRole("admin") or requireRole("admin", "staff")
- */
+
 function requireRole(...roles) {
   return (req, res, next) => {
     if (!req.user) {
@@ -50,8 +42,6 @@ function requireRole(...roles) {
     next();
   };
 }
-
-// Convenience shortcuts (self-contained: verify token + check role)
 const adminOnly = [verifyToken, requireRole("admin")];
 const staffOrAdmin = [verifyToken, requireRole("admin", "staff")];
 

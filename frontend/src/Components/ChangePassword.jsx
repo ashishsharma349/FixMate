@@ -7,7 +7,7 @@ function ChangePassword() {
   const navigate = useNavigate();
   const { isLoggedIn, clearFirstLogin } = useContext(AuthContext);
 
-  // ALL state hooks must come before any conditional return
+
   const [formData, setFormData] = useState({
     currentPassword: "",
     newPassword: "",
@@ -16,7 +16,7 @@ function ChangePassword() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Guard AFTER all hooks
+
   if (!isLoggedIn) return <Navigate to="/login" />;
 
   const handleChange = (e) => {

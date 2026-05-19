@@ -627,7 +627,7 @@ function ComplaintsView() {
       } catch (err) { console.error("Availability check failed:", err); }
       finally { setCheckingAvailability(false); }
     };
-    const timer = setTimeout(checkAvailability, 500); // Debounce
+    const timer = setTimeout(checkAvailability, 500);
     return () => clearTimeout(timer);
   }, [assignModal, assignForm.scheduledAt, assignForm.scheduledSlot]);
 
@@ -1591,7 +1591,7 @@ function PaymentsView() {
     setProcessing(true); setMsg("");
     try {
       const amount = prompt("Enter maintenance amount:", "5000");
-      if (amount === null) return; // cancelled
+      if (amount === null) return;
 
       const res = await apiFetch("/payments/generate-monthly", {
         method: "POST",
@@ -2085,7 +2085,7 @@ function ScheduleCalendar({ schedule = [] }) {
   const totalDays = daysInMonth(month, year);
   const startDay = firstDayOfMonth(month, year);
 
-  // Padding for start of month
+
   for (let i = 0; i < startDay; i++) days.push(null);
   for (let i = 1; i <= totalDays; i++) days.push(i);
 

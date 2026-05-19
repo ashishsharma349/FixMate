@@ -1,7 +1,4 @@
-/**
- * FixMate — Live Feature Verification (correct endpoints)
- * Run: node tests/live_feature_test.js  (backend on port 3000)
- */
+
 const BASE = "http://localhost:3000";
 const results = [];
 const cookies = { admin: "", user: "", staff: "" };

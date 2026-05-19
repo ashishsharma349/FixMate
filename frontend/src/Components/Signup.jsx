@@ -3,8 +3,7 @@ import { Navigate } from "react-router-dom";
 import { AuthContext } from "../Context/AuthContext";
 import { jsonAuthHeaders } from "../utils/api";
 
-// This is NOT a public signup page.
-// Only admin can access this to create resident/staff accounts.
+
 export default function CreateUser() {
   const { isLoggedIn, role } = useContext(AuthContext);
 
@@ -14,7 +13,7 @@ export default function CreateUser() {
     age: "",
     email: "",
     contact: "",
-    aadhaar: "", // Added Aadhaar field
+    aadhaar: "",
     department: "",
   });
 
@@ -22,13 +21,13 @@ export default function CreateUser() {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Guard: only admin can access
+
   if (!isLoggedIn || role !== "admin") return <Navigate to="/" />;
 
   function handleChange(e) {
     const { name, value } = e.target;
 
-    // Custom logic for Aadhaar and Contact to only allow numbers
+
     if (name === "aadhaar" || name === "contact") {
       const numericValue = value.replace(/\D/g, "");
       setFormData(prev => ({ ...prev, [name]: numericValue }));
@@ -43,7 +42,7 @@ export default function CreateUser() {
     setErrors({});
     setSuccess("");
 
-    // Basic Aadhaar Validation before sending to server
+
     if (formData.aadhaar.length !== 12) {
       setErrors({ aadhaar: "Aadhaar must be exactly 12 digits" });
       return;

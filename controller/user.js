@@ -11,7 +11,7 @@ exports.handlePost_fileUpload = async (req, res) => {
     if (!req.body.title || !req.body.description || !req.body.priority) {
       return res.status(400).json({ error: "Title, description and priority required" });
     }
-    // FIXED: photo is MANDATORY
+
     if (!req.file) {
       return res.status(400).json({ error: "Photo is required" });
     }
@@ -118,8 +118,7 @@ exports.handleProfilePhotoUpload = async (req, res) => {
 };
 
 // ── STAFF SUBMITS ESTIMATE ─────────────────────────────────────────────────────
-// Personal = labour only, goes to resident for acceptance
-// CommonArea = labour + inventory, goes to admin for approval
+
 exports.submitEstimate = async (req, res) => {
   try {
     const sessionUser = req.user;
@@ -138,7 +137,7 @@ exports.submitEstimate = async (req, res) => {
     const isPersonal = complaint.workType === "Personal";
     const invEst = isPersonal ? [] : (inventoryEstimate || []);
     
-    // Calculate total estimated cost
+
     const totalInvCost = invEst.reduce((sum, item) => sum + (item.price * item.qty), 0);
     const totalEst = Number(labourEstimate) + totalInvCost;
 
@@ -195,8 +194,7 @@ exports.acceptEstimate = async (req, res) => {
 }
 
 // ── STAFF SUBMITS COMPLETION PROOF ────────────────────────────────────────────
-// Personal work → PaymentPending
-// CommonArea → Mark Completed, Admin verifies and releases fund
+
 exports.completeTask = async (req, res) => {
   try {
     const sessionUser = req.user;
@@ -232,11 +230,11 @@ exports.completeTask = async (req, res) => {
 
     await Complain.findByIdAndUpdate(complaintId, { $set: updateData });
 
-    // Release all assigned staff
+
     const Staff = require("../model/staff");
     await Staff.updateMany({ _id: { $in: complaint.assignedStaff } }, { $set: { isAvailable: true } });
 
-    // For CommonArea: Create a PENDING expense in Finance (Pending Payout flow)
+
     if (!isPersonal) {
         if (inventory.length > 0) {
             await deductMaterials(inventory.map(i => ({ name: i.name, qty: i.qty })));
@@ -244,12 +242,12 @@ exports.completeTask = async (req, res) => {
         
         const Finance = require("../model/finance");
         const now = new Date();
-        // Create a Pending expense entry for the society fund
+
         await Finance.create({
             transactionType: "Expense",
             transactionCategory: "CommonRepair",
             amount: finalTotal,
-            status: "Pending", // Admin must click PAY to mark as Paid
+            status: "Pending",
             description: `Common Area repair completed: ${complaint.title}`,
             relatedComplaint: complaint._id,
             month: now.getMonth() + 1,
@@ -291,19 +289,19 @@ exports.recordPaymentVerification = async (req, res) => {
             return res.status(403).json({ error: "Only staff or resident can record payment" });
         }
 
-        // Auto-resolve if both match, reset if mismatch
+
         if (complaint.userPaymentAmount !== null && complaint.staffPaymentAmount !== null) {
             if (complaint.userPaymentAmount === complaint.staffPaymentAmount) {
                 complaint.status = "Resolved";
                 complaint.isPaymentVerified = true;
                 
-                // Payment verified, no extra finance log needed as per user request to only track monthly fees as income.
+
                 
-                // Release staff
+
                 const Staff = require("../model/staff");
                 await Staff.updateMany({ _id: { $in: complaint.assignedStaff } }, { isAvailable: true });
             } else {
-                // MISMATCH — reset both amounts so they can re-enter
+
                 const mismatchInfo = {
                     staffEntered: complaint.staffPaymentAmount,
                     residentEntered: complaint.userPaymentAmount
@@ -382,14 +380,14 @@ exports.rateStaff = async (req, res) => {
     const staff = await Staff.findById(staffId);
     if (!staff) return res.status(404).json({ error: "Staff not found" });
 
-    // Calculate new accumulated rating
+
     const currentTotal = staff.rating * staff.ratingCount;
     const newCount = staff.ratingCount + 1;
     const newRating = (currentTotal + rating) / newCount;
 
     await Staff.findByIdAndUpdate(staffId, {
       $set: {
-        rating: Math.round(newRating * 10) / 10, // Round to 1 decimal
+        rating: Math.round(newRating * 10) / 10,
         ratingCount: newCount
       }
     });

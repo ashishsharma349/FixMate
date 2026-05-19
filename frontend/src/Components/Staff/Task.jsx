@@ -5,7 +5,7 @@ import { AuthContext } from "../../Context/AuthContext";
 
 
 
-// Auto-refresh hook
+
 const usePolling = (fetchFn, intervalMs = 15000) => {
   const savedFn = useRef(fetchFn);
   useEffect(() => { savedFn.current = fetchFn; }, [fetchFn]);
@@ -33,8 +33,8 @@ function TaskCard({ task, onRefresh }) {
   const [worklog, setWorklog] = useState("");
   const [actualLabour, setActualLabour] = useState("");
   const [proofFile, setProofFile] = useState(null);
-  const [estMaterials, setEstMaterials] = useState([]); // used during estimate
-  const [materialsUsed, setMaterialsUsed] = useState([]); // used during completion
+  const [estMaterials, setEstMaterials] = useState([]);
+  const [materialsUsed, setMaterialsUsed] = useState([]);
   const [inventoryItems, setInventoryItems] = useState([]);
   const [submittingProof, setSubmittingProof] = useState(false);
   const [proofMsg, setProofMsg] = useState("");
@@ -46,7 +46,7 @@ function TaskCard({ task, onRefresh }) {
   const isPersonal = task.workType === "Personal";
   const isCommonArea = task.workType === "CommonArea";
 
-  // Fetch inventory for CommonArea during Assigned (Estimate) AND InProgress (Completion)
+
   useEffect(() => {
     if (isCommonArea && ["Assigned", "InProgress", "EstimateApproved"].includes(task.status)) {
       fetch(`${API}/inventory`, { headers: getAuthHeaders(), credentials: "include" })
@@ -74,7 +74,7 @@ function TaskCard({ task, onRefresh }) {
     setter(updated);
   };
 
-  // Submit estimate
+
   const handleSubmitEstimate = async () => {
     if (!labourEst) return;
     setSubmittingEst(true);
@@ -101,7 +101,7 @@ function TaskCard({ task, onRefresh }) {
     }
   };
 
-  // Submit proof
+
   const handleSubmitProof = async () => {
     if (!proofFile) return;
     setSubmittingProof(true);

@@ -10,13 +10,13 @@ function Logout() {
   useEffect(() => {
     const doLogout = async () => {
       try {
-        // Tell server to revoke refresh token (fire-and-forget)
+
         await fetch(`${API}/logout`, {
           method: "POST",
           headers: { ...getAuthHeaders() },
-          credentials: "include", // sends refresh token cookie for revocation
+          credentials: "include",
         });
-        logout(); // clears token + resets state
+        logout();
         navigate("/");
       } catch (err) {
         console.log(err);

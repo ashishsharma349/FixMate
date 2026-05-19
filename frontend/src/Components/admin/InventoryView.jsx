@@ -1,10 +1,5 @@
 // ── ADD THIS COMPONENT inside AdminDashboard.jsx ────────────────────────────
-// Place it before the PlaceholderView component and wire it in renderView()
 
-// In renderView(), replace:
-//   case "Inventory": return <PlaceholderView title="Inventory" />;
-// With:
-//   case "Inventory": return <InventoryView />;
 
 import { useState, useEffect, useCallback } from "react";
 import { getAuthHeaders, API, apiFetch } from "../../utils/api";

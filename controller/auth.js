@@ -50,14 +50,14 @@ function buildTokenPayload(authUser, profile) {
 async function issueTokenPair(authUser, profile, req, res) {
   const payload = buildTokenPayload(authUser, profile);
 
-  // Access token (short-lived, sent in response body)
+
   const accessToken = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_ACCESS_EXPIRY });
 
-  // Refresh token (long-lived, stored in httpOnly cookie)
+
   const jti = crypto.randomUUID();
   const refreshToken = jwt.sign({ id: payload.id, jti }, JWT_REFRESH_SECRET, { expiresIn: JWT_REFRESH_EXPIRY });
 
-  // Hash and store refresh token in DB
+
   const tokenHash = crypto.createHash("sha256").update(refreshToken).digest("hex");
   await RefreshToken.create({
     tokenHash,
@@ -68,7 +68,7 @@ async function issueTokenPair(authUser, profile, req, res) {
     ip: req.ip || "",
   });
 
-  // Set refresh token as httpOnly cookie
+
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: false,       // Set to true in production with HTTPS
@@ -120,7 +120,7 @@ exports.handlePost_refresh = async (req, res) => {
       return res.status(401).json({ error: "No refresh token" });
     }
 
-    // Verify the refresh token
+
     let decoded;
     try {
       decoded = jwt.verify(oldRefreshToken, JWT_REFRESH_SECRET);
@@ -128,21 +128,21 @@ exports.handlePost_refresh = async (req, res) => {
       return res.status(401).json({ error: "Invalid or expired refresh token" });
     }
 
-    // Find and validate in DB
+
     const tokenHash = crypto.createHash("sha256").update(oldRefreshToken).digest("hex");
     const storedToken = await RefreshToken.findOne({ tokenHash, jti: decoded.jti });
 
     if (!storedToken) {
-      // Token reuse detected — revoke ALL tokens for this user (security measure)
+
       await RefreshToken.deleteMany({ userId: decoded.id });
       res.clearCookie("refreshToken", { path: "/" });
       return res.status(401).json({ error: "Token reuse detected. All sessions revoked." });
     }
 
-    // Delete old token (rotation: one-time use)
+
     await RefreshToken.deleteOne({ _id: storedToken._id });
 
-    // Fetch fresh user data
+
     const authUser = await Auth.findById(decoded.id);
     if (!authUser) {
       return res.status(401).json({ error: "User no longer exists" });
@@ -152,7 +152,7 @@ exports.handlePost_refresh = async (req, res) => {
     if (authUser.role === "user") profile = await User.findOne({ authId: authUser._id });
     else if (authUser.role === "staff") profile = await Staff.findOne({ authId: authUser._id });
 
-    // Issue new token pair
+
     const { accessToken } = await issueTokenPair(authUser, profile, req, res);
 
     return res.json({ success: true, token: accessToken });
@@ -168,12 +168,12 @@ exports.handle_logout = async (req, res) => {
   try {
     const refreshToken = req.cookies?.refreshToken;
     if (refreshToken) {
-      // Revoke refresh token from DB
+
       const tokenHash = crypto.createHash("sha256").update(refreshToken).digest("hex");
       await RefreshToken.deleteOne({ tokenHash });
     }
 
-    // Clear the refresh token cookie
+
     res.clearCookie("refreshToken", { path: "/" });
     res.status(200).json({ message: "Successfully Logged Out" });
   } catch (err) {
@@ -260,7 +260,7 @@ exports.handlePost_changePassword = async (req, res) => {
     const authUser = await Auth.findById(tokenUser.id).select("+password");
     if (!authUser) return res.status(404).json({ error: "User not found" });
 
-    // Bcrypt comparison
+
     const isMatch = await bcrypt.compare(currentPassword, authUser.password);
     if (!isMatch)
       return res.status(401).json({ error: "Current password is incorrect" });
@@ -269,7 +269,7 @@ exports.handlePost_changePassword = async (req, res) => {
     authUser.isFirstLogin = false;
     await authUser.save();
 
-    // Issue a fresh access token with updated isFirstLogin
+
     let profile;
     if (authUser.role === "user") profile = await User.findOne({ authId: authUser._id });
     else if (authUser.role === "staff") profile = await Staff.findOne({ authId: authUser._id });
