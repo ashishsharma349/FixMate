@@ -272,23 +272,8 @@ app.use((err, req, res, next) => {
 
 
 
-mongoose.connect(DB_PATH).then(async () => {
+module.exports = app;
 
-  console.log("[Database Name] :", mongoose.connection.name);
-
-  console.log("Connected to MongoDB");
-
-  app.listen(PORT, () => {
-
-    console.log(`Server is running at http://localhost:${PORT}`);
-
-  });
-
-}).catch(err => {
-
-  console.log("Error :" + err);
-
-});
 
 
 
