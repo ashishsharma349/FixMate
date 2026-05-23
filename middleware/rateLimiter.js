@@ -4,7 +4,7 @@ function slidingWindowLimiter({ windowMs = 15 * 60 * 1000, max = 5, message } = 
   const ipLogs = new Map(); // IP → [timestamp, timestamp, ...]
 
   // Periodic cleanup: remove stale IPs every 5 minutes
-  setInterval(() => {
+  const timer = setInterval(() => {
     const now = Date.now();
     for (const [ip, timestamps] of ipLogs) {
       const filtered = timestamps.filter((t) => now - t < windowMs);
@@ -15,6 +15,10 @@ function slidingWindowLimiter({ windowMs = 15 * 60 * 1000, max = 5, message } = 
       }
     }
   }, 5 * 60 * 1000);
+
+  if (timer && typeof timer.unref === "function") {
+    timer.unref();
+  }
 
   return (req, res, next) => {
     const ip = req.ip || req.connection.remoteAddress;
