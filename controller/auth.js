@@ -1,118 +1,43 @@
-const bcrypt = require("bcrypt");
-const path = require('path');
-const crypto = require("crypto");
-const jwt = require("jsonwebtoken");
-const rootDir = require('../utils/pathUtil');
+const authService = require("../services/AuthService");
+const generateTempPassword = require("../utils/passwordGenerator");
 const Auth = require("../model/Auth");
 const User = require("../model/User");
 const Staff = require("../model/staff");
-const RefreshToken = require("../model/RefreshToken");
 const { sendTempPasswordMail } = require("../utils/mailer");
+const bcrypt = require("bcrypt");
 
-const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
-const JWT_ACCESS_EXPIRY = process.env.JWT_ACCESS_EXPIRY || "15m";
-const JWT_REFRESH_EXPIRY = process.env.JWT_REFRESH_EXPIRY || "7d";
-
-// ─── Helper: generate a random secure temp password ───────────────────────────
-function generateTempPassword() {
-  const upper = "ABCDEFGHJKLMNPQRSTUVWXYZ";
-  const lower = "abcdefghijkmnpqrstuvwxyz";
-  const digits = "23456789";
-  const special = "@$!%*?&";
-  const all = upper + lower + digits + special;
-
-  let pass =
-    upper[Math.floor(Math.random() * upper.length)] +
-    lower[Math.floor(Math.random() * lower.length)] +
-    digits[Math.floor(Math.random() * digits.length)] +
-    special[Math.floor(Math.random() * special.length)];
-
-  for (let i = 0; i < 4; i++) {
-    pass += all[Math.floor(Math.random() * all.length)];
-  }
-
-  return pass.split("").sort(() => Math.random() - 0.5).join("");
-}
-
-// ─── Helper: build JWT payload ────────────────────────────────────────────────
-function buildTokenPayload(authUser, profile) {
-  return {
-    id: authUser._id.toString(),
-    email: authUser.email,
-    role: authUser.role,
-    profileId: profile?._id?.toString() || null,
-    isFirstLogin: authUser.isFirstLogin,
-  };
-}
-
-// ─── Helper: issue access + refresh tokens ────────────────────────────────────
-async function issueTokenPair(authUser, profile, req, res) {
-  const payload = buildTokenPayload(authUser, profile);
-
-
-  const accessToken = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_ACCESS_EXPIRY });
-
-
-  const jti = crypto.randomUUID();
-  const refreshToken = jwt.sign({ id: payload.id, jti }, JWT_REFRESH_SECRET, { expiresIn: JWT_REFRESH_EXPIRY });
-
-
-  const tokenHash = crypto.createHash("sha256").update(refreshToken).digest("hex");
-  await RefreshToken.create({
-    tokenHash,
-    userId: authUser._id,
-    jti,
-    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-    userAgent: req.headers["user-agent"] || "",
-    ip: req.ip || "",
-  });
-
-
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: false,       // Set to true in production with HTTPS
-    sameSite: "lax",
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    path: "/",
-  });
-
-  return { accessToken, payload };
-}
-
-// ─── LOGIN ────────────────────────────────────────────────────────────────────
+// Handle resident and staff authentication
 exports.handlePost_login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const authUser = await Auth.findOne({ email }).select("+password");
-    if (!authUser) return res.status(401).json({ error: "Email not found" });
+    const ip = req.ip || req.connection.remoteAddress;
+    const userAgent = req.headers["user-agent"] || "";
 
-    const isMatch = await bcrypt.compare(password, authUser.password);
-    if (!isMatch) {
-      return res.status(401).json({ error: "Invalid password" });
-    }
+    const result = await authService.login(email, password, ip, userAgent);
 
-    let profile;
-    if (authUser.role === "user") profile = await User.findOne({ authId: authUser._id });
-    else if (authUser.role === "staff") profile = await Staff.findOne({ authId: authUser._id });
-
-    const { accessToken, payload } = await issueTokenPair(authUser, profile, req, res);
+    res.cookie("refreshToken", result.refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: "/",
+    });
 
     return res.json({
       success: true,
-      token: accessToken,
-      role: payload.role,
-      isFirstLogin: payload.isFirstLogin,
+      token: result.token,
+      role: result.role,
+      isFirstLogin: result.isFirstLogin,
       message: "Logged in",
     });
-
   } catch (err) {
     console.error("[handlePost_login ERROR]:", err);
-    res.status(500).json({ error: "Authentication Failed" });
+    const statusCode = err.statusCode || 500;
+    res.status(statusCode).json({ error: err.message || "Authentication Failed" });
   }
 };
 
-// ─── REFRESH TOKEN ────────────────────────────────────────────────────────────
+// Handle token refresh and rotation
 exports.handlePost_refresh = async (req, res) => {
   try {
     const oldRefreshToken = req.cookies?.refreshToken;
@@ -120,59 +45,35 @@ exports.handlePost_refresh = async (req, res) => {
       return res.status(401).json({ error: "No refresh token" });
     }
 
+    const ip = req.ip || req.connection.remoteAddress;
+    const userAgent = req.headers["user-agent"] || "";
 
-    let decoded;
-    try {
-      decoded = jwt.verify(oldRefreshToken, JWT_REFRESH_SECRET);
-    } catch (err) {
-      return res.status(401).json({ error: "Invalid or expired refresh token" });
-    }
+    const result = await authService.refresh(oldRefreshToken, ip, userAgent);
 
+    res.cookie("refreshToken", result.refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: "/",
+    });
 
-    const tokenHash = crypto.createHash("sha256").update(oldRefreshToken).digest("hex");
-    const storedToken = await RefreshToken.findOne({ tokenHash, jti: decoded.jti });
-
-    if (!storedToken) {
-
-      await RefreshToken.deleteMany({ userId: decoded.id });
-      res.clearCookie("refreshToken", { path: "/" });
-      return res.status(401).json({ error: "Token reuse detected. All sessions revoked." });
-    }
-
-
-    await RefreshToken.deleteOne({ _id: storedToken._id });
-
-
-    const authUser = await Auth.findById(decoded.id);
-    if (!authUser) {
-      return res.status(401).json({ error: "User no longer exists" });
-    }
-
-    let profile;
-    if (authUser.role === "user") profile = await User.findOne({ authId: authUser._id });
-    else if (authUser.role === "staff") profile = await Staff.findOne({ authId: authUser._id });
-
-
-    const { accessToken } = await issueTokenPair(authUser, profile, req, res);
-
-    return res.json({ success: true, token: accessToken });
-
+    return res.json({ success: true, token: result.token });
   } catch (err) {
     console.error("[handlePost_refresh ERROR]:", err);
-    res.status(500).json({ error: "Token refresh failed" });
+    if (err.clearCookie) {
+      res.clearCookie("refreshToken", { path: "/" });
+    }
+    const statusCode = err.statusCode || 500;
+    res.status(statusCode).json({ error: err.message || "Token refresh failed" });
   }
 };
 
-// ─── LOGOUT ───────────────────────────────────────────────────────────────────
+// Handle logging out and removing refresh tokens
 exports.handle_logout = async (req, res) => {
   try {
     const refreshToken = req.cookies?.refreshToken;
-    if (refreshToken) {
-
-      const tokenHash = crypto.createHash("sha256").update(refreshToken).digest("hex");
-      await RefreshToken.deleteOne({ tokenHash });
-    }
-
+    await authService.logout(refreshToken);
 
     res.clearCookie("refreshToken", { path: "/" });
     res.status(200).json({ message: "Successfully Logged Out" });
@@ -182,7 +83,25 @@ exports.handle_logout = async (req, res) => {
   }
 };
 
-// ─── ADMIN: CREATE USER OR STAFF (plain text password for demo) ──────────────
+// Handle changing passwords for authenticated users
+exports.handlePost_changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const tokenUser = req.user;
+
+    if (!tokenUser) return res.status(401).json({ error: "Not logged in" });
+
+    const result = await authService.changePassword(tokenUser.id, currentPassword, newPassword);
+
+    res.json({ success: true, message: "Password changed successfully", token: result.token });
+  } catch (err) {
+    console.error("[handlePost_changePassword ERROR]:", err);
+    const statusCode = err.statusCode || 500;
+    res.status(statusCode).json({ error: err.message || "Could not change password" });
+  }
+};
+
+// Temporary endpoint for creating resident or staff accounts
 exports.handlePost_createUser = async (req, res) => {
   try {
     const { name, userType, age, email, contact, phone, aadhaar, department } = req.body;
@@ -202,7 +121,6 @@ exports.handlePost_createUser = async (req, res) => {
     if (existingAuth) return res.status(409).json({ error: "Email already registered" });
 
     const tempPassword = generateTempPassword();
-
     const hashedPassword = await bcrypt.hash(tempPassword, 10);
 
     const authUser = await Auth.create({
@@ -246,41 +164,5 @@ exports.handlePost_createUser = async (req, res) => {
       return res.status(400).json({ error: "Validation Failed: " + err.message });
     }
     res.status(500).json({ error: "Could not create account: " + err.message });
-  }
-};
-
-// ─── CHANGE PASSWORD (plain text for demo) ───────────────────────────────────
-exports.handlePost_changePassword = async (req, res) => {
-  try {
-    const { currentPassword, newPassword } = req.body;
-    const tokenUser = req.user; // From JWT middleware
-
-    if (!tokenUser) return res.status(401).json({ error: "Not logged in" });
-
-    const authUser = await Auth.findById(tokenUser.id).select("+password");
-    if (!authUser) return res.status(404).json({ error: "User not found" });
-
-
-    const isMatch = await bcrypt.compare(currentPassword, authUser.password);
-    if (!isMatch)
-      return res.status(401).json({ error: "Current password is incorrect" });
-
-    authUser.password = await bcrypt.hash(newPassword, 10);
-    authUser.isFirstLogin = false;
-    await authUser.save();
-
-
-    let profile;
-    if (authUser.role === "user") profile = await User.findOne({ authId: authUser._id });
-    else if (authUser.role === "staff") profile = await Staff.findOne({ authId: authUser._id });
-
-    const payload = buildTokenPayload(authUser, profile);
-    const newAccessToken = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_ACCESS_EXPIRY });
-
-    res.json({ success: true, message: "Password changed successfully", token: newAccessToken });
-
-  } catch (err) {
-    console.log("[handlePost_changePassword ERROR]:", err);
-    res.status(500).json({ error: "Could not change password" });
   }
 };
