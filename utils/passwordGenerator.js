@@ -1,12 +1,12 @@
 const crypto = require("crypto");
 
+// Generate a secure temporary password satisfying standard validation requirements
 function generateTempPassword() {
   const upper = "ABCDEFGHJKLMNPQRSTUVWXYZ";
   const lower = "abcdefghijkmnpqrstuvwxyz";
   const digits = "23456789";
   const special = "@$!%*?&";
 
-  // Ensure at least one character from each set to satisfy validations
   let pass = "";
   pass += upper[crypto.randomInt(0, upper.length)];
   pass += lower[crypto.randomInt(0, lower.length)];
@@ -18,7 +18,6 @@ function generateTempPassword() {
     pass += all[crypto.randomInt(0, all.length)];
   }
 
-  // Shuffle securely using Fisher-Yates algorithm
   const arr = pass.split("");
   for (let i = arr.length - 1; i > 0; i--) {
     const j = crypto.randomInt(0, i + 1);
