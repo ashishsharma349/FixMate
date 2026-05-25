@@ -3,7 +3,10 @@ const express = require("express");
 const cookieParser = require('cookie-parser');
 const path = require('path');
 const logger = require("./utils/logger");
+const morganMiddleware = require("./middleware/morganMiddleware");
 const app = express();
+
+app.use(morganMiddleware);
 
 const userRouter = require('./routes/userRoutes');
 const adminRouter = require('./routes/adminRoutes');
