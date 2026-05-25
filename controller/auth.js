@@ -70,7 +70,7 @@ exports.handlePost_refresh = async (req, res) => {
 };
 
 // Handle logging out and removing refresh tokens
-exports.handle_logout = async (req, res) => {
+exports.handlePost_logout = async (req, res) => {
   try {
     const refreshToken = req.cookies?.refreshToken;
     await authService.logout(refreshToken);
@@ -82,7 +82,7 @@ exports.handle_logout = async (req, res) => {
     res.status(500).json({ error: "Logout failed" });
   }
 };
-
+exports.handle_logout = exports.handlePost_logout;
 // Handle changing passwords for authenticated users
 exports.handlePost_changePassword = async (req, res) => {
   try {

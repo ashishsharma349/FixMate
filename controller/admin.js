@@ -6,6 +6,9 @@ const Inventory = require("../model/Inventory");
 const Payment = require("../model/Payment");
 const Finance = require("../model/finance");
 const { sendTempPasswordMail } = require("../utils/mailer");
+const userService = require("../services/UserService");
+const staffService = require("../services/StaffService");
+const adminService = require("../services/AdminService");
 
 // ── Helper: generate a random secure temp password ───────────────────────────
 function generateTempPassword() {
@@ -448,161 +451,87 @@ exports.getReportsData = async (req, res) => {
 // USER CRUD
 // ══════════════════════════════════════════════════════════════════════════════
 
+// ── USER CRUD ────────────────────────────────────────────────────────────────
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().populate("authId", "email role isFirstLogin");
+    const users = await userService.getAllUsers();
     res.json({ users });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 };
 
 exports.createUser = async (req, res) => {
-  let auth = null;
   try {
-    const { email, name, age, phone, contact, aadhaar, flatNumber } = req.body;
-    const phoneNum = phone || contact;
-    console.log("Body Object :", req.body);
-    if (!email || !name || !age || !phoneNum || !aadhaar)
-      return res.status(400).json({ error: "All fields required" });
-
-    const existing = await Auth.findOne({ email });
-    if (existing) return res.status(409).json({ error: "Email already exists" });
-
-    const tempPassword = generateTempPassword();
-    auth = await Auth.create({ email, password: tempPassword, role: "user", isFirstLogin: true });
-    const user = await User.create({ authId: auth._id, name, age, phone: phoneNum, aadhaar, flatNumber: flatNumber || null });
-
-    // await sendTempPasswordMail(email, tempPassword, "Resident");
-    await sendTempPasswordMail(email, name, tempPassword, "Resident");
-
-
+    const user = await userService.createUser(req.body);
     res.status(201).json({ message: "User created", userId: user._id });
   } catch (err) {
-    if (auth) await Auth.findByIdAndDelete(auth._id);
-    console.error("[createUser]:", err);
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 };
 
 exports.updateUser = async (req, res) => {
   try {
-    const { userId } = req.params;
-    const { name, age, phone, aadhaar, email, flatNumber } = req.body;
-    const user = await User.findByIdAndUpdate(userId, { $set: { name, age, phone, aadhaar, flatNumber } }, { new: true });
-    if (!user) return res.status(404).json({ error: "User not found" });
-    if (email) await Auth.findByIdAndUpdate(user.authId, { $set: { email } });
+    const user = await userService.updateUser(req.params.userId, req.body);
     res.json({ message: "User updated", user });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 };
 
 exports.deleteUser = async (req, res) => {
   try {
-    const { userId } = req.params;
-    const user = await User.findByIdAndDelete(userId);
-    if (!user) return res.status(404).json({ error: "User not found" });
-    await Auth.findByIdAndDelete(user.authId);
+    await userService.deleteUser(req.params.userId);
     res.json({ message: "User deleted" });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 };
 
-// ══════════════════════════════════════════════════════════════════════════════
-// STAFF CRUD
-// ══════════════════════════════════════════════════════════════════════════════
-
+// ── STAFF CRUD ────────────────────────────────────────────────────────────────
 exports.getAllStaff = async (req, res) => {
   try {
-    const staff = await Staff.find().populate("authId", "email role isFirstLogin");
+    const staff = await staffService.getAllStaff();
     res.json({ staff });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 };
 
 exports.createStaff = async (req, res) => {
-  let auth = null;
   try {
-    const { email, name, phone, contact, department, aadhaar } = req.body;
-    const phoneNum = phone || contact;
-    if (!email || !name || !phoneNum || !department)
-      return res.status(400).json({ error: "All fields required" });
-
-    const existing = await Auth.findOne({ email });
-    if (existing) return res.status(409).json({ error: "Email already exists" });
-
-    const tempPassword = generateTempPassword();
-    auth = await Auth.create({ email, password: tempPassword, role: "staff", isFirstLogin: true });
-    const staff = await Staff.create({ authId: auth._id, name, phone: phoneNum, department, aadhaar });
-    await sendTempPasswordMail(email, name, tempPassword, "Staff");
-
+    const staff = await staffService.createStaff(req.body);
     res.status(201).json({ message: "Staff created", staffId: staff._id });
   } catch (err) {
-    if (auth) await Auth.findByIdAndDelete(auth._id);
-    console.error("[createStaff]:", err);
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 };
 
 exports.updateStaff = async (req, res) => {
   try {
-    const { staffId } = req.params;
-    const { name, phone, department, aadhaar, email, isAvailable } = req.body;
-    const staff = await Staff.findByIdAndUpdate(staffId, { $set: { name, phone, department, aadhaar, isAvailable } }, { new: true });
-    if (!staff) return res.status(404).json({ error: "Staff not found" });
-    if (email) await Auth.findByIdAndUpdate(staff.authId, { $set: { email } });
+    const staff = await staffService.updateStaff(req.params.staffId, req.body);
     res.json({ message: "Staff updated", staff });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 };
 
 exports.deleteStaff = async (req, res) => {
   try {
-    const { staffId } = req.params;
-    const staff = await Staff.findByIdAndDelete(staffId);
-    if (!staff) return res.status(404).json({ error: "Staff not found" });
-    await Auth.findByIdAndDelete(staff.authId);
+    await staffService.deleteStaff(req.params.staffId);
     res.json({ message: "Staff deleted" });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 };
 
 // ── ADMIN SETTINGS ─────────────────────────────────────────────────────────────
 exports.updateAdminProfile = async (req, res) => {
   try {
-    const tokenUser = req.user;
-    const { name, email, currentPassword, newPassword } = req.body;
-    const auth = await Auth.findById(tokenUser.id).select("+password");
-    if (!auth) return res.status(404).json({ error: "Admin not found" });
-
-    if (email && email !== auth.email) {
-      const exists = await Auth.findOne({ email });
-      if (exists) return res.status(409).json({ error: "Email already in use" });
-      auth.email = email;
-    }
-
-    if (newPassword) {
-      if (!currentPassword) return res.status(400).json({ error: "Current password required" });
-      if (currentPassword !== auth.password) return res.status(401).json({ error: "Current password is incorrect" });
-      auth.password = newPassword;
-    }
-
-    await auth.save();
-
-
-    const jwt = require("jsonwebtoken");
-    const payload = { id: auth._id.toString(), email: auth.email, role: auth.role, profileId: null, isFirstLogin: auth.isFirstLogin };
-    const newToken = jwt.sign(payload, process.env.JWT_SECRET || "fxm_acc_fallback", { expiresIn: process.env.JWT_ACCESS_EXPIRY || "15m" });
-
-    res.json({ message: "Profile updated successfully", token: newToken });
+    const result = await adminService.updateProfile(req.user.id, req.body);
+    res.json({ message: "Profile updated successfully", token: result.token });
   } catch (err) {
-    console.error("[updateAdminProfile]:", err);
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 };
 
