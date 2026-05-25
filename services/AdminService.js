@@ -7,39 +7,54 @@ class AdminService {
   async updateProfile(adminId, updateData) {
     const { email, currentPassword, newPassword } = updateData;
 
-    const auth = await authRepository.findByIdWithPassword(adminId);
+    let auth;
+    try {
+      auth = await authRepository.findByIdWithPassword(adminId);
+    } catch (err) {
+      const error = new Error("Error retrieving admin profile");
+      error.statusCode = 500;
+      throw error;
+    }
+
     if (!auth) {
       const error = new Error("Admin not found");
       error.statusCode = 404;
       throw error;
     }
 
-    if (email && email !== auth.email) {
-      const exists = await authRepository.findByEmailWithPassword(email);
-      if (exists) {
-        const error = new Error("Email already in use");
-        error.statusCode = 409;
-        throw error;
+    try {
+      if (email && email !== auth.email) {
+        const exists = await authRepository.findByEmailWithPassword(email);
+        if (exists) {
+          const error = new Error("Email already in use");
+          error.statusCode = 409;
+          throw error;
+        }
+        auth.email = email;
       }
-      auth.email = email;
-    }
 
-    if (newPassword) {
-      if (!currentPassword) {
-        const error = new Error("Current password required");
-        error.statusCode = 400;
-        throw error;
+      if (newPassword) {
+        if (!currentPassword) {
+          const error = new Error("Current password required");
+          error.statusCode = 400;
+          throw error;
+        }
+        const isMatch = await bcrypt.compare(currentPassword, auth.password);
+        if (!isMatch) {
+          const error = new Error("Current password is incorrect");
+          error.statusCode = 401;
+          throw error;
+        }
+        auth.password = await bcrypt.hash(newPassword, 10);
       }
-      const isMatch = await bcrypt.compare(currentPassword, auth.password);
-      if (!isMatch) {
-        const error = new Error("Current password is incorrect");
-        error.statusCode = 401;
-        throw error;
-      }
-      auth.password = await bcrypt.hash(newPassword, 10);
-    }
 
-    await auth.save();
+      await auth.save();
+    } catch (err) {
+      if (err.statusCode) throw err;
+      const error = new Error("Failed to update admin profile settings");
+      error.statusCode = 500;
+      throw error;
+    }
 
     const payload = {
       id: auth._id.toString(),
@@ -49,7 +64,12 @@ class AdminService {
       isFirstLogin: auth.isFirstLogin
     };
 
-    const JWT_SECRET = process.env.JWT_SECRET || "fxm_acc_fallback";
+    const JWT_SECRET = process.env.JWT_SECRET;
+    if (!JWT_SECRET) {
+      const error = new Error("JWT secret configuration is missing");
+      error.statusCode = 500;
+      throw error;
+    }
     const JWT_ACCESS_EXPIRY = process.env.JWT_ACCESS_EXPIRY || "15m";
     const newToken = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_ACCESS_EXPIRY });
 

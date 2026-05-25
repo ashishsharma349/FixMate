@@ -2,7 +2,11 @@ require('dotenv').config();
 const express = require("express");
 const cookieParser = require('cookie-parser');
 const path = require('path');
+const logger = require("./utils/logger");
+const morganMiddleware = require("./middleware/morganMiddleware");
 const app = express();
+
+app.use(morganMiddleware);
 
 const userRouter = require('./routes/userRoutes');
 const adminRouter = require('./routes/adminRoutes');
@@ -129,21 +133,12 @@ app.use((err, req, res, next) => {
 
 
   // Log error for debugging
-
-  console.error(`[${new Date().toISOString()}] ${req.method} ${req.path}:`, {
-
-    error: err.message,
-
+  logger.error(`${req.method} ${req.path} - ${err.message}`, {
     stack: err.stack,
-
     body: req.body,
-
     params: req.params,
-
     query: req.query,
-
     user: req.user?.id || 'anonymous'
-
   });
 
 
