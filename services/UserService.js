@@ -8,7 +8,13 @@ const { sendTempPasswordMail } = require("../utils/mailer");
 class UserService {
   // Retrieve all residents populated with authentication details
   async getAllUsers() {
-    return await userRepository.findAll();
+    try {
+      return await userRepository.findAll();
+    } catch (err) {
+      const error = new Error("Failed to retrieve residents list");
+      error.statusCode = 500;
+      throw error;
+    }
   }
 
   // Create a resident credentials and profile within a transaction
@@ -22,27 +28,41 @@ class UserService {
       throw error;
     }
 
-    const existing = await userRepository.findByEmail(email);
-    if (existing) {
-      const error = new Error("Email already exists");
-      error.statusCode = 409;
+    try {
+      const existing = await userRepository.findByEmail(email);
+      if (existing) {
+        const error = new Error("Email already exists");
+        error.statusCode = 409;
+        throw error;
+      }
+    } catch (err) {
+      if (err.statusCode) throw err;
+      const error = new Error("Error checking email availability");
+      error.statusCode = 500;
       throw error;
     }
 
     const tempPassword = generateTempPassword();
     const hashedPassword = await bcrypt.hash(tempPassword, 10);
 
-    const result = await withTransaction(async (session) => {
-      const auth = await userRepository.createAuth(
-        { email, password: hashedPassword, role: "user", isFirstLogin: true },
-        session
-      );
-      const user = await userRepository.createUser(
-        { authId: auth._id, name, age, phone: phoneNum, aadhaar, flatNumber: flatNumber || null },
-        session
-      );
-      return { user, tempPassword };
-    });
+    let result;
+    try {
+      result = await withTransaction(async (session) => {
+        const auth = await userRepository.createAuth(
+          { email, password: hashedPassword, role: "user", isFirstLogin: true },
+          session
+        );
+        const user = await userRepository.createUser(
+          { authId: auth._id, name, age, phone: phoneNum, aadhaar, flatNumber: flatNumber || null },
+          session
+        );
+        return { user, tempPassword };
+      });
+    } catch (err) {
+      const error = new Error("Failed to create resident account: " + err.message);
+      error.statusCode = err.statusCode || 500;
+      throw error;
+    }
 
     try {
       await sendTempPasswordMail(email, name, result.tempPassword, "Resident");
@@ -57,41 +77,70 @@ class UserService {
   async updateUser(userId, updateData) {
     const { name, age, phone, aadhaar, email, flatNumber } = updateData;
 
-    const user = await userRepository.findById(userId);
+    let user;
+    try {
+      user = await userRepository.findById(userId);
+    } catch (err) {
+      const error = new Error("Error retrieving user profile");
+      error.statusCode = 500;
+      throw error;
+    }
+
     if (!user) {
       const error = new Error("User not found");
       error.statusCode = 404;
       throw error;
     }
 
-    if (email) {
-      const currentAuth = await authRepository.findById(user.authId);
-      if (currentAuth && currentAuth.email !== email) {
-        const existing = await userRepository.findByEmail(email);
-        if (existing) {
-          const error = new Error("Email already in use");
-          error.statusCode = 409;
-          throw error;
+    try {
+      if (email) {
+        const currentAuth = await authRepository.findById(user.authId);
+        if (currentAuth && currentAuth.email !== email) {
+          const existing = await userRepository.findByEmail(email);
+          if (existing) {
+            const error = new Error("Email already in use");
+            error.statusCode = 409;
+            throw error;
+          }
+          await userRepository.updateAuth(user.authId, { email });
         }
-        await userRepository.updateAuth(user.authId, { email });
       }
-    }
 
-    const updatedUser = await userRepository.update(userId, { name, age, phone, aadhaar, flatNumber });
-    return updatedUser;
+      const updatedUser = await userRepository.update(userId, { name, age, phone, aadhaar, flatNumber });
+      return updatedUser;
+    } catch (err) {
+      if (err.statusCode) throw err;
+      const error = new Error("Failed to update user profile");
+      error.statusCode = 500;
+      throw error;
+    }
   }
 
   // Remove user profile and associated credentials
   async deleteUser(userId) {
-    const user = await userRepository.findById(userId);
+    let user;
+    try {
+      user = await userRepository.findById(userId);
+    } catch (err) {
+      const error = new Error("Error retrieving user profile for deletion");
+      error.statusCode = 500;
+      throw error;
+    }
+
     if (!user) {
       const error = new Error("User not found");
       error.statusCode = 404;
       throw error;
     }
 
-    await userRepository.delete(userId);
-    await userRepository.deleteAuth(user.authId);
+    try {
+      await userRepository.delete(userId);
+      await userRepository.deleteAuth(user.authId);
+    } catch (err) {
+      const error = new Error("Failed to delete user account");
+      error.statusCode = 500;
+      throw error;
+    }
   }
 }
 
