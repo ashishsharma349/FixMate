@@ -137,7 +137,7 @@ class PaymentService {
         resident: resident._id,
         flatNumber: resident.flatNumber || "—",
         amount,
-        dueDate: new Date(year, month, 5),
+        dueDate: new Date(year, month - 1, 5), // FIXED month-indexing bug
         status: "Pending",
         month,
         year,
