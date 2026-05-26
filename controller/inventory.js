@@ -123,14 +123,25 @@ exports.restock = async (req, res) => {
 
 exports.deductMaterials = async (materialsUsed = []) => {
   if (!materialsUsed || materialsUsed.length === 0) return;
+  const names = materialsUsed.map(mat => mat.name);
+  const items = await Inventory.find({ name: { $in: names } });
+  const itemsMap = new Map(items.map(item => [item.name, item.quantity]));
+
+  const ops = [];
   for (const mat of materialsUsed) {
-    const item = await Inventory.findOne({ name: mat.name });
-    if (!item) continue;
-    const newQty = Math.max(0, item.quantity - Math.abs(Number(mat.qty)));
-    await Inventory.findOneAndUpdate(
-      { name: mat.name },
-      { $set: { quantity: newQty, updatedAt: new Date() } }
-    );
+    const currentQty = itemsMap.get(mat.name);
+    if (currentQty === undefined) continue;
+    const newQty = Math.max(0, currentQty - Math.abs(Number(mat.qty)));
+    ops.push({
+      updateOne: {
+        filter: { name: mat.name },
+        update: { $set: { quantity: newQty, updatedAt: new Date() } }
+      }
+    });
+  }
+
+  if (ops.length > 0) {
+    await Inventory.bulkWrite(ops);
   }
 };
 
