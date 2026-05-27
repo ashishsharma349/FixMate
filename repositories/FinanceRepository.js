@@ -1,7 +1,11 @@
 const Finance = require("../model/finance");
 
 class FinanceRepository {
-  async create(data) {
+  async create(data, session = null) {
+    if (session) {
+      const created = await Finance.create([data], { session });
+      return created[0];
+    }
     return await Finance.create(data);
   }
 
