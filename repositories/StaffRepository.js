@@ -28,8 +28,21 @@ class StaffRepository {
   }
 
   // Update staff profile by ID
-  async update(id, updateData) {
-    return await Staff.findByIdAndUpdate(id, { $set: updateData }, { new: true });
+  async update(id, updateData, session = null) {
+    const options = { new: true };
+    if (session) {
+      options.session = session;
+    }
+    return await Staff.findByIdAndUpdate(id, { $set: updateData }, options);
+  }
+
+  // Update many staff profiles
+  async updateMany(filter, updateData, session = null) {
+    const options = {};
+    if (session) {
+      options.session = session;
+    }
+    return await Staff.updateMany(filter, updateData, options);
   }
 
   // Update authentication credentials by ID

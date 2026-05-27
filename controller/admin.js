@@ -9,6 +9,7 @@ const { sendTempPasswordMail } = require("../utils/mailer");
 const userService = require("../services/UserService");
 const staffService = require("../services/StaffService");
 const adminService = require("../services/AdminService");
+const ComplaintService = require("../services/ComplaintService");
 
 // ── Helper: generate a random secure temp password ───────────────────────────
 function generateTempPassword() {
@@ -222,36 +223,18 @@ exports.getAllComplaints = async (req, res) => {
 exports.assignComplaint = async (req, res) => {
   try {
     const { complaintId, staffIds, workType, scheduledAt, scheduledSlot, staffIncentive } = req.body;
-    if (!complaintId || !staffIds || !Array.isArray(staffIds) || staffIds.length < 1 || !workType)
-      return res.status(400).json({ error: "complaintId, staffIds (array with at least 1) and workType are required" });
-
-
-
-    if (!["Personal", "CommonArea"].includes(workType))
-      return res.status(400).json({ error: "workType must be Personal or CommonArea" });
-
-    const staffMembers = await Staff.find({ _id: { $in: staffIds } });
-    if (staffMembers.length !== staffIds.length)
-      return res.status(404).json({ error: "One or more staff not found" });
-
-    await Complain.findByIdAndUpdate(complaintId, {
-      $set: {
-        assignedStaff: staffIds,
-        status: "Assigned",
-        workType,
-        scheduledAt,
-        scheduledSlot,
-        staffIncentive: Number(staffIncentive) || 0
-      },
+    await ComplaintService.assignMultipleStaffToOneComplaint({
+      complaintId,
+      staffIds,
+      workType,
+      scheduledAt,
+      scheduledSlot,
+      staffIncentive
     });
-
-
-    await Staff.updateMany({ _id: { $in: staffIds } }, { $set: { isAvailable: false } });
-
     res.json({ message: "Complaint assigned to " + staffIds.length + " staff members", workType });
   } catch (err) {
     console.error("[assignComplaint]:", err);
-    res.status(500).json({ error: "Server error" });
+    res.status(err.message.includes("required") ? 400 : 500).json({ error: err.message || "Server error" });
   }
 };
 
