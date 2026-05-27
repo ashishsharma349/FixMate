@@ -1,5 +1,6 @@
 const Inventory = require("../model/Inventory");
 const Finance = require("../model/finance");
+const InventoryRepository = require("../repositories/InventoryRepository");
 
 // ── GET ALL inventory items ───────────────────────────────────────────────────
 exports.getAll = async (req, res) => {
@@ -141,7 +142,7 @@ exports.deductMaterials = async (materialsUsed = []) => {
   }
 
   if (ops.length > 0) {
-    await Inventory.bulkWrite(ops);
+    await InventoryRepository.bulkWrite(ops);
   }
 };
 

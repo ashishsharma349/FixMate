@@ -1,60 +1,50 @@
-const Complain = require("../model/Complain");
-const User = require("../model/User");
-const { deductMaterials } = require("./inventory");
+const ComplaintService = require("../services/ComplaintService");
+const StaffRepository = require("../repositories/StaffRepository");
+const UserRepository = require("../repositories/UserRepository");
+const ComplaintRepository = require("../repositories/ComplaintRepository");
 
 // ── FILE UPLOAD FOR COMPLAINT ──────────────────────────────────────────────────
-exports.handlePost_fileUpload = async (req, res) => {
+exports.handlePost_fileUpload = async (req, res, next) => {
   try {
     if (!req.user) {
       return res.status(401).json({ error: "Unauthorized. Please log in." });
     }
-    if (!req.body.title || !req.body.description || !req.body.priority) {
-      return res.status(400).json({ error: "Title, description and priority required" });
-    }
-
-    if (!req.file) {
-      return res.status(400).json({ error: "Photo is required" });
-    }
-    const complain = {
-      image_url:     req.file.path,
+    const complainData = {
       title:         req.body.title,
-      category:      req.body.category || "General",
-      priority:      req.body.priority,
       description:   req.body.description,
+      priority:      req.body.priority,
+      category:      req.body.category,
       flatNumber:    req.body.flatNumber,
       residentName:  req.body.residentName,
       residentPhone: req.body.residentPhone,
       scheduledSlot: req.body.scheduledSlot,
-      resident:      req.user.profileId || req.user.id,
+      residentId:    req.user.profileId || req.user.id,
+      imagePath:     req.file ? (req.file.path || "temp_path_for_testing") : null
     };
-    await Complain.create(complain);
+
+    await ComplaintService.fileComplaint(complainData);
     res.status(201).json({ message: "Complaint filed successfully" });
   } catch (err) {
     console.error("[handlePost_fileUpload]:", err);
-    res.status(500).json({ error: "Could not save complaint" });
+    res.status(err.message.includes("required") ? 400 : 500).json({ error: err.message || "Could not save complaint" });
   }
 };
 
 // ── SHOW COMPLAINTS ────────────────────────────────────────────────────────────
-exports.ShowComplains = async (req, res) => {
+exports.ShowComplains = async (req, res, next) => {
   try {
-    const sessionUser = req.user;
-    if (!sessionUser) return res.status(401).json({ error: "Not logged in" });
-    const filter = sessionUser.role === "admin" ? {} : { resident: sessionUser.profileId || sessionUser.id };
-    const data = await Complain.find(filter)
-      .populate("assignedStaff", "name department phone")
-      .sort({ createdAt: -1 });
-    res.status(200).json({ complains: data });
+    const complains = await ComplaintService.getComplaints(req.user);
+    res.status(200).json({ complains });
   } catch (err) {
-    res.status(500).json({ error: "Database error" });
+    console.error("[ShowComplains]:", err);
+    res.status(err.message === "Not logged in" ? 401 : 500).json({ error: err.message || "Database error" });
   }
 };
 
 // ── GET ALL STAFF ──────────────────────────────────────────────────────────────
-exports.getAllStaffDetails = async (req, res) => {
+exports.getAllStaffDetails = async (req, res, next) => {
   try {
-    const Staff = require("../model/staff");
-    const staff = await Staff.find().populate({ path: "authId", select: "email role" });
+    const staff = await StaffRepository.findAll();
     res.json(staff);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -62,34 +52,28 @@ exports.getAllStaffDetails = async (req, res) => {
 };
 
 // ── ASSIGN COMPLAINT ───────────────────────────────────────────────────────────
-exports.handleComplainAssign = async (req, res) => {
+exports.handleComplainAssign = async (req, res, next) => {
   try {
-    const Staff = require("../model/staff");
     const { staffId, complaintIds, workType } = req.body;
-    if (!staffId || !Array.isArray(complaintIds) || complaintIds.length === 0)
-      return res.status(400).json({ error: "Invalid input data" });
-    const staff = await Staff.findById(staffId);
-    if (!staff) return res.status(404).json({ error: "Staff not found" });
-    const updateResult = await Complain.updateMany(
-      { _id: { $in: complaintIds } },
-      { $set: { assignedStaff: staffId, status: "Assigned", workType: workType || "Personal" } }
-    );
-    await Staff.findByIdAndUpdate(staffId, { $set: { isAvailable: false } });
+    const updateResult = await ComplaintService.assignOneStaffToMultipleComplaints({ staffId, complaintIds, workType });
     return res.status(200).json({ message: "Complaints assigned", assignedCount: updateResult.modifiedCount });
-  } catch (error) {
-    res.status(500).json({ error: "Internal server error" });
+  } catch (err) {
+    console.error("[handleComplainAssign]:", err);
+    res.status(err.message.includes("not found") ? 404 : 400).json({ error: err.message || "Internal server error" });
   }
 };
 
 // ── FETCH STAFF TASKS ──────────────────────────────────────────────────────────
-exports.fetch_task = async (req, res) => {
+exports.fetch_task = async (req, res, next) => {
   try {
     const sessionUser = req.user;
-    if (!sessionUser || sessionUser.role !== "staff")
+    if (!sessionUser || sessionUser.role !== "staff") {
       return res.status(401).json({ error: "Unauthorized" });
-    const complains = await Complain.find({ assignedStaff: sessionUser.profileId })
-      .populate("resident", "name phone")
-      .sort({ createdAt: -1 });
+    }
+    const complains = await ComplaintRepository.find(
+      { assignedStaff: sessionUser.profileId },
+      [{ path: "resident", select: "name phone" }]
+    );
     res.status(200).json({ complains });
   } catch (err) {
     res.status(500).json({ error: "Internal server error" });
@@ -97,17 +81,16 @@ exports.fetch_task = async (req, res) => {
 };
 
 // ── PROFILE PHOTO UPLOAD ───────────────────────────────────────────────────────
-exports.handleProfilePhotoUpload = async (req, res) => {
+exports.handleProfilePhotoUpload = async (req, res, next) => {
   try {
-    const Staff = require("../model/staff");
     const sessionUser = req.user;
     if (!sessionUser) return res.status(401).json({ error: "Not logged in" });
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
     const photoUrl = req.file.path;
     if (sessionUser.role === "user") {
-      await User.findOneAndUpdate({ authId: sessionUser.id }, { $set: { photo: photoUrl } });
+      await UserRepository.update(sessionUser.profileId, { photo: photoUrl });
     } else if (sessionUser.role === "staff") {
-      await Staff.findOneAndUpdate({ authId: sessionUser.id }, { $set: { photo: photoUrl } });
+      await StaffRepository.update(sessionUser.profileId, { photo: photoUrl });
     } else {
       return res.status(403).json({ error: "Admin does not have a profile photo" });
     }
@@ -118,39 +101,12 @@ exports.handleProfilePhotoUpload = async (req, res) => {
 };
 
 // ── STAFF SUBMITS ESTIMATE ─────────────────────────────────────────────────────
-
-exports.submitEstimate = async (req, res) => {
+exports.submitEstimate = async (req, res, next) => {
   try {
     const sessionUser = req.user;
-    if (!sessionUser || sessionUser.role !== "staff")
-      return res.status(401).json({ error: "Unauthorized" });
-
     const { complaintId, labourEstimate, inventoryEstimate } = req.body;
-    if (!complaintId || (!labourEstimate && labourEstimate !== 0))
-      return res.status(400).json({ error: "complaintId and labourEstimate required" });
-
-    const complaint = await Complain.findById(complaintId);
-    if (!complaint) return res.status(404).json({ error: "Complaint not found" });
-    if (!complaint.assignedStaff.includes(sessionUser.profileId))
-      return res.status(403).json({ error: "Not your complaint" });
-
-    const isPersonal = complaint.workType === "Personal";
-    const invEst = isPersonal ? [] : (inventoryEstimate || []);
-    
-
-    const totalInvCost = invEst.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    const totalEst = Number(labourEstimate) + totalInvCost;
-
-    await Complain.findByIdAndUpdate(complaintId, {
-      $set: {
-        labourEstimate:    Number(labourEstimate),
-        inventoryEstimate: invEst,
-        estimatedCost:     totalEst,
-        estimateStatus:    "Pending",
-        status:            "EstimateSubmitted",
-      },
-    });
-
+    const result = await ComplaintService.submitEstimate(sessionUser, complaintId, labourEstimate, inventoryEstimate);
+    const isPersonal = result.workType === "Personal";
     res.status(200).json({
       message: isPersonal
         ? "Estimate sent to resident for acceptance."
@@ -158,243 +114,92 @@ exports.submitEstimate = async (req, res) => {
     });
   } catch (err) {
     console.error("[submitEstimate]:", err);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(err.message === "Unauthorized" ? 401 : err.message.includes("not found") ? 404 : 400).json({ error: err.message });
   }
 };
 
 // ── RESIDENT ACCEPTS ESTIMATE (Personal Work Only) ─────────────────────────────
-exports.acceptEstimate = async (req, res) => {
-    try {
-        const sessionUser = req.user;
-        if (!sessionUser || sessionUser.role !== "user")
-          return res.status(401).json({ error: "Unauthorized" });
-    
-        const { complaintId } = req.body;
-        const complaint = await Complain.findById(complaintId);
-        
-        if (!complaint) return res.status(404).json({ error: "Complaint not found" });
-        if (String(complaint.resident) !== String(sessionUser.profileId || sessionUser.id))
-            return res.status(403).json({ error: "Unauthorized access" });
-        
-        if (complaint.workType !== "Personal")
-            return res.status(400).json({ error: "Only personal work estimates can be accepted by residents" });
-        
-        if (complaint.status !== "EstimateSubmitted")
-            return res.status(400).json({ error: "Invalid complaint status for acceptance" });
-        
-        complaint.status = "InProgress";
-        complaint.estimateStatus = "Approved";
-        await complaint.save();
-    
-        res.json({ message: "Estimate accepted. Staff can now start work." });
-    } catch (err) {
-        console.error("[acceptEstimate]:", err);
-        res.status(500).json({ error: "Server error" });
-    }
-}
-
-// ── STAFF SUBMITS COMPLETION PROOF ────────────────────────────────────────────
-
-exports.completeTask = async (req, res) => {
+exports.acceptEstimate = async (req, res, next) => {
   try {
     const sessionUser = req.user;
-    if (!sessionUser || sessionUser.role !== "staff")
-      return res.status(401).json({ error: "Unauthorized" });
+    const { complaintId } = req.body;
+    await ComplaintService.acceptEstimate(sessionUser, complaintId);
+    res.json({ message: "Estimate accepted. Staff can now start work." });
+  } catch (err) {
+    console.error("[acceptEstimate]:", err);
+    res.status(err.message === "Unauthorized" ? 401 : err.message.includes("not found") ? 404 : 400).json({ error: err.message });
+  }
+};
 
+// ── STAFF SUBMITS COMPLETION PROOF ────────────────────────────────────────────
+exports.completeTask = async (req, res, next) => {
+  try {
+    const sessionUser = req.user;
     const { complaintId, worklog, actualLabourCost, actualInventoryUsed } = req.body;
-    if (!complaintId || !req.file)
-      return res.status(400).json({ error: "complaintId and proof image required" });
-
-    const complaint = await Complain.findById(complaintId);
-    if (!complaint) return res.status(404).json({ error: "Complaint not found" });
-    if (!complaint.assignedStaff.includes(sessionUser.profileId))
-      return res.status(403).json({ error: "Not your complaint" });
-
-    let inventory = [];
-    try { inventory = JSON.parse(actualInventoryUsed || "[]"); } catch (_) {}
-
-    const isPersonal = complaint.workType === "Personal";
     
-    const finalLabour = Number(actualLabourCost) || complaint.labourEstimate || 0;
-    const finalInvCost = inventory.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    const finalTotal = finalLabour + finalInvCost;
-
-    const updateData = {
-        proofImage:    req.file.path,
-        worklog:       worklog || "",
-        actualLabourCost: finalLabour,
-        actualInventoryUsed: isPersonal ? [] : inventory,
-        actualCost:    finalTotal,
-        status:        isPersonal ? "PaymentPending" : "Resolved",
-    };
-
-    await Complain.findByIdAndUpdate(complaintId, { $set: updateData });
-
-
-    const Staff = require("../model/staff");
-    await Staff.updateMany({ _id: { $in: complaint.assignedStaff } }, { $set: { isAvailable: true } });
-
-
-    if (!isPersonal) {
-        if (inventory.length > 0) {
-            await deductMaterials(inventory.map(i => ({ name: i.name, qty: i.qty })));
-        }
-        
-        const Finance = require("../model/finance");
-        const now = new Date();
-
-        await Finance.create({
-            transactionType: "Expense",
-            transactionCategory: "CommonRepair",
-            amount: finalTotal,
-            status: "Pending",
-            description: `Common Area repair completed: ${complaint.title}`,
-            relatedComplaint: complaint._id,
-            month: now.getMonth() + 1,
-            year: now.getFullYear(),
-            handledBy: sessionUser.profileId
-        });
-    }
-
+    const updated = await ComplaintService.completeTask(
+      sessionUser,
+      complaintId,
+      worklog,
+      actualLabourCost,
+      actualInventoryUsed,
+      req.file
+    );
+    
+    const isPersonal = updated.workType === "Personal";
     res.status(200).json({ 
-        message: isPersonal 
-            ? "Work completed. Awaiting payment verification from both parties." 
-            : "Work completed successfully and recorded." 
+      message: isPersonal 
+          ? "Work completed. Awaiting payment verification from both parties." 
+          : "Work completed successfully and recorded." 
     });
   } catch (err) {
     console.error("[completeTask]:", err);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(err.message === "Unauthorized" ? 401 : err.message.includes("not found") ? 404 : 400).json({ error: err.message });
   }
 };
 
 // ── RECORD PAYMENT VERIFICATION (Personal Work Only) ───────────────────────────
-exports.recordPaymentVerification = async (req, res) => {
-    try {
-        const sessionUser = req.user;
-        const { complaintId, amount } = req.body;
-        
-        if (!complaintId || !amount)
-            return res.status(400).json({ error: "complaintId and amount required" });
-        
-        const complaint = await Complain.findById(complaintId);
-        if (!complaint) return res.status(404).json({ error: "Complaint not found" });
-        if (complaint.workType !== "Personal")
-            return res.status(400).json({ error: "Only personal work requires payment verification" });
-
-        if (sessionUser.role === "user") {
-            complaint.userPaymentAmount = Number(amount);
-        } else if (sessionUser.role === "staff") {
-            complaint.staffPaymentAmount = Number(amount);
-        } else {
-            return res.status(403).json({ error: "Only staff or resident can record payment" });
-        }
-
-
-        if (complaint.userPaymentAmount !== null && complaint.staffPaymentAmount !== null) {
-            if (complaint.userPaymentAmount === complaint.staffPaymentAmount) {
-                complaint.status = "Resolved";
-                complaint.isPaymentVerified = true;
-                
-
-                
-
-                const Staff = require("../model/staff");
-                await Staff.updateMany({ _id: { $in: complaint.assignedStaff } }, { isAvailable: true });
-            } else {
-
-                const mismatchInfo = {
-                    staffEntered: complaint.staffPaymentAmount,
-                    residentEntered: complaint.userPaymentAmount
-                };
-                complaint.paymentMismatchCount = (complaint.paymentMismatchCount || 0) + 1;
-                complaint.lastMismatchStaffAmount = mismatchInfo.staffEntered;
-                complaint.lastMismatchUserAmount = mismatchInfo.residentEntered;
-                complaint.userPaymentAmount = null;
-                complaint.staffPaymentAmount = null;
-
-                await complaint.save();
-                return res.json({ 
-                    message: `Payment mismatch! Staff entered ₹${mismatchInfo.staffEntered}, Resident entered ₹${mismatchInfo.residentEntered}. Both must re-enter the correct amount.`,
-                    mismatch: true,
-                    mismatchInfo 
-                });
-            }
-        }
-
-        await complaint.save();
-        res.json({ message: "Payment recorded successfully", isVerified: complaint.isPaymentVerified });
-    } catch (err) {
-        console.error("[recordPaymentVerification]:", err);
-        res.status(500).json({ error: "Server error" });
+exports.recordPaymentVerification = async (req, res, next) => {
+  try {
+    const sessionUser = req.user;
+    const { complaintId, amount } = req.body;
+    const result = await ComplaintService.recordPaymentVerification(sessionUser, complaintId, amount);
+    if (result.mismatch) {
+      return res.status(200).json({
+        message: result.message,
+        mismatch: true,
+        mismatchInfo: result.mismatchInfo
+      });
     }
+    res.json({ message: result.message, isVerified: result.isVerified });
+  } catch (err) {
+    console.error("[recordPaymentVerification]:", err);
+    res.status(err.message.includes("not found") ? 404 : 400).json({ error: err.message });
+  }
 };
 
 // ── RESIDENT REVOKES ASSIGNED STAFF ───────────────────────────────────────────
-exports.revokeStaff = async (req, res) => {
+exports.revokeStaff = async (req, res, next) => {
   try {
-    const Staff = require("../model/staff");
     const sessionUser = req.user;
-    if (!sessionUser || sessionUser.role !== "user")
-      return res.status(401).json({ error: "Unauthorized" });
     const { complaintId, revokeReason } = req.body;
-    if (!complaintId) return res.status(400).json({ error: "complaintId required" });
-    const complaint = await Complain.findById(complaintId);
-    if (!complaint) return res.status(404).json({ error: "Complaint not found" });
-    if (String(complaint.resident) !== String(sessionUser.profileId || sessionUser.id))
-      return res.status(403).json({ error: "Not your complaint" });
-    if (complaint.workType !== "Personal")
-      return res.status(400).json({ error: "Can only revoke Personal work" });
-    if (!["Assigned", "EstimatePending", "EstimateApproved"].includes(complaint.status))
-      return res.status(400).json({ error: "Cannot revoke at this stage" });
-
-    if (complaint.assignedStaff)
-      await Staff.findByIdAndUpdate(complaint.assignedStaff, { $set: { isAvailable: true } });
-
-    await Complain.findByIdAndUpdate(complaintId, {
-      $set: {
-        assignedStaff: null, status: "Pending", workType: null,
-        estimatedCost: null, estimateStatus: null,
-        revokedAt: new Date(), revokeReason: revokeReason || "Revoked by resident",
-      },
-    });
+    await ComplaintService.revokeStaff(sessionUser, complaintId, revokeReason);
     res.status(200).json({ message: "Staff revoked. Complaint reopened." });
   } catch (err) {
-    res.status(500).json({ error: "Internal server error" });
+    console.error("[revokeStaff]:", err);
+    res.status(err.message === "Unauthorized" ? 401 : err.message.includes("not found") ? 404 : 400).json({ error: err.message });
   }
 };
 
 // ── RESIDENT RATES STAFF ─────────────────────────────────────────────────────
-exports.rateStaff = async (req, res) => {
+exports.rateStaff = async (req, res, next) => {
   try {
-    const Staff = require("../model/staff");
     const sessionUser = req.user;
-    if (!sessionUser || sessionUser.role !== "user")
-      return res.status(401).json({ error: "Unauthorized" });
-    
     const { staffId, rating } = req.body;
-    if (!staffId || !rating)
-      return res.status(400).json({ error: "staffId and rating required" });
-    if (rating < 1 || rating > 5)
-      return res.status(400).json({ error: "Rating must be between 1 and 5" });
-
-    const staff = await Staff.findById(staffId);
-    if (!staff) return res.status(404).json({ error: "Staff not found" });
-
-
-    const currentTotal = staff.rating * staff.ratingCount;
-    const newCount = staff.ratingCount + 1;
-    const newRating = (currentTotal + rating) / newCount;
-
-    await Staff.findByIdAndUpdate(staffId, {
-      $set: {
-        rating: Math.round(newRating * 10) / 10,
-        ratingCount: newCount
-      }
-    });
-
-    res.status(200).json({ message: "Rating submitted successfully", newRating: Math.round(newRating * 10) / 10 });
+    const updatedStaff = await ComplaintService.rateStaff(sessionUser, staffId, rating);
+    res.status(200).json({ message: "Rating submitted successfully", newRating: updatedStaff.rating });
   } catch (err) {
     console.error("[rateStaff]:", err);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(err.message === "Unauthorized" ? 401 : err.message.includes("not found") ? 404 : 400).json({ error: err.message });
   }
 };

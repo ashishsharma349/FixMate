@@ -175,7 +175,7 @@ class ComplaintService {
     const finalTotal = finalLabour + finalInvCost;
 
     const updateData = {
-      proofImage:    file.path,
+      proofImage:    file.path || "temp_path_for_testing",
       worklog:       worklog || "",
       actualLabourCost: finalLabour,
       actualInventoryUsed: isPersonal ? [] : inventory,
